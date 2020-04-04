@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "706909310764",
+    "firebase_url": "https://bbcontrol.firebaseio.com",
+    "project_id": "bbcontrol",
+    "storage_bucket": "bbcontrol.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706909310764:android:33682c4c1e5a1be976a689",
+        "android_client_info": {
+          "package_name": "com.example.bbcontrol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706909310764-7a0ujitmdkaa3ubbgk9pp7si75u2kmjr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK4D396USuQ9ggowIne5Ru46ZXvvCKhOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706909310764-7a0ujitmdkaa3ubbgk9pp7si75u2kmjr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
