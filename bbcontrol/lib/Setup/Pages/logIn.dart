@@ -1,3 +1,4 @@
+import 'package:bbcontrol/Setup/Pages/signUp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,13 +20,15 @@ class _LoginPageState extends State<LoginPage>{
       ),
       body: Form(
         key: _formKey,
-        child: Column(
+        child: ListView(
           children: <Widget>[
             TextFormField(
               validator: (input){
+                var msg;
                 if(input.isEmpty){
-                  return 'Please type an email';
+                  msg = 'Please type an email';
                 }
+                return msg;
               },
               onSaved: (input) => _email = input,
               decoration: InputDecoration(
@@ -34,9 +37,11 @@ class _LoginPageState extends State<LoginPage>{
             ),
             TextFormField(
               validator: (input){
+                var msg;
                 if(input.length<6){
-                  return 'Your password needs to be atleast 6 characters';
+                  msg = 'Your password needs to be atleast 6 characters';
                 }
+                return msg;
               },
               onSaved: (input)=> _password = input,
               decoration: InputDecoration(
@@ -51,34 +56,25 @@ class _LoginPageState extends State<LoginPage>{
             Container(
                 child: Row(
                   children: <Widget>[
-                    Text('Does not have account?'),
+                    Text('Not registered yet?'),
                     FlatButton(
                       textColor: Colors.blue,
                       child: Text(
                         'Sign in',
                         style: TextStyle(fontSize: 20),
                       ),
-                      onPressed: () {
-                        //signup screen
-                      },
+                      onPressed: navigateToSignUp,
                     )
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,
                 )),
-            TextFormField(
-              validator: (input){
-                if(input.length<6){
-                  return 'Your password needs to be atleast 6 characters';
-                }
-               },
-            )
           ],
         ),
       )
     );
   }
 
-  Future <void> signIn() async{
+  void signIn() async{
 
     final formState = _formKey.currentState;
     if(formState.validate()){
@@ -91,5 +87,10 @@ class _LoginPageState extends State<LoginPage>{
       }
     }
   }
+
+  void navigateToSignUp(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage()));
+  }
+
 
 }
