@@ -29,9 +29,11 @@ class _LoginPageState extends State<LoginPage>{
               padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
               child: TextFormField(
                 validator: (input){
+                  var msg;
                   if(input.isEmpty){
-                    return 'Please type an email';
+                    msg = 'Please type an email';
                   }
+                  return msg;
                 },
                 onSaved: (input) => _email = input,
                 decoration: InputDecoration(
@@ -41,11 +43,12 @@ class _LoginPageState extends State<LoginPage>{
             ),
             Container(
               padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-              child: TextFormField(
-                validator: (input){
-                  if(input.length<6){
-                    return 'Your password needs to be atleast 6 characters';
-                  }
+              child: TextFormField(validator: (input){
+                var msg;
+                if(input.isEmpty){
+                  msg = 'Your password needs to be atleast 6 characters';
+                }
+                return msg;
                 },
                 onSaved: (input)=> _password = input,
                 decoration: InputDecoration(
