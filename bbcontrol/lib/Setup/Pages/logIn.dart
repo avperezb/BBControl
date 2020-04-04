@@ -14,44 +14,65 @@ class _LoginPageState extends State<LoginPage>{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Log in'),
-      ),
       body: Form(
         key: _formKey,
-        child: Column(
+        child: ListView(
           children: <Widget>[
-            TextFormField(
-              validator: (input){
-                if(input.isEmpty){
-                  return 'Please type an email';
-                }
-              },
-              onSaved: (input) => _email = input,
-              decoration: InputDecoration(
-                labelText: 'Email'
+            Container(
+              margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+              child: Image.asset('assets/images/logo.png',
+                height: 220,
+                width: 220,
               ),
             ),
-            TextFormField(
-              validator: (input){
-                if(input.length<6){
-                  return 'Your password needs to be atleast 6 characters';
-                }
-              },
-              onSaved: (input)=> _password = input,
-              decoration: InputDecoration(
-                  labelText: 'Password'
+            Container(
+              padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              child: TextFormField(
+                validator: (input){
+                  if(input.isEmpty){
+                    return 'Please type an email';
+                  }
+                },
+                onSaved: (input) => _email = input,
+                decoration: InputDecoration(
+                    labelText: 'Email'
+                ),
               ),
-              obscureText: true,
             ),
-            RaisedButton(
-              onPressed: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                );
-              },
-              child: Text('Sign in'),
+            Container(
+              padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              child: TextFormField(
+                validator: (input){
+                  if(input.length<6){
+                    return 'Your password needs to be atleast 6 characters';
+                  }
+                },
+                onSaved: (input)=> _password = input,
+                decoration: InputDecoration(
+                    labelText: 'Password'
+                ),
+                obscureText: true,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
+              child: RaisedButton(
+                padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(10.0),
+                ),
+                color: const Color(0xFFD7384A),
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Home()),
+                  );
+                },
+                child: Text('Sign in',
+                style: TextStyle(
+                  color: Colors.white,
+                ),),
+              ),
             )
           ],
         ),
