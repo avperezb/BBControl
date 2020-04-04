@@ -15,7 +15,7 @@ class _LoginPageState extends State<LoginPage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Log in'),
+        title: Text('BBControl'),
       ),
       body: Form(
         key: _formKey,
@@ -45,13 +45,32 @@ class _LoginPageState extends State<LoginPage>{
               obscureText: true,
             ),
             RaisedButton(
-              onPressed: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                );
-              },
+              onPressed: signIn,
               child: Text('Sign in'),
+            ),
+            Container(
+                child: Row(
+                  children: <Widget>[
+                    Text('Does not have account?'),
+                    FlatButton(
+                      textColor: Colors.blue,
+                      child: Text(
+                        'Sign in',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onPressed: () {
+                        //signup screen
+                      },
+                    )
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                )),
+            TextFormField(
+              validator: (input){
+                if(input.length<6){
+                  return 'Your password needs to be atleast 6 characters';
+                }
+               },
             )
           ],
         ),
@@ -66,6 +85,8 @@ class _LoginPageState extends State<LoginPage>{
       formState.save();
       try{
         FirebaseUser user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password)).user;
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Home(user: user)));
+        //TO DO: Navigate to home
       }catch(e) {
         print(e.message);
       }
