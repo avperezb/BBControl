@@ -4,40 +4,44 @@ import 'package:flutter/material.dart';
 
 import 'logIn.dart';
 
-class SignupPage extends StatefulWidget {
+class SignUpPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignupPage>{
+class _SignUpState extends State<SignUpPage>{
+
   String _email, _password;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Text('Registration'),
+        title: Text('Registration',
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
+        backgroundColor: Color(0xFFFF6B00),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-                child: Image.asset('assets/images/logo.png',
-                  height: 220,
-                  width: 220,
-                ),
+              Text('Enter your information',
+              style: TextStyle(
+                  fontSize: 20
+              ),
+                textAlign: TextAlign.center,
               ),
               Container(
                   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                   child: TextFormField(
                     validator: (input){
-                      var msg = '';
                       if(input.isEmpty){
-                        msg = 'Please type an email';
+                        return 'Please type an email';
                       }
-                      return msg;
                     },
                     onSaved: (input) => _email = input,
                     decoration: InputDecoration(
@@ -49,11 +53,9 @@ class _SignUpState extends State<SignupPage>{
                 padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                 child: TextFormField(
                   validator: (input){
-                    var msg = '';
-                    if(input.length<6) {
-                      msg = 'Your password needs to be atleast 6 characters';
+                    if(input.length<6){
+                      return 'Your password needs to be atleast 6 characters';
                     }
-                    return msg;
                   },
                   onSaved: (input)=> _password = input,
                   decoration: InputDecoration(
@@ -83,11 +85,14 @@ class _SignUpState extends State<SignupPage>{
       ),
     );
   }
-  void signUp() async{
 
-    final formState = _formKey.currentState;
-    if(formState.validate()){
-      formState.save();
+  void signUp() async{
+    print(_email);
+    print( _password);
+    print(_formKey.currentState);
+    if(_formKey.currentState.validate()){
+      print('holaaa');
+      _formKey.currentState.save();
       try{
         FirebaseUser user = (await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();

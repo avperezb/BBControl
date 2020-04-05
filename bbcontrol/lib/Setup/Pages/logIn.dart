@@ -14,34 +14,39 @@ class _LoginPageState extends State<LoginPage>{
   String _email, _password;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('BBControl'),
-      ),
+    return new Scaffold(
       body: Form(
         key: _formKey,
         child: ListView(
-          children: <Widget>[
-            TextFormField(
-              validator: (input){
-                var msg;
-                if(input.isEmpty){
-                  msg = 'Please type an email';
-                }
-                return msg;
-              },
-              onSaved: (input) => _email = input,
-              decoration: InputDecoration(
-                labelText: 'Email'
-              ),
+            children: <Widget>[
+            Container(
+              margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+              child: Image.asset('assets/images/logo.png',
+              height: 220,
+              width: 220,
             ),
-            TextFormField(
+          ),
+            Container(
+              padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              child: TextFormField(
+                validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type an email';
+                    }
+                },
+                onSaved: (input) => _email = input,
+                decoration: InputDecoration(
+                    labelText: 'Email'
+                ),
+              )
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+            child: TextFormField(
               validator: (input){
-                var msg;
                 if(input.length<6){
-                  msg = 'Your password needs to be atleast 6 characters';
+                  return 'Your password needs to be atleast 6 characters';
                 }
-                return msg;
               },
               onSaved: (input)=> _password = input,
               decoration: InputDecoration(
@@ -49,19 +54,35 @@ class _LoginPageState extends State<LoginPage>{
               ),
               obscureText: true,
             ),
-            RaisedButton(
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
+            child: RaisedButton(
+              padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(10.0),
+              ),
+              color: const Color(0xFFD7384A),
               onPressed: signIn,
-              child: Text('Sign in'),
+              child: Text('Log in',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16
+                ),),
             ),
+          ),
             Container(
+                margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
                 child: Row(
                   children: <Widget>[
-                    Text('Not registered yet?'),
+                    Text('Not registered yet?',
+                    style: TextStyle(fontSize: 16)
+                    ),
                     FlatButton(
-                      textColor: Colors.blue,
+                      textColor: const Color(0xFFD7384A),
                       child: Text(
-                        'Sign in',
-                        style: TextStyle(fontSize: 20),
+                        'Sign up',
+                        style: TextStyle(fontSize: 16),
                       ),
                       onPressed: navigateToSignUp,
                     )
@@ -74,11 +95,12 @@ class _LoginPageState extends State<LoginPage>{
     );
   }
 
-  void signIn() async{
-
-    final formState = _formKey.currentState;
-    if(formState.validate()){
-      formState.save();
+  Future <void> signIn() async{
+    print('login');
+    print(_email);
+    print( _password);
+    if(_formKey.currentState.validate()){
+      _formKey.currentState.save();
       try{
         FirebaseUser user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password)).user;
         Navigator.push(context, MaterialPageRoute(builder: (context) => Home(user: user)));
@@ -89,7 +111,8 @@ class _LoginPageState extends State<LoginPage>{
   }
 
   void navigateToSignUp(){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage()));
+    print('holaaa navig');
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
   }
 
 
