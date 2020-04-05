@@ -1,9 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'reservations.dart';
 
 class Home extends StatelessWidget {
+
+  const Home({
+    Key key,
+    @required this.user
+  }) : super(key: key);
+  final FirebaseUser user;
+
   final iconSize = 60.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
