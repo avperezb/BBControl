@@ -15,83 +15,83 @@ class _LoginPageState extends State<LoginPage>{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: Form(
-        key: _formKey,
-        child: ListView(
+        body: Form(
+          key: _formKey,
+          child: ListView(
             children: <Widget>[
-            Container(
-              margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-              child: Image.asset('assets/images/logo.png',
-              height: 220,
-              width: 220,
-            ),
-          ),
-            Container(
-              padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-              child: TextFormField(
-                validator: (input){
-                    if(input.isEmpty){
-                      return 'Please type an email';
-                    }
-                },
-                onSaved: (input) => _email = input,
-                decoration: InputDecoration(
-                    labelText: 'Email'
+              Container(
+                margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                child: Image.asset('assets/images/logo.png',
+                  height: 220,
+                  width: 220,
                 ),
-              )
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-            child: TextFormField(
-              validator: (input){
-                if(input.length<6){
-                  return 'Your password needs to be atleast 6 characters';
-                }
-              },
-              onSaved: (input)=> _password = input,
-              decoration: InputDecoration(
-                  labelText: 'Password'
               ),
-              obscureText: true,
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
-            child: RaisedButton(
-              padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(10.0),
-              ),
-              color: const Color(0xFFD7384A),
-              onPressed: signIn,
-              child: Text('Log in',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16
-                ),),
-            ),
-          ),
-            Container(
-                margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
-                child: Row(
-                  children: <Widget>[
-                    Text('Not registered yet?',
-                    style: TextStyle(fontSize: 16)
+              Container(
+                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                  child: TextFormField(
+                    validator: (input){
+                      if(input.isEmpty){
+                        return 'Please type an email';
+                      }
+                    },
+                    onSaved: (input) => _email = input,
+                    decoration: InputDecoration(
+                        labelText: 'Email'
                     ),
-                    FlatButton(
-                      textColor: const Color(0xFFD7384A),
-                      child: Text(
-                        'Sign up',
-                        style: TextStyle(fontSize: 16),
+                  )
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.length<6){
+                      return 'Your password needs to be atleast 6 characters';
+                    }
+                  },
+                  onSaved: (input)=> _password = input,
+                  decoration: InputDecoration(
+                      labelText: 'Password'
+                  ),
+                  obscureText: true,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
+                child: RaisedButton(
+                  padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(10.0),
+                  ),
+                  color: const Color(0xFFD7384A),
+                  onPressed: signIn,
+                  child: Text('Log in',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16
+                    ),),
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
+                  child: Row(
+                    children: <Widget>[
+                      Text('Not registered yet?',
+                          style: TextStyle(fontSize: 16)
                       ),
-                      onPressed: navigateToSignUp,
-                    )
-                  ],
-                  mainAxisAlignment: MainAxisAlignment.center,
-                )),
-          ],
-        ),
-      )
+                      FlatButton(
+                        textColor: const Color(0xFFD7384A),
+                        child: Text(
+                          'Sign up',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        onPressed: navigateToSignUp,
+                      )
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                  )),
+            ],
+          ),
+        )
     );
   }
 
