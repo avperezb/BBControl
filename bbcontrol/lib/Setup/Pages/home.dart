@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'reservations.dart';
 
 class Home extends StatelessWidget {
   final iconSize = 60.0;
@@ -9,7 +10,7 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: Text('Menu'),
         centerTitle: true,
-        backgroundColor: Colors.grey,
+        backgroundColor: const Color(0xFFFF6B00),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -19,7 +20,9 @@ class Home extends StatelessWidget {
             child: FlatButton(
               padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               color: const Color(0xFF69B3E7),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Reservations()),);
+              },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
