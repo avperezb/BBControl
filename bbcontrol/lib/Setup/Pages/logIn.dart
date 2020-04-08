@@ -103,7 +103,9 @@ class _LoginPageState extends State<LoginPage>{
       _formKey.currentState.save();
       try{
         FirebaseUser user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password)).user;
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Home(user: user)));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Home()));
       }catch(e) {
         print(e.message);
       }
@@ -111,7 +113,6 @@ class _LoginPageState extends State<LoginPage>{
   }
 
   void navigateToSignUp(){
-    print('holaaa navig');
     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
   }
 
