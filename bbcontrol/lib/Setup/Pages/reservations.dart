@@ -1,12 +1,21 @@
+import 'package:bbcontrol/Setup/Database/database_creator.dart';
+import 'package:bbcontrol/Setup/Pages/reservationsList.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Reservations extends StatefulWidget {
+  const Reservations({Key key, @required this.user}) : super(key: key);
+  final FirebaseUser user;
   _ReservationsState createState() => _ReservationsState();
 }
 
 class _ReservationsState extends State<Reservations> {
   int numPeople = 0;
+  int reservaId = 0;
+  ReservationsList rl = new ReservationsList();
+
   callback(numPeople){
     setState(() {
       this.numPeople += numPeople;
@@ -106,27 +115,188 @@ class _ReservationsState extends State<Reservations> {
               )),
           )
           ,
-          Center(
-            child: Container(
-              padding: EdgeInsets.fromLTRB(0.0, 30.00, 0.0, 0.0),
-              width: 400,
-              child: FlatButton(
-                padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                color: const Color(0xFFFF6B00),
-                child: Text('Make reservation',
-                    style: TextStyle(
-                        color: Colors.white
-                    )),
-                onPressed: (){
-
-                },
+          Container(
+            margin: EdgeInsets.fromLTRB(10.0, 40.0, 10.0, 0.0),
+            child: RaisedButton(
+              padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(10.0),
               ),
+              color: const Color(0xFFD7384A),
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList2()));
+
+              },
+              child: Text('New reservation',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16
+                ),),
             ),
           ),
         ],
       ),
     );
   }
+
+  Container createR() {
+    return Container(
+      margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+      padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 30.0),
+      color: const Color(0xFF996480),
+      child: Column(
+        children: <Widget>[
+          Text('Table: 8',
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+            ),
+          ),
+          Text('Seats: $numPeople',
+            style: TextStyle(
+                fontSize: 17
+            ),
+          ),
+          Text('Start date: ${(new DateFormat('yyyy-MM-dd hh:mm')).format(DateTime.now())})',
+            style: TextStyle(
+                fontSize: 17
+            ),
+          ),
+          Text('End date: ${(new DateFormat('yyyy-MM-dd hh:mm')).format(DateTime.now().add(Duration(hours:2, minutes:0, seconds:0)))})',
+            style: TextStyle(
+                fontSize: 17
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ReservationsList2 extends StatelessWidget {
+  ReservationDatabase db = new ReservationDatabase();
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Today reservations'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFFF6B00),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            color: const Color(0xFF996480),
+            child: Column(
+              children: <Widget>[
+                Text('Table: 5',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                Text('Seats: 4',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('Start hour: 4:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('End hour: 6:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            color: const Color(0xFF996480),
+            child: Column(
+              children: <Widget>[
+                Text('Table: 7',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                Text('Seats: 4',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('Start hour: 6:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('End hour: 8:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            color: const Color(0xFF996480),
+            child: Column(
+              children: <Widget>[
+                Text('Table: 8',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                Text('Seats: 4',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('Start hour: 8:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('End hour: 10:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10.0, 150.0, 10.0, 0.0),
+            child: RaisedButton(
+              padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(10.0),
+              ),
+              color: const Color(0xFFD7384A),
+              onPressed:(){ Navigator.push(context, MaterialPageRoute(builder: (context) => Reservations()));},
+              child: Text('Add new reservation',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16
+                ),),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 
 class Table extends StatefulWidget {

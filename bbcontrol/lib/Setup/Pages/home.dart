@@ -1,15 +1,11 @@
+import 'package:bbcontrol/Setup/Pages/reservationsList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'reservations.dart';
 
-class Home extends StatelessWidget {
 
-  const Home({
-    Key key,
-    @required this.user
-  }) : super(key: key);
-  final FirebaseUser user;
+class Home extends StatelessWidget {
 
   final iconSize = 60.0;
 
@@ -30,7 +26,7 @@ class Home extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               color: const Color(0xFF69B3E7),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Reservations()),);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList()),);
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
