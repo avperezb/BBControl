@@ -1,30 +1,39 @@
-import 'package:bbcontrol/Setup/Pages/signUp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-import 'home.dart';
+import 'logIn.dart';
 
-class LoginPage extends StatefulWidget {
-
-  _LoginPageState createState() => new _LoginPageState();
+class SignUpPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _SignUpState();
 }
 
-class _LoginPageState extends State<LoginPage>{
+class _SignUpState extends State<SignUpPage>{
+
   String _email, _password;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   Widget build(BuildContext context) {
     return new Scaffold(
-        body: Form(
-          key: _formKey,
-          child: ListView(
+      appBar: new AppBar(
+        title: Text('Registration',
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
+        backgroundColor: Color(0xFFFF6B00),
+      ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-                child: Image.asset('assets/images/logo.png',
-                  height: 220,
-                  width: 220,
-                ),
+              Text('Enter your information',
+              style: TextStyle(
+                  fontSize: 20
+              ),
+                textAlign: TextAlign.center,
               ),
               Container(
                   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
@@ -63,58 +72,37 @@ class _LoginPageState extends State<LoginPage>{
                     borderRadius: new BorderRadius.circular(10.0),
                   ),
                   color: const Color(0xFFD7384A),
-                  onPressed: signIn,
-                  child: Text('Log in',
+                  onPressed: signUp,
+                  child: Text('Register',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16
                     ),),
                 ),
               ),
-              Container(
-                  margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
-                  child: Row(
-                    children: <Widget>[
-                      Text('Not registered yet?',
-                          style: TextStyle(fontSize: 16)
-                      ),
-                      FlatButton(
-                        textColor: const Color(0xFFD7384A),
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        onPressed: navigateToSignUp,
-                      )
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.center,
-                  )),
-            ],
-          ),
-        )
+            ]
+        ),
+      ),
     );
   }
 
-  Future <void> signIn() async{
-    print('login');
+  void signUp() async{
     print(_email);
     print( _password);
+    print(_formKey.currentState);
     if(_formKey.currentState.validate()){
+      print('holaaa');
       _formKey.currentState.save();
       try{
-        FirebaseUser user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password)).user;
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Home()));
+        FirebaseUser user = (await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password)).user;
+        user.sendEmailVerification();
+        print('creating user');
+        //Display for the user that we sent an email.
+        Navigator.of(context).pop();
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
       }catch(e) {
         print(e.message);
       }
     }
   }
-
-  void navigateToSignUp(){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
-  }
-
-
 }
