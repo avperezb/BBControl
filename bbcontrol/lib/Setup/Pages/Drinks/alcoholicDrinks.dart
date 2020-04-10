@@ -4,305 +4,94 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
-  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: ListView(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Bacata')),);
-              },
-              leading: Image.asset('assets/images/polas/bacata.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Bacata'),
-                    Text('4,1% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('White beer type witbier. Made with wheat and orange peels.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Cajica')),);
-              },
-              leading: Image.asset('assets/images/polas/cajica.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Cajica'),
-                    Text('5,3% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Blonde beer type honey ale. Made with bee honey.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Candelaria')),);
-              },
-              leading: Image.asset('assets/images/polas/candelaria.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Candelaria'),
-                    Text('5,2% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Blonde beer type kölsch. Made with pure malt.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Chapinero')),);
-              },
-              leading: Image.asset('assets/images/polas/chapinero.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Chapinero'),
-                    Text('5,0% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Black beer type porter. Made with pure toasted malt.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Lager')),);
-              },
-              leading: Image.asset('assets/images/polas/lager.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Lager'),
-                    Text('5,0% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Blonde beer type lager. Made with pure malt.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Macondo')),);
-              },
-              leading: Image.asset('assets/images/polas/macondo.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Macondo'),
-                    Text('5,8% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Black beer type ale stout. Made with and infusion of Colombian coffee.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Monserrate')),);
-              },
-              leading: Image.asset('assets/images/polas/monserrate.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Monserrate'),
-                    Text('5,0% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Red beer type bitter. Made with pure malt.'),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol('Septimazo')),);
-              },
-              leading: Image.asset('assets/images/polas/septimazo.png'),
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Septimazo'),
-                    Text('6,0% alc',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue,
-                        ))
-                  ],
-                ),
-              ),
-              subtitle: Text('Red beer type india pale ale. Made with aromatic hops.'),
-            ),
-          ),
+          SingleAlcoholicDrink('Bacata'),
+          SingleAlcoholicDrink('Cajica'),
+          SingleAlcoholicDrink('Candelaria'),
+          SingleAlcoholicDrink('Chapinero'),
+          SingleAlcoholicDrink('Lager'),
+          SingleAlcoholicDrink('Macondo'),
+          SingleAlcoholicDrink('Monserrate'),
+          SingleAlcoholicDrink('Septimazo'),
         ],
       ),
     );
   }
 }
+
+class SingleAlcoholicDrink extends StatelessWidget {
+  var beers = '{'
+      '"Bacata" : { "Volume" : "4,1% alc", "Description" : "White beer type witbier. Made with wheat and orange peels.", "Image" : "assets/images/polas/bacata.png"},'
+      '"Cajica" : { "Volume" : "5,3% alc", "Description" : "Blonde beer type honey ale. Made with bee honey.", "Image" : "assets/images/polas/cajica.png"},'
+      '"Candelaria" : { "Volume" : "5,2% alc", "Description" : "Blonde beer type kölsch. Made with pure malt.", "Image" : "assets/images/polas/candelaria.png"},'
+      '"Chapinero" : { "Volume" : "5,0% alc", "Description" : "Black beer type porter. Made with pure toasted malt.", "Image" : "assets/images/polas/chapinero.png"},'
+      '"Lager" : { "Volume" : "5,0% alc", "Description" : "Blonde beer type lager. Made with pure malt.", "Image" : "assets/images/polas/lager.png"},'
+      '"Macondo" : { "Volume" : "5,8% alc", "Description" : "Black beer type ale stout. Made with and infusion of Colombian coffee.", "Image" : "assets/images/polas/macondo.png"},'
+      '"Monserrate" : { "Volume" : "5,0% alc", "Description" : "Red beer type bitter. Made with pure malt.", "Image" : "assets/images/polas/monserrate.png"},'
+      '"Septimazo" : { "Volume" : "6,0% alc", "Description" : "Red beer type india pale ale. Made with aromatic hops.", "Image" : "assets/images/polas/septimazo.png"}'
+      '}';
+  String drinkName;
+  SingleAlcoholicDrink(String drinkName){
+    this.drinkName = drinkName;
+    getInfo();
+  }
+
+  String volume;
+  String description;
+  String image;
+  void getInfo(){
+    Map<String, dynamic> parsedJson = json.decode(beers)[drinkName];
+    this.volume = parsedJson['Volume'];
+    this.description = parsedJson['Description'];
+    this.image = parsedJson['Image'];
+  }
+
+  Widget build(BuildContext context) {
+    return Container(
+      child: Container(
+        margin: EdgeInsets.fromLTRB(0, 10, 0, 18),
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              offset: Offset(0.0, 1.0), //(x,y)
+              blurRadius: 6.0,
+            ),
+          ],
+        ),
+        child: ListTile(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol(drinkName)),);
+          },
+          leading: Image.asset(image),
+          title: Container(
+            margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(drinkName),
+                Text(volume,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.blue,
+                    ))
+              ],
+            ),
+          ),
+          subtitle: Text(description),
+        ),
+      ),
+    );;
+  }
+}
+
 
 class OrderAlcohol extends StatefulWidget {
   @override
@@ -562,8 +351,8 @@ class _OrderAlcoholState extends State<OrderAlcohol> {
                     child: Text(
                       'Total: $accumulateTotal',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20
                       ),
                     ),
                   ),
