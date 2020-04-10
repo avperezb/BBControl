@@ -52,20 +52,20 @@ class SingleAlcoholicDrink extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.0),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 6.0,
+          ),
+        ],
+      ),
       child: Container(
-        margin: EdgeInsets.fromLTRB(0, 10, 0, 18),
-        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 6.0,
-            ),
-          ],
-        ),
         child: ListTile(
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol(drinkName)),);
@@ -129,7 +129,8 @@ class _OrderAlcoholState extends State<OrderAlcohol> {
         result = start + end;
       }
       return result;
-    };
+    }
+
     String getSizePrice(String size){
       var parsedJson = json.decode(prices);
       String price = parsedJson[size];
@@ -342,38 +343,36 @@ class _OrderAlcoholState extends State<OrderAlcohol> {
                 ),
               ],
             ),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width*0.35,
-                    child: Text(
-                      'Total: $accumulateTotal',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20
-                      ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width*0.35,
+                  child: Text(
+                    'Total: $accumulateTotal',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20
                     ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width*0.55,
-                    child: RaisedButton(
-                      padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(10.0),
-                      ),
-                      color: const Color(0xFFD7384A),
-                      onPressed:(){},
-                      child: Text('Add order',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16
-                        ),),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width*0.55,
+                  child: RaisedButton(
+                    padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(10.0),
                     ),
-                  )
-                ],
-              ),
+                    color: const Color(0xFFD7384A),
+                    onPressed:(){},
+                    child: Text('Add order',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                      ),),
+                  ),
+                )
+              ],
             ),
           ],
         )
