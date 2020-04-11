@@ -3,7 +3,7 @@ import 'package:bbcontrol/Setup/Pages/reservationsList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
-import 'Services/auth.dart';
+import '../Services/auth.dart';
 
 
 class Home extends StatelessWidget {
