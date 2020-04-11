@@ -1,8 +1,9 @@
+
 import 'package:bbcontrol/models/user.dart';
-import 'package:bbcontrol/setup/Pages/Authenticate/authenticate.dart';
-import 'package:bbcontrol/setup/Pages/Home/home.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'Authenticate/authenticate.dart';
+import 'home.dart';
 
 class Wrapper extends StatelessWidget {
   @override
@@ -12,7 +13,7 @@ class Wrapper extends StatelessWidget {
     if(user == null){
       return Authenticate();
     } else{
-      print('sigo logueado');
+      print('user logged in');
       return Home();
     }
 

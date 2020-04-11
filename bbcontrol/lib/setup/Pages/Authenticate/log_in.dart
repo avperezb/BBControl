@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                       if (input.isEmpty) {
                         return 'Please type an email';
                       }
-                      if(!input.isEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
+                      if(input.isNotEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
                         return 'Please type a valid email';
                       }
                     },
@@ -81,6 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                       dynamic result = await _auth.signIn(_email, _password);
                       if(result == null){
                         setState(() => error = 'Could not sign you in. Please, check your data and try again.');
+                        print(error);
                       }
                     }
                   },

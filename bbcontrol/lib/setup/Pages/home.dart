@@ -8,7 +8,7 @@ import 'Services/auth.dart';
 
 class Home extends StatelessWidget {
 
-  AuthService _auth;
+  AuthService _auth = AuthService();
   final iconSize = 60.0;
 
   @override
@@ -20,10 +20,12 @@ class Home extends StatelessWidget {
         backgroundColor: const Color(0xFFFF6B00),
         actions: <Widget>[
           FlatButton.icon(
-              onPressed: _auth.signOut,
               icon: Icon(Icons.person),
-              label: Text('Log out'),
-          ),
+              label: Text('log out'),
+              onPressed: () async {
+                await _auth.signOut();
+              },
+          )
         ],
       ),
       body: ListView(
