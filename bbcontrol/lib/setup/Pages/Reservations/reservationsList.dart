@@ -1,5 +1,5 @@
 import 'package:bbcontrol/Setup/Database/database_creator.dart';
-import 'package:bbcontrol/Setup/Pages/reservations.dart';
+import 'package:bbcontrol/Setup/Pages/Reservations/reservations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

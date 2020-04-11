@@ -1,5 +1,5 @@
-import 'package:bbcontrol/Setup/Pages/food.dart';
-import 'package:bbcontrol/Setup/Pages/reservationsList.dart';
+import 'package:bbcontrol/Setup/Pages/Food/food.dart';
+import 'package:bbcontrol/Setup/Pages/Reservations/reservationsList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
