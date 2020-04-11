@@ -4,7 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
-import 'package:bbcontrol/setup/Pages/reservations.dart';
+import 'reservations.dart';
+
 
 class Home extends StatelessWidget {
 

@@ -124,7 +124,7 @@ class _ReservationsState extends State<Reservations> {
               ),
               color: const Color(0xFFD7384A),
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList2()));
 
               },
               child: Text('New reservation',
@@ -171,6 +171,132 @@ class _ReservationsState extends State<Reservations> {
       ),
     );
   }
+}
+
+class ReservationsList2 extends StatelessWidget {
+  ReservationDatabase db = new ReservationDatabase();
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Today reservations'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFFF6B00),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            color: const Color(0xFF996480),
+            child: Column(
+              children: <Widget>[
+                Text('Table: 5',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                Text('Seats: 4',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('Start hour: 4:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('End hour: 6:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            color: const Color(0xFF996480),
+            child: Column(
+              children: <Widget>[
+                Text('Table: 7',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                Text('Seats: 4',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('Start hour: 6:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('End hour: 8:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            color: const Color(0xFF996480),
+            child: Column(
+              children: <Widget>[
+                Text('Table: 8',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                Text('Seats: 4',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('Start hour: 8:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+                Text('End hour: 10:00 pm',
+                  style: TextStyle(
+                      fontSize: 17
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10.0, 150.0, 10.0, 0.0),
+            child: RaisedButton(
+              padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(10.0),
+              ),
+              color: const Color(0xFFD7384A),
+              onPressed:(){ Navigator.push(context, MaterialPageRoute(builder: (context) => Reservations()));},
+              child: Text('Add new reservation',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16
+                ),),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 
 class Table extends StatefulWidget {
