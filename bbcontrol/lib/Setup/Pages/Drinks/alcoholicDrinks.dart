@@ -3,27 +3,21 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+
 class AlcoholicDrinks extends StatelessWidget {
+  List<String> beers = ['Bacata', 'Cajica', 'Candelaria', 'Chapinero', 'Lager', 'Macondo', 'Monserrate', 'Septimazo'];
+
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: ListView(
-        children: <Widget>[
-          SingleAlcoholicDrink('Bacata'),
-          SingleAlcoholicDrink('Cajica'),
-          SingleAlcoholicDrink('Candelaria'),
-          SingleAlcoholicDrink('Chapinero'),
-          SingleAlcoholicDrink('Lager'),
-          SingleAlcoholicDrink('Macondo'),
-          SingleAlcoholicDrink('Monserrate'),
-          SingleAlcoholicDrink('Septimazo'),
-        ],
+        children: beers.map((beer) => SingleBeer(beer)).toList(),
       ),
     );
   }
 }
 
-class SingleAlcoholicDrink extends StatelessWidget {
+class SingleBeer extends StatelessWidget {
   var beers = '{'
       '"Bacata" : { "Volume" : "4,1% alc", "Description" : "White beer type witbier. Made with wheat and orange peels.", "Image" : "assets/images/polas/bacata.png"},'
       '"Cajica" : { "Volume" : "5,3% alc", "Description" : "Blonde beer type honey ale. Made with bee honey.", "Image" : "assets/images/polas/cajica.png"},'
@@ -35,7 +29,7 @@ class SingleAlcoholicDrink extends StatelessWidget {
       '"Septimazo" : { "Volume" : "6,0% alc", "Description" : "Red beer type india pale ale. Made with aromatic hops.", "Image" : "assets/images/polas/septimazo.png"}'
       '}';
   String drinkName;
-  SingleAlcoholicDrink(String drinkName){
+  SingleBeer(String drinkName){
     this.drinkName = drinkName;
     getInfo();
   }
@@ -68,7 +62,7 @@ class SingleAlcoholicDrink extends StatelessWidget {
       child: Container(
         child: ListTile(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAlcohol(drinkName)),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName)),);
           },
           leading: Image.asset(image),
           title: Container(
@@ -93,18 +87,18 @@ class SingleAlcoholicDrink extends StatelessWidget {
 }
 
 
-class OrderAlcohol extends StatefulWidget {
+class OrderBeer extends StatefulWidget {
   @override
   String beer;
-  OrderAlcohol(String beer){
+  OrderBeer(String beer){
     this.beer = beer;
   }
 
   @override
-  _OrderAlcoholState createState() => _OrderAlcoholState();
+  _OrderBeerState createState() => _OrderBeerState();
 }
 
-class _OrderAlcoholState extends State<OrderAlcohol> {
+class _OrderBeerState extends State<OrderBeer> {
   int glassTotal = 0;
   int towerTotal = 0;
   int pintTotal = 0;
@@ -395,6 +389,12 @@ class QuantityControl extends StatefulWidget  {
 class _QuantityControlState extends State<QuantityControl> {
   @override
   int quantity = 0;
+  bool minDisabled = true;
+  bool maxDisabled = false;
+  var colorDecrease = Color(0xFF7F7F7F);
+  var colorIncrease = Color(0xFFD7384A);
+  final enabledColor = Color(0xFFD7384A);
+  final disabledColor = Color(0xFF7F7F7F);
 
   int getMaxOrder(String size){
     var jsonData = '{ "Glass" : "10", "Pint" : "10", "Tower" : "2", "Jar" : "3"  }';
@@ -409,36 +409,66 @@ class _QuantityControlState extends State<QuantityControl> {
         IconButton(
           icon: Icon(
             Icons.remove,
-            color: const Color(0xFFD7384A),
+            color: colorDecrease,
           ),
           onPressed: (){
-            if(quantity > 0){
+            if(quantity == 0){
+              setState(() {
+                minDisabled = true;
+              });
+            }
+            else{
               setState(() {
                 quantity --;
+                minDisabled = (quantity > 0) ? false : true;
                 widget.callback(quantity, widget.size);
               });
-
             }
+            if(maxDisabled){
+              maxDisabled = false;
+              colorIncrease = enabledColor;
+            }
+            colorDecrease = (minDisabled) ? disabledColor : enabledColor;
           },
         ),
-        Text(
-            '$quantity',
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-            )
+        Container(
+          width: 25,
+          child: Center(
+            child: Text(
+                '$quantity',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black
+                )
+            ),
+          ),
         ),
         IconButton(
           icon: Icon(
             Icons.add,
-            color: const Color(0xFFD7384A),
+            color: colorIncrease,
           ),
           onPressed: (){
-            if(quantity < getMaxOrder(widget.size)){
+            if(quantity == getMaxOrder(widget.size)){
+              setState(() {
+                maxDisabled = true;
+              });
+            }
+            else{
               setState(() {
                 quantity ++;
+                maxDisabled = (quantity == getMaxOrder(widget.size)) ? true : false;
                 widget.callback(quantity, widget.size);
               });
+
+              if(minDisabled){
+                setState(() {
+                  minDisabled = false;
+                  colorDecrease = enabledColor;
+                });
+              }
+              colorIncrease = (maxDisabled) ? disabledColor : enabledColor;
             }
           },
         ),
