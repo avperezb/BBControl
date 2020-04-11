@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'logIn.dart';
+import 'log_in.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -11,7 +12,10 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpState extends State<SignUpPage>{
 
+  final AuthService _auth = AuthService();
+
   String _email, _password;
+  String error = '';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -20,7 +24,7 @@ class _SignUpState extends State<SignUpPage>{
       appBar: new AppBar(
         title: Text('Registration',
           style: TextStyle(
-            color: Colors.white
+              color: Colors.white
           ),
         ),
         backgroundColor: Color(0xFFFF6B00),
@@ -30,9 +34,9 @@ class _SignUpState extends State<SignUpPage>{
         child: ListView(
             children: <Widget>[
               Text('Enter your information',
-              style: TextStyle(
-                  fontSize: 20
-              ),
+                style: TextStyle(
+                    fontSize: 20
+                ),
                 textAlign: TextAlign.center,
               ),
               Container(
@@ -41,6 +45,9 @@ class _SignUpState extends State<SignUpPage>{
                     validator: (input){
                       if(input.isEmpty){
                         return 'Please type an email';
+                      }
+                      if(!input.isEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
+                        return 'Please type a valid email';
                       }
                     },
                     onSaved: (input) => _email = input,
@@ -72,7 +79,15 @@ class _SignUpState extends State<SignUpPage>{
                     borderRadius: new BorderRadius.circular(10.0),
                   ),
                   color: const Color(0xFFD7384A),
-                  onPressed: signUp,
+                  onPressed:  () async {
+                    if(_formKey.currentState.validate()){
+                      _formKey.currentState.save();
+                      dynamic result = await _auth.signUp(_email, _password);
+                      //Se vuelve a la página de Log in
+                      Navigator.of(context).pop();
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    }
+                  },
                   child: Text('Register',
                     style: TextStyle(
                         color: Colors.white,
@@ -84,25 +99,5 @@ class _SignUpState extends State<SignUpPage>{
         ),
       ),
     );
-  }
-
-  void signUp() async{
-    print(_email);
-    print( _password);
-    print(_formKey.currentState);
-    if(_formKey.currentState.validate()){
-      print('holaaa');
-      _formKey.currentState.save();
-      try{
-        FirebaseUser user = (await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password)).user;
-        user.sendEmailVerification();
-        print('creating user');
-        //Display for the user that we sent an email.
-        Navigator.of(context).pop();
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-      }catch(e) {
-        print(e.message);
-      }
-    }
   }
 }
