@@ -1,14 +1,14 @@
 import 'package:bbcontrol/Setup/Pages/food.dart';
 import 'package:bbcontrol/Setup/Pages/reservationsList.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
-import 'reservations.dart';
+import 'Services/auth.dart';
 
 
 class Home extends StatelessWidget {
 
+  AuthService _auth = AuthService();
   final iconSize = 60.0;
 
   @override
@@ -18,6 +18,15 @@ class Home extends StatelessWidget {
         title: Text('Menu'),
         centerTitle: true,
         backgroundColor: const Color(0xFFFF6B00),
+        actions: <Widget>[
+          FlatButton.icon(
+            icon: Icon(Icons.person),
+            label: Text('log out'),
+            onPressed: () async {
+              await _auth.signOut();
+            },
+          )
+        ],
       ),
       body: ListView(
         children:<Widget>[ Column(

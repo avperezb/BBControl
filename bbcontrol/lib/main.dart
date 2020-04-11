@@ -1,10 +1,20 @@
 
-import 'package:flutter/cupertino.dart';
+import 'package:bbcontrol/models/user.dart';
+import 'package:bbcontrol/setup/Pages/Services/auth.dart';
+import 'package:bbcontrol/setup/Pages/wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'Setup/Pages/logIn.dart';
+void main() => runApp(MyApp());
 
-void main() => runApp(MaterialApp(
-  home: LoginPage(),
-));
-
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamProvider<User>.value(
+      value: AuthService().user ,
+      child: MaterialApp(
+        home: Wrapper(),
+      ),
+    );
+  }
+}
