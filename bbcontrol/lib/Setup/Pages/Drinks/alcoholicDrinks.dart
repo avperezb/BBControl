@@ -193,7 +193,7 @@ class _OrderBeerState extends State<OrderBeer> {
                       Text(
                         getSizePrice('Glass'),
                         style: TextStyle(
-                            color: const Color(0xFFD7384A),
+                            color: Colors.blue,
                             fontSize: 20
                         ),
                       ),
@@ -236,7 +236,7 @@ class _OrderBeerState extends State<OrderBeer> {
                       Text(
                         getSizePrice('Tower'),
                         style: TextStyle(
-                            color: const Color(0xFFD7384A),
+                            color: Colors.blue,
                             fontSize: 20
                         ),
                       ),
@@ -284,7 +284,7 @@ class _OrderBeerState extends State<OrderBeer> {
                       Text(
                         getSizePrice('Jar'),
                         style: TextStyle(
-                            color: const Color(0xFFD7384A),
+                            color: Colors.blue,
                             fontSize: 20
                         ),
                       ),
@@ -327,7 +327,7 @@ class _OrderBeerState extends State<OrderBeer> {
                       Text(
                         getSizePrice('Pint'),
                         style: TextStyle(
-                            color: const Color(0xFFD7384A),
+                            color: Colors.blue,
                             fontSize: 20
                         ),
                       ),

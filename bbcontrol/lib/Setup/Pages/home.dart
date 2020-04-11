@@ -1,3 +1,4 @@
+import 'package:bbcontrol/Setup/Pages/food.dart';
 import 'package:bbcontrol/Setup/Pages/reservationsList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -123,7 +124,9 @@ class Home extends StatelessWidget {
                       child: FlatButton(
                         padding: EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 90.0),
                         color: const Color(0xFF996480),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FoodList()),);
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
