@@ -20,11 +20,11 @@ class Home extends StatelessWidget {
         backgroundColor: const Color(0xFFFF6B00),
         actions: <Widget>[
           FlatButton.icon(
-              icon: Icon(Icons.person),
-              label: Text('log out'),
-              onPressed: () async {
-                await _auth.signOut();
-              },
+            icon: Icon(Icons.person),
+            label: Text('log out'),
+            onPressed: () async {
+              await _auth.signOut();
+            },
           )
         ],
       ),
