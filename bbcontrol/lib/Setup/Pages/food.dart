@@ -2,32 +2,32 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-class NonAlcoholicDrinks extends StatefulWidget {
-  List<String> drinkNames = ['Coke', 'Mineral water', 'Capuccino', 'Latte', 'Machiatto', 'Americano', 'Classic lemonade'];
+class FoodList extends StatefulWidget {
+  List<String> mealNames = ['Transmilenio', 'Gold museum', 'Rosales', 'Cedritos', 'Andino', 'Colombian pizza', 'Margarita pizza', 'BLT - BBC'];
   var jsonOrder = '';
 
   void jsonString(){
-    drinkNames.forEach((drink){
-      jsonOrder += '"$drink" : 0,';
+    mealNames.forEach((meal){
+      jsonOrder += '"$meal" : 0,';
     } );
     jsonOrder = jsonOrder.substring(0, jsonOrder.length - 1);
     jsonOrder = '{$jsonOrder}';
   }
 
-  NonAlcoholicDrinks(){
+  FoodList(){
     jsonString();
   }
   @override
-  _NonAlcoholicDrinksState createState() => _NonAlcoholicDrinksState();
+  _FoodListState createState() => _FoodListState();
 }
 
-class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
+class _FoodListState extends State<FoodList> {
   @override
   String accumulateTotal = '\$0';
 
-  callback(String drinkName, int quantity){
+  callback(String mealName, int quantity){
     Map<String, dynamic> map = jsonDecode(widget.jsonOrder);
-    map[drinkName] = quantity;
+    map[mealName] = quantity;
     setState(() {
       widget.jsonOrder = json.encode(map);
       accumulateTotal = '\$' + addDecimals(calculateTotal().toString());
@@ -37,9 +37,9 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
   int calculateTotal(){
     int total = 0;
     Map<String, dynamic> orderMap = jsonDecode(widget.jsonOrder);
-    Map<String, dynamic> drinksMap = jsonDecode(drinks);
-    widget.drinkNames.forEach((drink){
-      int subtotal = orderMap[drink]*drinksMap[drink]['Price'];
+    Map<String, dynamic> mealsMap = jsonDecode(meals);
+    widget.mealNames.forEach((meal){
+      int subtotal = orderMap[meal]*mealsMap[meal]['Price'];
       total += subtotal;
     });
     return total;
@@ -55,18 +55,24 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
     return result;
   }
 
-  var drinks = '{'
-      '"Coke" : { "Volume" : "350 mL", "Price" : 3900, "Image" : "assets/images/nonAlcoholic/coke.png"},'
-      '"Mineral water" : { "Volume" : "400 mL", "Price" : 3500, "Image" : "assets/images/nonAlcoholic/manantial.png"},'
-      '"Capuccino" : { "Volume" : "", "Price" : 4500, "Image" : "assets/images/nonAlcoholic/cafe.png"},'
-      '"Latte" : { "Volume" : "", "Price" : 4500, "Image" : "assets/images/nonAlcoholic/cafe.png"},'
-      '"Machiatto" : { "Volume" : "", "Price" : 3500, "Image" : "assets/images/nonAlcoholic/cafe.png"},'
-      '"Americano" : { "Volume" : "", "Price" : 2500, "Image" : "assets/images/nonAlcoholic/cafe.png"},'
-      '"Classic lemonade" : { "Volume" : "", "Price" : 4900, "Image" : "assets/images/nonAlcoholic/lemonadeGlass.png"}'
+  var meals = '{'
+      '"Transmilenio" : { "Description" : "Buffalo wings with blue cheese sauce and house fries.", "Price" : 21900},'
+      '"Gold museum" : { "Description" : "Mixed skewers with beef, chicken and sausage, sided with house guacamole.", "Price" : 25900},'
+      '"Rosales" : { "Description" : "Homemade corn tortillas sided with chicken, house guacamole and pico de gallo.", "Price" : 29900},'
+      '"Cedritos" : { "Description" : "House potatos and onion rings with balsamic oil.", "Price" : 7900},'
+      '"Andino" : { "Description" : "Fried plantain  with cheese, sided with shredded chicken and house guacamole.", "Price" : 21900},'
+      '"Colombian pizza" : { "Description" : "Sausage, paipa cheese, fresh corn and sweet plantain.", "Price" : 24900},'
+      '"Margarita pizza" : { "Description" : "Buffalo mozzarella, grilled tomatoes and fresh oregano.", "Price" : 21900},'
+      '"BLT - BBC" : { "Description" : "Ciabatta bread, bacon, avocado and grilled tomatoes.", "Price" : 19900}'
       '}';
 
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Food'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFFF6B00),
+      ),
         bottomSheet: Card(
           elevation: 6.0,
           child: Container(
@@ -110,9 +116,9 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
             Container(
               margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height*0.66,
+                height: MediaQuery.of(context).size.height*0.77,
                 child: ListView(
-                  children: widget.drinkNames.map((drink) => SingleDrink(drink, drinks, callback)).toList(),
+                  children: widget.mealNames.map((meal) => SingleMeal(meal, meals, callback)).toList(),
                 ),
               ),
             )
@@ -122,40 +128,38 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
   }
 }
 
-class SingleDrink extends StatefulWidget {
-  var drinks;
-  String drinkName;
-  String volume;
+class SingleMeal extends StatefulWidget {
+  var meals;
+  String mealName;
+  String description;
   int price;
-  String image;
   Function(String, int) callback;
 
-  SingleDrink(String drinkName, drinks, Function callback){
-    this.drinkName = drinkName;
-    this.drinks = drinks;
+  SingleMeal(String drinkName, meals, Function callback){
+    this.mealName = drinkName;
+    this.meals = meals;
     this.callback = callback;
     getInfo();
   }
 
   void getInfo(){
-    Map<String, dynamic> parsedJson = json.decode(drinks)[drinkName];
-    this.volume = parsedJson['Volume'];
+    Map<String, dynamic> parsedJson = json.decode(meals)[mealName];
+    this.description = parsedJson['Description'];
     this.price = parsedJson['Price'];
-    this.image = parsedJson['Image'];
   }
 
   @override
-  _SingleDrinkState createState() => _SingleDrinkState();
+  _SingleMealState createState() => _SingleMealState();
 }
 
-class _SingleDrinkState extends State<SingleDrink> {
+class _SingleMealState extends State<SingleMeal> {
   int quantity;
 
   callback(int quantity){
     setState(() {
       this.quantity = quantity;
     });
-    widget.callback(widget.drinkName, quantity);
+    widget.callback(widget.mealName, quantity);
   }
 
   String formatPrice(int price){
@@ -186,18 +190,12 @@ class _SingleDrinkState extends State<SingleDrink> {
       ),
       child: Container(
         child: ListTile(
-          leading: Container(
-            width: 70,
-            child: Center(
-              child: Image.asset(widget.image),
-            ),
-          ),
           title: Container(
             margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(widget.drinkName),
+                Text(widget.mealName),
                 Text(formatPrice(widget.price),
                     style: TextStyle(
                       fontSize: 13,
@@ -208,8 +206,17 @@ class _SingleDrinkState extends State<SingleDrink> {
           ),
           subtitle: Container(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.5,
+                    child: Text(
+                      widget.description,
+                      style: TextStyle(
+                         // fontSize: 15
+                      ),
+                    ),
+                  ),
                   QuantityControl(callback)
                 ],
               )
@@ -232,7 +239,7 @@ class QuantityControl extends StatefulWidget  {
 class _QuantityControlState extends State<QuantityControl> {
   @override
   int quantity = 0;
-  int max = 10;
+  int max = 4;
   bool minDisabled = true;
   bool maxDisabled = false;
   var colorDecrease = Color(0xFF7F7F7F);
