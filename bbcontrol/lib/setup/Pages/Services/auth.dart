@@ -1,18 +1,18 @@
-
-import 'package:bbcontrol/models/user.dart';
+import 'package:bbcontrol/models/customer.dart';
+import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final CustomersFirestoreClass _firestoreService = CustomersFirestoreClass();
   //Create object based on FirebaseUser
-  User _userFromFirebaseUser(FirebaseUser user){
-    return user != null ? User(uId: user.uid) : null;
+  Customer _userFromFirebaseUser(FirebaseUser user){
+    return user != null ? Customer(id: user.uid) : null;
   }
 
   //Auth change user stream
-  Stream<User> get user{
+  Stream<Customer> get user{
     return _auth.onAuthStateChanged
         .map(_userFromFirebaseUser);
   }
@@ -29,13 +29,30 @@ class AuthService {
   }
 
   //Register email-password
-  Future signUp(String _email, String _password) async{
+  Future signUp(String _email, String _password, String _fullName, num _phoneNumber, DateTime _birthDate) async{
       try{
         FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();
-        return _userFromFirebaseUser(user);
+
+        print(_fullName);
+        print(_email);
+        print(_phoneNumber);
+        print(_birthDate);
+
+      await _firestoreService.createCustomer(Customer(
+        id:  user.uid,
+        email: _email,
+        fullName: _fullName,
+        birthDate: _birthDate,
+        phoneNumber: _phoneNumber
+      ));
+    return _userFromFirebaseUser(user);
         //Display for the user that we sent an email.
       }catch(e) {
+        print(_fullName);
+        print(_email);
+        print(_phoneNumber);
+        print(_birthDate);
         print(e.message);
         return null;
     }

@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Container(
-                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
                   child: TextFormField(
                     validator: (input) {
                       if (input.isEmpty) {
@@ -46,12 +46,16 @@ class _LoginPageState extends State<LoginPage> {
                       setState(() => _email = input);
                     },
                     decoration: InputDecoration(
-                        labelText: 'Email'
+                      icon: const Icon(Icons.email,
+                          color: const Color(0xFFD7384A)
+                      ),
+                      hintText: 'Enter an email address',
+                      labelText: 'Email',
                     ),
                   )
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
                 child: TextFormField(
                   validator: (input) {
                     if (input.length < 6) {
@@ -62,7 +66,11 @@ class _LoginPageState extends State<LoginPage> {
                     setState(() => _password = input);
                   },
                   decoration: InputDecoration(
-                      labelText: 'Password'
+                    icon: const Icon(Icons.remove_red_eye,
+                    color: const Color(0xFFD7384A)
+                    ),
+                    hintText: 'Enter your password',
+                    labelText: 'Password',
                   ),
                   obscureText: true,
                 ),

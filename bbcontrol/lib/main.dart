@@ -1,16 +1,17 @@
 
-import 'package:bbcontrol/models/user.dart';
-import 'package:bbcontrol/setup/Pages/Services/auth.dart';
-import 'package:bbcontrol/setup/Pages/wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'models/customer.dart';
+import 'setup/Pages/Services/auth.dart';
+import 'setup/Pages/wrapper.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<User>.value(
+    return StreamProvider<Customer>.value(
       value: AuthService().user ,
       child: MaterialApp(
         home: Wrapper(),
