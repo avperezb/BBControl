@@ -1,5 +1,5 @@
 
-import 'package:bbcontrol/models/user.dart';
+import 'package:bbcontrol/models/customer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'Authenticate/authenticate.dart';
@@ -8,7 +8,7 @@ import 'Home/home.dart';
 class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
+    final user = Provider.of<Customer>(context);
     //return either Home or Authenticate widget
     if(user == null){
       return Authenticate();
