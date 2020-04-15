@@ -113,9 +113,6 @@ class ReservationsList extends StatelessWidget {
     );
   }
 
-  void getR(Reservation r){
-    db.insert(r);
-  }
 
 }
 /*return FutureBuilder(

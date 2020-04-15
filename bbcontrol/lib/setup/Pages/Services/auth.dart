@@ -33,12 +33,6 @@ class AuthService {
       try{
         FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();
-
-        print(_fullName);
-        print(_email);
-        print(_phoneNumber);
-        print(_birthDate);
-
       await _firestoreService.createCustomer(Customer(
         id:  user.uid,
         email: _email,
@@ -49,11 +43,6 @@ class AuthService {
     return _userFromFirebaseUser(user);
         //Display for the user that we sent an email.
       }catch(e) {
-        print(_fullName);
-        print(_email);
-        print(_phoneNumber);
-        print(_birthDate);
-        print(e.message);
         return null;
     }
   }
