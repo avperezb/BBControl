@@ -1,151 +1,169 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FoodList extends StatefulWidget {
-  List<String> mealNames = ['Transmilenio', 'Gold museum', 'Rosales', 'Cedritos', 'Andino', 'Colombian pizza', 'Margarita pizza', 'BLT - BBC'];
+  var mealPrices = '';
+  List<String> mealNames = [];
   var jsonOrder = '';
 
-  void jsonString(){
-    mealNames.forEach((meal){
-      jsonOrder += '"$meal" : 0,';
+  Future<List<Map<String, dynamic>>> getInfo() async{
+
+    QuerySnapshot alertRef = await Firestore.instance.collection('/FoodPlates').getDocuments();
+    List<Map<String, dynamic>> messages = new List();
+
+    List<DocumentSnapshot> alertSnaps= alertRef.documents;
+
+    for (int i = 0; i < alertSnaps.length; i++) {
+      mealNames.add(alertSnaps[i]['name']);
+      mealPrices += '"${alertSnaps[i]['name']}" : ${alertSnaps[i]['price']},';
+    }
+    mealPrices = mealPrices.substring(0, mealPrices.length - 1);
+    mealPrices = '{$mealPrices}';
+
+    mealNames.forEach((drink){
+      jsonOrder += '"$drink" : 0,';
     } );
     jsonOrder = jsonOrder.substring(0, jsonOrder.length - 1);
     jsonOrder = '{$jsonOrder}';
+
+    return messages;
+
   }
 
   FoodList(){
-    jsonString();
+    getInfo();
   }
   @override
   _FoodListState createState() => _FoodListState();
 }
 
 class _FoodListState extends State<FoodList> {
-  @override
   String accumulateTotal = '\$0';
+  var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
 
   callback(String mealName, int quantity){
     Map<String, dynamic> map = jsonDecode(widget.jsonOrder);
     map[mealName] = quantity;
     setState(() {
       widget.jsonOrder = json.encode(map);
-      accumulateTotal = '\$' + addDecimals(calculateTotal().toString());
+      accumulateTotal = formatCurrency.format(calculateTotal());
     });
   }
 
   int calculateTotal(){
     int total = 0;
     Map<String, dynamic> orderMap = jsonDecode(widget.jsonOrder);
-    Map<String, dynamic> mealsMap = jsonDecode(meals);
+    Map<String, dynamic> mealsMap = jsonDecode(widget.mealPrices);
     widget.mealNames.forEach((meal){
-      int subtotal = orderMap[meal]*mealsMap[meal]['Price'];
+      int subtotal = orderMap[meal]*mealsMap[meal];
       total += subtotal;
     });
     return total;
   }
 
-  String addDecimals(String price){
-    String result = "0";
-    if(int.parse(price) > 0) {
-      String end = price.substring(price.length - 3, price.length);
-      String start = (price.length >= 4) ? price.substring(0, price.length - 3) + '.' : "";
-      result = start + end;
-    }
-    return result;
-  }
-
-  var meals = '{'
-      '"Transmilenio" : { "Description" : "Buffalo wings with blue cheese sauce and house fries.", "Price" : 21900},'
-      '"Gold museum" : { "Description" : "Mixed skewers with beef, chicken and sausage, sided with house guacamole.", "Price" : 25900},'
-      '"Rosales" : { "Description" : "Homemade corn tortillas sided with chicken, house guacamole and pico de gallo.", "Price" : 29900},'
-      '"Cedritos" : { "Description" : "House potatos and onion rings with balsamic oil.", "Price" : 7900},'
-      '"Andino" : { "Description" : "Fried plantain  with cheese, sided with shredded chicken and house guacamole.", "Price" : 21900},'
-      '"Colombian pizza" : { "Description" : "Sausage, paipa cheese, fresh corn and sweet plantain.", "Price" : 24900},'
-      '"Margarita pizza" : { "Description" : "Buffalo mozzarella, grilled tomatoes and fresh oregano.", "Price" : 21900},'
-      '"BLT - BBC" : { "Description" : "Ciabatta bread, bacon, avocado and grilled tomatoes.", "Price" : 19900}'
-      '}';
-
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Food'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFFF6B00),
-      ),
-        bottomSheet: Card(
-          elevation: 6.0,
-          child: Container(
-            height: MediaQuery.of(context).size.height*0.1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width*0.35,
-                  child: Text(
-                    'Total: $accumulateTotal',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20
+    return StreamBuilder(
+        stream: Firestore.instance.collection(
+            "/FoodPlates")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Text('Loading data... wait a minute');
+          }
+          else {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('Food'),
+                  centerTitle: true,
+                  backgroundColor: const Color(0xFFFF6B00),
+                ),
+                bottomSheet: Card(
+                  elevation: 6.0,
+                  child: Container(
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height * 0.1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.35,
+                          child: Text(
+                            'Total: $accumulateTotal',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.55,
+                          child: RaisedButton(
+                            padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(10.0),
+                            ),
+                            color: const Color(0xFFD7384A),
+                            onPressed: () {},
+                            child: Text('Add to order',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width*0.55,
-                  child: RaisedButton(
-                    padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(10.0),
-                    ),
-                    color: const Color(0xFFD7384A),
-                    onPressed:(){},
-                    child: Text('Add order',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16
+                body: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      child: SizedBox(
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.77,
+                        child: ListView(
+                          children: snapshot.data.documents.map<SingleMeal>((DocumentSnapshot meal ){
+                            return SingleMeal(meal['name'], meal['description'], meal['price'], meal['category'], callback);
+                          }).toList(),
+                        ),
                       ),
-                    ),
-                  ),
+                    )
+                  ],
                 )
-              ],
-            ),
-          ),
-        ),
-        body : Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height*0.77,
-                child: ListView(
-                  children: widget.mealNames.map((meal) => SingleMeal(meal, meals, callback)).toList(),
-                ),
-              ),
-            )
-          ],
-        )
-    );
+            );
+          }
+        });
   }
 }
 
 class SingleMeal extends StatefulWidget {
-  var meals;
   String mealName;
   String description;
   int price;
+  String category;
   Function(String, int) callback;
 
-  SingleMeal(String drinkName, meals, Function callback){
-    this.mealName = drinkName;
-    this.meals = meals;
+  SingleMeal(String mealName, String description, int price, String category, Function callback){
+    this.mealName = mealName;
+    this.description = description;
+    this.price = price;
+    this.category = category;
     this.callback = callback;
-    getInfo();
-  }
-
-  void getInfo(){
-    Map<String, dynamic> parsedJson = json.decode(meals)[mealName];
-    this.description = parsedJson['Description'];
-    this.price = parsedJson['Price'];
   }
 
   @override
@@ -213,7 +231,7 @@ class _SingleMealState extends State<SingleMeal> {
                     child: Text(
                       widget.description,
                       style: TextStyle(
-                         // fontSize: 15
+                        // fontSize: 15
                       ),
                     ),
                   ),

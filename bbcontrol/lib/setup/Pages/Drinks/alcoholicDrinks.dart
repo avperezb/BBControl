@@ -2,46 +2,45 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
-  List<String> beers = ['Bacata', 'Cajica', 'Candelaria', 'Chapinero', 'Lager', 'Macondo', 'Monserrate', 'Septimazo'];
-
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
-      child: ListView(
-        children: beers.map((beer) => SingleBeer(beer)).toList(),
-      ),
+    return StreamBuilder(
+      stream: Firestore.instance.collection(
+          "/Drinks/A1AX1eCQDVMq9uRSMnGe/Alcoholic Drinks/H6vBaPIidRlPTSFJDyAk/Beers")
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Text('Loading data... wait a minute');
+        }
+        else {
+          return Container(
+            margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+            child: ListView(
+              children: snapshot.data.documents.map<SingleBeer>((DocumentSnapshot beer ){
+                return SingleBeer(beer);
+              }).toList(),
+            ),
+          );
+        }
+      },
     );
   }
 }
-
 class SingleBeer extends StatelessWidget {
-  var beers = '{'
-      '"Bacata" : { "Volume" : "4,1% alc", "Description" : "White beer type witbier. Made with wheat and orange peels.", "Image" : "assets/images/polas/bacata.png"},'
-      '"Cajica" : { "Volume" : "5,3% alc", "Description" : "Blonde beer type honey ale. Made with bee honey.", "Image" : "assets/images/polas/cajica.png"},'
-      '"Candelaria" : { "Volume" : "5,2% alc", "Description" : "Blonde beer type kölsch. Made with pure malt.", "Image" : "assets/images/polas/candelaria.png"},'
-      '"Chapinero" : { "Volume" : "5,0% alc", "Description" : "Black beer type porter. Made with pure toasted malt.", "Image" : "assets/images/polas/chapinero.png"},'
-      '"Lager" : { "Volume" : "5,0% alc", "Description" : "Blonde beer type lager. Made with pure malt.", "Image" : "assets/images/polas/lager.png"},'
-      '"Macondo" : { "Volume" : "5,8% alc", "Description" : "Black beer type ale stout. Made with and infusion of Colombian coffee.", "Image" : "assets/images/polas/macondo.png"},'
-      '"Monserrate" : { "Volume" : "5,0% alc", "Description" : "Red beer type bitter. Made with pure malt.", "Image" : "assets/images/polas/monserrate.png"},'
-      '"Septimazo" : { "Volume" : "6,0% alc", "Description" : "Red beer type india pale ale. Made with aromatic hops.", "Image" : "assets/images/polas/septimazo.png"}'
-      '}';
   String drinkName;
-  SingleBeer(String drinkName){
-    this.drinkName = drinkName;
-    getInfo();
-  }
-
   String volume;
   String description;
   String image;
-  void getInfo(){
-    Map<String, dynamic> parsedJson = json.decode(beers)[drinkName];
-    this.volume = parsedJson['Volume'];
-    this.description = parsedJson['Description'];
-    this.image = parsedJson['Image'];
+
+  SingleBeer(DocumentSnapshot beer){
+    this.drinkName = beer['name'];
+    this.volume = beer['volume'];
+    this.description = beer['description'];
+    this.image = beer['image'];
   }
 
   Widget build(BuildContext context) {
@@ -64,7 +63,7 @@ class SingleBeer extends StatelessWidget {
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName)),);
           },
-          leading: Image.asset(image),
+          leading: Image.network(image),
           title: Container(
             margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
             child: Row(
@@ -82,14 +81,17 @@ class SingleBeer extends StatelessWidget {
           subtitle: Text(description),
         ),
       ),
-    );;
+    );
   }
 }
-
 
 class OrderBeer extends StatefulWidget {
   @override
   String beer;
+  int glassPrice = 7900;
+  int towerPrice = 60000;
+  int pintPrice = 11000;
+  int jarPrice = 34000;
   OrderBeer(String beer){
     this.beer = beer;
   }
@@ -99,37 +101,21 @@ class OrderBeer extends StatefulWidget {
 }
 
 class _OrderBeerState extends State<OrderBeer> {
+  var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
+
   int glassTotal = 0;
   int towerTotal = 0;
   int pintTotal = 0;
   int jarTotal = 0;
+
   String accumulateTotal = '\$0';
 
   Widget build(BuildContext context) {
-    var prices = '{ "Glass" : "7900", "Pint" : "11000", "Tower" : "60000", "Jar" : "34000"  }';
 
     int getTotalOrder(){
-      var parsedJson = json.decode(prices);
-      int total = glassTotal*int.parse(parsedJson['Glass']) + towerTotal*int.parse(parsedJson['Tower']) +
-          pintTotal*int.parse(parsedJson['Pint']) + jarTotal*int.parse(parsedJson['Jar']);
+      int total = glassTotal*widget.glassPrice + towerTotal*widget.towerPrice +
+          pintTotal*widget.pintPrice + jarTotal*widget.jarPrice;
       return total;
-    }
-
-    String addDecimals(String price){
-      String result = "0";
-      if(int.parse(price) > 0) {
-        String end = price.substring(price.length - 3, price.length);
-        String start = (price.length >= 4) ? price.substring(0, price.length - 3) + '.' : "";
-        result = start + end;
-      }
-      return result;
-    }
-
-    String getSizePrice(String size){
-      var parsedJson = json.decode(prices);
-      String price = parsedJson[size];
-
-      return '\$' + addDecimals(price);
     }
 
     callback(int quantity, String size){
@@ -141,8 +127,7 @@ class _OrderBeerState extends State<OrderBeer> {
         else if(size == 'Jar') jarTotal = quantity;
 
         int total = getTotalOrder();
-        String aux = total.toString();
-        accumulateTotal = '\$' + addDecimals(aux) ;
+        accumulateTotal = formatCurrency.format(total);
       });
     }
 
@@ -191,7 +176,7 @@ class _OrderBeerState extends State<OrderBeer> {
                         ),
                       ),
                       Text(
-                        getSizePrice('Glass'),
+                        formatCurrency.format(widget.glassPrice),
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 20
@@ -234,7 +219,7 @@ class _OrderBeerState extends State<OrderBeer> {
                         ),
                       ),
                       Text(
-                        getSizePrice('Tower'),
+                        formatCurrency.format(widget.towerPrice),
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 20
@@ -282,7 +267,7 @@ class _OrderBeerState extends State<OrderBeer> {
                         ),
                       ),
                       Text(
-                        getSizePrice('Jar'),
+                        formatCurrency.format(widget.jarPrice),
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 20
@@ -325,7 +310,7 @@ class _OrderBeerState extends State<OrderBeer> {
                         ),
                       ),
                       Text(
-                        getSizePrice('Pint'),
+                        formatCurrency.format(widget.pintPrice),
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 20
@@ -359,7 +344,7 @@ class _OrderBeerState extends State<OrderBeer> {
                     ),
                     color: const Color(0xFFD7384A),
                     onPressed:(){},
-                    child: Text('Add order',
+                    child: Text('Add to order',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16
@@ -476,5 +461,6 @@ class _QuantityControlState extends State<QuantityControl> {
     );
   }
 }
+
 
 
