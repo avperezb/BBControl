@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class FoodList extends StatefulWidget {
   var mealPrices = '';
@@ -35,9 +38,23 @@ class FoodList extends StatefulWidget {
 
   FoodList(){
     getInfo();
+    _checkInternetConnectivity();
   }
+
   @override
   _FoodListState createState() => _FoodListState();
+}
+
+_checkInternetConnectivity() async {
+  var result = await Connectivity().checkConnectivity();
+  if(result == ConnectivityResult.none){
+    print('No internet connection');
+  }else if(result == ConnectivityResult.mobile){
+    print('Connection on mobile data');
+  }else if(result == ConnectivityResult.wifi){
+    print('connection by wifi');
+  }
+
 }
 
 class _FoodListState extends State<FoodList> {
@@ -114,7 +131,11 @@ class _FoodListState extends State<FoodList> {
                               borderRadius: new BorderRadius.circular(10.0),
                             ),
                             color: const Color(0xFFD7384A),
-                            onPressed: () {},
+                            onPressed: () {
+                                return showSimpleNotification(
+                                  Text((CheckConnectivity().checkInternetConnectivity().toString())),
+                                  background: Colors.green);
+                            },
                             child: Text('Add to order',
                               style: TextStyle(
                                   color: Colors.white,
