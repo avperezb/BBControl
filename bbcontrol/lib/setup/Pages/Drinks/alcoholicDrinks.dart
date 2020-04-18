@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -72,7 +73,11 @@ class SingleBeer extends StatelessWidget {
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName)),);
           },
-          leading: Image.network(image),
+          leading: CachedNetworkImage(
+            imageUrl: image,
+            placeholder: (context, url) => Image.asset('assets/images/logo.png'),
+            errorWidget: (context, url, error) => Image.asset('assets/images/logo.png'),
+          ),
           title: Container(
             margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
             child: Row(
