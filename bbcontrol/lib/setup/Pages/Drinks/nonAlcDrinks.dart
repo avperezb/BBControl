@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -205,7 +206,11 @@ class _SingleDrinkState extends State<SingleDrink> {
           leading: Container(
             width: 70,
             child: Center(
-              child: Image.network(widget.image),
+              child: CachedNetworkImage(
+                imageUrl: widget.image,
+                placeholder: (context, url) => Image.asset('assets/images/logo.png'),
+                errorWidget: (context, url, error) => Image.asset('assets/images/logo.png'),
+              ),
             ),
           ),
           title: Container(
