@@ -115,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           onPressed: () async{
                             Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                           
                           }
                       )
                     ],
