@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   decoration: InputDecoration(
                     icon: const Icon(Icons.remove_red_eye,
-                    color: const Color(0xFFD7384A)
+                        color: const Color(0xFFD7384A)
                     ),
                     hintText: 'Enter your password',
                     labelText: 'Password',
