@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
@@ -38,11 +37,11 @@ class FoodList extends StatefulWidget {
 
   FoodList(){
     getInfo();
-    _checkInternetConnectivity();
   }
 
   @override
   _FoodListState createState() => _FoodListState();
+
 }
 
 _checkInternetConnectivity() async {
@@ -132,9 +131,6 @@ class _FoodListState extends State<FoodList> {
                             ),
                             color: const Color(0xFFD7384A),
                             onPressed: () {
-                                return showSimpleNotification(
-                                  Text((CheckConnectivity().checkInternetConnectivity().toString())),
-                                  background: Colors.green);
                             },
                             child: Text('Add to order',
                               style: TextStyle(
