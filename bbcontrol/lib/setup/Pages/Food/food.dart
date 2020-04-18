@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
+import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
@@ -87,7 +89,22 @@ class _FoodListState extends State<FoodList> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Text('Loading data... wait a minute');
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('Food'),
+                  centerTitle: true,
+                  backgroundColor: const Color(0xFFFF6B00),
+                ),
+                body :
+                ColorLoader5(
+                  dotOneColor: Colors.redAccent,
+                  dotTwoColor: Colors.blueAccent,
+                  dotThreeColor: Colors.green,
+                  dotType: DotType.circle,
+                  dotIcon: Icon(Icons.adjust),
+                  duration: Duration(seconds: 1),
+                )
+            );
           }
           else {
             return Scaffold(
