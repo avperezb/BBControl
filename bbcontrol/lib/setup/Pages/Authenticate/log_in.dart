@@ -2,6 +2,7 @@
 
 import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
+import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -116,10 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           onPressed: () async{
                             Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
-                            ColorLoader5(
-                              radius: 15.0,
-                              dotRadius: 6.0,
-                            );
+                          /*  ColorLoader5(dotOneColor: Colors.redAccent, dotTwoColor: Colors.blueAccent, dotThreeColor: Colors.green,
+                              dotType: DotType.circle, dotIcon: Icon(Icons.adjust),duration: Duration(seconds: 1),);*/
                           }
                       )
                     ],

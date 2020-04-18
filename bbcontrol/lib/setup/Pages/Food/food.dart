@@ -87,17 +87,7 @@ class _FoodListState extends State<FoodList> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text('Food'),
-                centerTitle: true,
-                backgroundColor: const Color(0xFFFF6B00),
-              ),
-              body: Container(
-                child: 
-              ),
-            );
-              Text('Loading data... wait a minute');
+            return Text('Loading data... wait a minute');
           }
           else {
             return Scaffold(
