@@ -1,15 +1,16 @@
-class OrderProduct {
+class FinalOrderProduct {
 
-
+  String _id;
   String _productName;
   num _quantity;
   String _beerSize;
   num _price;
   String _foodComments;
 
-  OrderProduct(this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
-  OrderProduct.withId(this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
+  FinalOrderProduct(this._id, this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
+  FinalOrderProduct.withId(this._id, this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
 
+  String get id => _id;
   String get productName => _productName;
   num get quantity => _quantity;
   String get beerSize => _beerSize;
@@ -36,26 +37,8 @@ class OrderProduct {
     this._foodComments = newComments;
   }
 
-  OrderProduct.fromMapObject(Map<String, dynamic> map){
-    this._productName = map['productName'];
-    this._quantity = map['quantity'];
-    this._beerSize = map['beerSize'];
-    this._price = map['price'];
-    this._foodComments = map['foodComments'];
-  }
-
-  Map<String, dynamic> toMap() {
-    var map = Map<String, dynamic>();
-    map['productName']= _productName;
-    map['quantity']= _quantity;
-    map['beerSize']= _beerSize;
-    map['price'] = _price;
-    map['foodComments']= _foodComments;
-
-    return map;
-  }
-
-  OrderProduct.fromData(Map<String, dynamic> data):
+  FinalOrderProduct.fromData(Map<String, dynamic> data):
+        _id = data['id'],
         _productName = data['productName'],
         _quantity = data['quantity'],
         _beerSize = data['beerSize'],
@@ -64,6 +47,7 @@ class OrderProduct {
 
   Map<String, dynamic> toJson(){
     return{
+      'id': _id,
       'productName': _productName,
       'quantity' : _quantity,
       'beerSize' : _beerSize,

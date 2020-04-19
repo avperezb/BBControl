@@ -1,30 +1,35 @@
+import 'package:bbcontrol/models/finalOrderProduct.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrdersFirestoreClass {
 
   final String id;
-
+  bool done = false;
   OrdersFirestoreClass({this.id});
 
   final CollectionReference _ordersCollectionReference = Firestore.instance
       .collection('Orders');
 
-  Future addProductToOrder(OrderProduct orderProduct) async {
+  Future addProductToOrder(FinalOrderProduct orderProduct) async {
+    String message = '';
     try {
       await _ordersCollectionReference.document(orderProduct.id).setData(
           orderProduct.toJson());
     } catch (e) {
-      return e.message;
+      message = e.message;
+    }
+    if(message.length==0){
+      done = true;
+    }
+    else{
+      done = false;
     }
   }
 
-  Future createOrder(List<OrderProduct> listOfOrders) async{
+  bool getOperationStatus(){
 
-    for (int i = 0; i< listOfOrders.length; i++){
-        await addProductToOrder(listOfOrders[i]);
-    }
-
+    return done;
   }
 
   Future updateProductOfOrder(String fullName, String email, String,
