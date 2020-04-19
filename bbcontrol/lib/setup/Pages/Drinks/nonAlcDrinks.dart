@@ -385,5 +385,5 @@ class _QuantityControlState extends State<QuantityControl> {
       ],
     );
   }
-}
 
+}
