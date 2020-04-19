@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:ffi';
+import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
@@ -10,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class FoodList extends StatefulWidget {
+  List<OrderProduct> productsOrder = new List<OrderProduct>();
   var mealPrices = '';
   List<String> mealNames = [];
   var jsonOrder = '';
@@ -23,7 +26,10 @@ class FoodList extends StatefulWidget {
 
     for (int i = 0; i < alertSnaps.length; i++) {
       mealNames.add(alertSnaps[i]['name']);
-      mealPrices += '"${alertSnaps[i]['name']}" : ${alertSnaps[i]['price']},';
+      mealPrices += '"${alertSnaps[i]['name']}": '
+          '{"id": "${alertSnaps[i].documentID}", '
+          '"price": ${alertSnaps[i]['price']} ,'
+          '"quantity": 0},';
     }
     mealPrices = mealPrices.substring(0, mealPrices.length - 1);
     mealPrices = '{$mealPrices}';
@@ -33,7 +39,7 @@ class FoodList extends StatefulWidget {
     } );
     jsonOrder = jsonOrder.substring(0, jsonOrder.length - 1);
     jsonOrder = '{$jsonOrder}';
-
+    print(mealPrices);
     return messages;
 
   }
@@ -54,20 +60,20 @@ class _FoodListState extends State<FoodList> {
   bool cStatus = true;
 
   callback(String mealName, int quantity){
-    Map<String, dynamic> map = jsonDecode(widget.jsonOrder);
-    map[mealName] = quantity;
+    Map<String, dynamic> map = jsonDecode(widget.mealPrices);
+    map[mealName]['quantity'] = quantity;
     setState(() {
-      widget.jsonOrder = json.encode(map);
+      widget.mealPrices = json.encode(map);
       accumulateTotal = formatCurrency.format(calculateTotal());
     });
   }
 
   int calculateTotal(){
     int total = 0;
-    Map<String, dynamic> orderMap = jsonDecode(widget.jsonOrder);
-    Map<String, dynamic> mealsMap = jsonDecode(widget.mealPrices);
+    Map<String, dynamic> orderMap = jsonDecode(widget.mealPrices);
+    // Map<String, dynamic> mealsMap = jsonDecode(widget.mealPrices);
     widget.mealNames.forEach((meal){
-      int subtotal = orderMap[meal]*mealsMap[meal];
+      int subtotal = orderMap[meal]['price']*orderMap[meal]['quantity'];
       total += subtotal;
     });
     return total;
@@ -169,10 +175,24 @@ class _FoodListState extends State<FoodList> {
                                 }, duration: Duration(milliseconds: 4000));
                                 ;
                               }
-                              else{
-                                Navigator.push(context, MaterialPageRoute(builder: (
-                                    context) => PreOrderPage()),);
-                              };                            },
+                              int sumQuantity = 0;
+                              print('aaa');
+                              print(jsonDecode(widget.mealPrices));
+                              jsonDecode(widget.mealPrices).map((k, v) {
+                                print(k);
+                                print('KIUBO');
+                                print(v);
+                                  print('{ key: $k, value: $v }');
+                                });
+                               // sumQuantity +=
+                              print(sumQuantity);
+                              if(sumQuantity > 0){
+
+
+                              Navigator.push(context, MaterialPageRoute(builder: (
+                                  context) => PreOrderPage()),);
+                            }
+                              },
                             child: Text('Add to order',
                               style: TextStyle(
                                   color: Colors.white,
