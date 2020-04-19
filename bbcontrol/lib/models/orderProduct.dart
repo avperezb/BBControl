@@ -2,17 +2,23 @@
 
 class OrderProduct {
 
+<<<<<<< HEAD
   String _id;
+=======
+>>>>>>> aedbc6912a8ad2a19e8ab9f6173880ca171f4eb4
   String _productName;
   num _quantity;
   String _beerSize;
   num _price;
   String _foodComments;
 
-  OrderProduct(this._id,this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
-  OrderProduct.withId(this._id,this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
+  OrderProduct(this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
+  OrderProduct.withId(this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
 
+<<<<<<< HEAD
   String get id => _id;
+=======
+>>>>>>> aedbc6912a8ad2a19e8ab9f6173880ca171f4eb4
   String get productName => _productName;
   num get quantity => _quantity;
   String get beerSize => _beerSize;
@@ -40,7 +46,6 @@ class OrderProduct {
   }
 
   OrderProduct.fromMapObject(Map<String, dynamic> map){
-    this._id = map['id'];
     this._productName = map['productName'];
     this._quantity = map['quantity'];
     this._beerSize = map['beerSize'];
@@ -50,9 +55,6 @@ class OrderProduct {
 
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
-    if (id != null) {
-      map['id'] = _id;
-    }
     map['productName']= _productName;
     map['quantity']= _quantity;
     map['beerSize']= _beerSize;

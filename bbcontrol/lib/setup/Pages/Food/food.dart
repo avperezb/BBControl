@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:bbcontrol/models/orderProduct.dart';
+import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
@@ -173,18 +174,21 @@ class _FoodListState extends State<FoodList> {
                                     ),
                                     color: Colors.blueGrey,);
                                 }, duration: Duration(milliseconds: 4000));
-                                ;
                               }
                               int sumQuantity = 0;
                               jsonDecode(widget.mealPrices).forEach((name, content){
                                 sumQuantity += content['quantity'];
                               });
 
-                               // sumQuantity +=
                               print(sumQuantity);
                               if(sumQuantity > 0){
-
-
+                                jsonDecode(widget.mealPrices).forEach((name, content) async {
+                                  if(content['quantity'] > 0){
+                                    DatabaseHelper databaseHelper = new DatabaseHelper();
+                                    OrderProduct op = OrderProduct(name, content['quantity'], "", content['price'], "");
+                                   await databaseHelper.insertPreOrder(op);
+                                  }
+                                });
                               Navigator.push(context, MaterialPageRoute(builder: (
                                   context) => PreOrderPage()),);
                             }

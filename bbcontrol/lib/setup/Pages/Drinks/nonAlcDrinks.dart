@@ -149,14 +149,13 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                                   ),
                                   color: Colors.blueGrey,);
                               }, duration: Duration(milliseconds: 4000));
-                              ;
                             }
                             else{
                               DatabaseHelper db = new DatabaseHelper();
                               print(db.getCount());
                               Navigator.push(context, MaterialPageRoute(builder: (
                                   context) => PreOrderPage()),);
-                            };
+                            }
                           },
                           child: Text('Add to order',
                             style: TextStyle(
