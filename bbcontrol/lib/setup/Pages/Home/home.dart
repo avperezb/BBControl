@@ -1,10 +1,13 @@
 import 'package:bbcontrol/Setup/Pages/Food/food.dart';
 import 'package:bbcontrol/Setup/Pages/Reservations/reservationsList.dart';
+import 'package:bbcontrol/models/orderProduct.dart';
+import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:sqflite/sqflite.dart';
 import '../Services/auth.dart';
 
 
@@ -16,8 +19,11 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home>{
 
   CheckConnectivityState checkConnection = CheckConnectivityState();
+  DatabaseHelper databaseHelper = DatabaseHelper();
   bool cStatus = true;
   AuthService _auth = AuthService();
+  List<OrderProduct> orderList;
+  int count = 0;
   final iconSize = 60.0;
 
   Widget build(BuildContext context) {
@@ -29,7 +35,7 @@ class HomeState extends State<Home>{
           actions: <Widget>[
             FlatButton.icon(
               icon: Icon(Icons.person),
-              label: Text('log out'),
+              label: Text('Log out'),
               onPressed: () async {
                 await _auth.signOut();
               },
@@ -266,8 +272,11 @@ class HomeState extends State<Home>{
     await checkConnection.initConnectivity();
     setState(() {
       cStatus = checkConnection.getConnectionStatus(context);
-      print(cStatus.toString()+'hhhhhhhhhhhhh');
     });
+  }
+
+  void createDB() {
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
   }
 }
 
