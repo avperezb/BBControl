@@ -176,14 +176,10 @@ class _FoodListState extends State<FoodList> {
                                 ;
                               }
                               int sumQuantity = 0;
-                              print('aaa');
-                              print(jsonDecode(widget.mealPrices));
-                              jsonDecode(widget.mealPrices).map((k, v) {
-                                print(k);
-                                print('KIUBO');
-                                print(v);
-                                  print('{ key: $k, value: $v }');
-                                });
+                              jsonDecode(widget.mealPrices).forEach((name, content){
+                                sumQuantity += content['quantity'];
+                              });
+
                                // sumQuantity +=
                               print(sumQuantity);
                               if(sumQuantity > 0){
