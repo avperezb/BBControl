@@ -112,7 +112,8 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                             borderRadius: new BorderRadius.circular(10.0),
                           ),
                           color: const Color(0xFFD7384A),
-                          onPressed:(){},
+                          onPressed:(){
+                          },
                           child: Text('Add to order',
                             style: TextStyle(
                                 color: Colors.white,
@@ -333,5 +334,5 @@ class _QuantityControlState extends State<QuantityControl> {
       ],
     );
   }
-}
 
+}
