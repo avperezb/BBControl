@@ -46,7 +46,7 @@ class DatabaseHelper{
   }
 
   void _createDb(Database db, int newVersion) async{
-    await db.execute('CREATE TABLE $preOrderTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colProductName TEXT,'
+    await db.execute('CREATE TABLE $preOrderTable($colId TEXT PRIMARY KEY, $colProductName TEXT,'
     '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT)');
   }
   //Create DB table
@@ -86,6 +86,12 @@ class DatabaseHelper{
     return result;
   }
 
+  Future <int> getId(String productName) async{
+    var db = await this.database;
+    int result = await db.rawDelete('SELECT ID FROM $preOrderTable WHERE $colProductName = $productName');
+    return result;
+  }
+
   Future<int> getCount() async{
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $preOrderTable');
@@ -103,4 +109,5 @@ class DatabaseHelper{
     }
     return pList;
   }
+
 }

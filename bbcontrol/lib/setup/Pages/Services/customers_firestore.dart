@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CustomersFirestoreClass {
 
-
   final String id;
 
   CustomersFirestoreClass({this.id});
