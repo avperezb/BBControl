@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
+import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
   @override
@@ -18,12 +21,12 @@ class AlcoholicDrinks extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return ColorLoader5(
-                dotOneColor: Colors.redAccent,
-                dotTwoColor: Colors.blueAccent,
-                dotThreeColor: Colors.green,
-                dotType: DotType.circle,
-                dotIcon: Icon(Icons.adjust),
-                duration: Duration(seconds: 1),
+            dotOneColor: Colors.redAccent,
+            dotTwoColor: Colors.blueAccent,
+            dotThreeColor: Colors.green,
+            dotType: DotType.circle,
+            dotIcon: Icon(Icons.adjust),
+            duration: Duration(seconds: 1),
           );
         }
         else {
@@ -41,6 +44,7 @@ class AlcoholicDrinks extends StatelessWidget {
   }
 }
 class SingleBeer extends StatelessWidget {
+
   String drinkName;
   String volume;
   String description;
@@ -106,6 +110,7 @@ class OrderBeer extends StatefulWidget {
   int towerPrice = 60000;
   int pintPrice = 11000;
   int jarPrice = 34000;
+
   OrderBeer(String beer){
     this.beer = beer;
   }
@@ -121,6 +126,8 @@ class _OrderBeerState extends State<OrderBeer> {
   int towerTotal = 0;
   int pintTotal = 0;
   int jarTotal = 0;
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
 
   String accumulateTotal = '\$0';
 
@@ -351,18 +358,55 @@ class _OrderBeerState extends State<OrderBeer> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width*0.55,
-                  child: RaisedButton(
-                    padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(10.0),
+                  child: Builder(
+                    builder: (context) => RaisedButton(
+                      padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(10.0),
+                      ),
+                      color: const Color(0xFFD7384A),
+                      onPressed:(){
+                        showToast(context);
+                        if(!cStatus) {
+                          showOverlayNotification((context) {
+                            return Card(
+                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: SafeArea(
+                                child: ListTile(
+                                  title: Text('Connection Error',
+                                      style: TextStyle(fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)
+                                  ),
+                                  subtitle: Text(
+                                    'Products will be added when connection is back.',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                  trailing: IconButton(
+                                      icon: Icon(
+                                        Icons.close, color: Colors.white,),
+                                      onPressed: () {
+                                        OverlaySupportEntry.of(context)
+                                            .dismiss();
+                                      }),
+                                ),
+                              ),
+                              color: Colors.blueGrey,);
+                          }, duration: Duration(milliseconds: 4000));
+                          ;
+                        }
+                        else{
+                          Navigator.push(context, MaterialPageRoute(builder: (
+                              context) => PreOrderPage()),);
+                        };
+                      },
+                      child: Text('Add to order',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16
+                        ),),
                     ),
-                    color: const Color(0xFFD7384A),
-                    onPressed:(){},
-                    child: Text('Add to order',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16
-                      ),),
                   ),
                 )
               ],
@@ -371,6 +415,13 @@ class _OrderBeerState extends State<OrderBeer> {
         )
 
     );
+  }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+    });
   }
 }
 

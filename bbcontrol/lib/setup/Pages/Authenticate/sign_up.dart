@@ -1,3 +1,5 @@
+import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
+import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,6 @@ class _SignUpState extends State<SignUpPage>{
   DateTime _birthDate;
   String _fullName;
   num _phoneNumber;
-
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final format = DateFormat("yMd");
@@ -183,12 +184,21 @@ class _SignUpState extends State<SignUpPage>{
                   ),
                   color: const Color(0xFFD7384A),
                   onPressed:  () async {
-                    if(_formKey.currentState.validate()){
+                    ColorLoader5(
+                      dotOneColor: Colors.redAccent,
+                      dotTwoColor: Colors.blueAccent,
+                      dotThreeColor: Colors.green,
+                      dotType: DotType.circle,
+                      dotIcon: Icon(Icons.adjust),
+                      duration: Duration(seconds: 2),
+                    );
+                    if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
-                      dynamic result = await _auth.signUp(_email, _password, _fullName, _phoneNumber, _birthDate);
+                      dynamic result = await _auth.signUp(
+                          _email, _password, _fullName, _phoneNumber,
+                          _birthDate);
                       //Se vuelve a la página de Log in
                       Navigator.of(context).pop();
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
                     }
                   },
                   child: Text('Register',
