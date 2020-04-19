@@ -2,16 +2,21 @@ import 'dart:convert';
 
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
+import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class NonAlcoholicDrinks extends StatefulWidget {
   var drinkPrices = '';
   List<String> drinkNames = [];
   var jsonOrder = '';
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
 
   Future<List<Map<String, dynamic>>> getInfo() async{
 
@@ -47,6 +52,8 @@ class NonAlcoholicDrinks extends StatefulWidget {
 class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
   String accumulateTotal = '\$0';
   var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
 
   callback(String drinkName, int quantity){
     Map<String, dynamic> map = jsonDecode(widget.jsonOrder);
@@ -113,6 +120,40 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                           ),
                           color: const Color(0xFFD7384A),
                           onPressed:(){
+                            showToast(context);
+                            if(!cStatus) {
+                              showOverlayNotification((context) {
+                                return Card(
+                                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  child: SafeArea(
+                                    child: ListTile(
+                                      title: Text('Connection Error',
+                                          style: TextStyle(fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white)
+                                      ),
+                                      subtitle: Text(
+                                        'Products will be added when connection is back.',
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.white),
+                                      ),
+                                      trailing: IconButton(
+                                          icon: Icon(
+                                            Icons.close, color: Colors.white,),
+                                          onPressed: () {
+                                            OverlaySupportEntry.of(context)
+                                                .dismiss();
+                                          }),
+                                    ),
+                                  ),
+                                  color: Colors.blueGrey,);
+                              }, duration: Duration(milliseconds: 4000));
+                              ;
+                            }
+                            else{
+                              Navigator.push(context, MaterialPageRoute(builder: (
+                                  context) => PreOrderPage()),);
+                            };
                           },
                           child: Text('Add to order',
                             style: TextStyle(
@@ -146,6 +187,13 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
         }
       },
     );
+  }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+    });
   }
 }
 
