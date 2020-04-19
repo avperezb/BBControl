@@ -77,7 +77,7 @@ class DatabaseHelper{
 
   Future<int> updatePreOrder(OrderProduct pO) async{
     var db = await this.database;
-    var result = await db.update(preOrderTable, pO.toMap(), where: '$colId = ?', whereArgs: [pO.id]);
+    var result = await db.update(preOrderTable, pO.toMap(), where: '$colId = ?', whereArgs: [pO.productName]);
   }
 
   Future <int> deletePreOrder(int id) async{
@@ -92,7 +92,7 @@ class DatabaseHelper{
     int result = Sqflite.firstIntValue(x);
   }
 
-  Future<List<OrderProduct>> getList() async{
+  Future<List<OrderProduct>> getAllOrders() async{
     var productsList = await getPreOrdersMapList();
     int count = productsList.length;
 
