@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
@@ -46,21 +47,11 @@ class FoodList extends StatefulWidget {
 
 }
 
-_checkInternetConnectivity() async {
-  var result = await Connectivity().checkConnectivity();
-  if(result == ConnectivityResult.none){
-    print('No internet connection');
-  }else if(result == ConnectivityResult.mobile){
-    print('Connection on mobile data');
-  }else if(result == ConnectivityResult.wifi){
-    print('connection by wifi');
-  }
-
-}
-
 class _FoodListState extends State<FoodList> {
   String accumulateTotal = '\$0';
   var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
 
   callback(String mealName, int quantity){
     Map<String, dynamic> map = jsonDecode(widget.jsonOrder);
@@ -148,7 +139,40 @@ class _FoodListState extends State<FoodList> {
                             ),
                             color: const Color(0xFFD7384A),
                             onPressed: () {
-                            },
+                              showToast(context);
+                              if(!cStatus) {
+                                showOverlayNotification((context) {
+                                  return Card(
+                                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: SafeArea(
+                                      child: ListTile(
+                                        title: Text('Connection Error',
+                                            style: TextStyle(fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)
+                                        ),
+                                        subtitle: Text(
+                                          'Products will be added when connection is back.',
+                                          style: TextStyle(
+                                              fontSize: 16, color: Colors.white),
+                                        ),
+                                        trailing: IconButton(
+                                            icon: Icon(
+                                              Icons.close, color: Colors.white,),
+                                            onPressed: () {
+                                              OverlaySupportEntry.of(context)
+                                                  .dismiss();
+                                            }),
+                                      ),
+                                    ),
+                                    color: Colors.blueGrey,);
+                                }, duration: Duration(milliseconds: 4000));
+                                ;
+                              }
+                              else{
+                                Navigator.push(context, MaterialPageRoute(builder: (
+                                    context) => PreOrderPage()),);
+                              };                            },
                             child: Text('Add to order',
                               style: TextStyle(
                                   color: Colors.white,
@@ -183,6 +207,14 @@ class _FoodListState extends State<FoodList> {
           }
         });
   }
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+      print(cStatus.toString()+'hhhhhhhhhhhhh');
+    });
+  }
+
 }
 
 class SingleMeal extends StatefulWidget {
