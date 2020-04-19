@@ -2,7 +2,7 @@
 
 class OrderProduct {
 
-  int _id;
+  String _id;
   String _productName;
   num _quantity;
   String _beerSize;
@@ -12,7 +12,7 @@ class OrderProduct {
   OrderProduct(this._id,this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
   OrderProduct.withId(this._id,this._productName,this._quantity,this._beerSize,this._price,this._foodComments);
 
-  int get id => _id;
+  String get id => _id;
   String get productName => _productName;
   num get quantity => _quantity;
   String get beerSize => _beerSize;
@@ -60,5 +60,23 @@ class OrderProduct {
     map['foodComments']= _foodComments;
 
     return map;
+  }
+
+  OrderProduct.fromData(Map<String, dynamic> data):
+        _id = data['id'],
+        _productName = data['productName'],
+        _quantity = data['quantity'],
+        _beerSize = data['beerSize'],
+        _price = data['price'],
+        _foodComments = data['foodComments'];
+
+  Map<String, dynamic> toJson(){
+    return{
+      'id' : _id,
+      'productName': _productName,
+      'quantity' : _quantity,
+      'beerSize' : _beerSize,
+      'price' : _price
+    };
   }
 }

@@ -46,7 +46,7 @@ class DatabaseHelper{
   }
 
   void _createDb(Database db, int newVersion) async{
-    await db.execute('CREATE TABLE $preOrderTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colProductName TEXT,'
+    await db.execute('CREATE TABLE $preOrderTable($colId TEXT PRIMARY KEY, $colProductName TEXT,'
     '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT)');
   }
   //Create DB table

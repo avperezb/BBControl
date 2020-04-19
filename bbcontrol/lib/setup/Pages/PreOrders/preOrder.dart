@@ -2,6 +2,8 @@ import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
+import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
@@ -18,6 +20,9 @@ class _PreOrderPageState extends State<PreOrderPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<OrderProduct> orderList;
   int count = 0;
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
+  OrdersFirestoreClass _ordersFirestoreClass = OrdersFirestoreClass();
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +55,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
               ),
               color: const Color(0xFFD7384A),
               onPressed: () async {
-                await databaseHelper.insertPreOrder(
-                    OrderProduct(0,'test',4,'testSize',25000,'foodComments'));
-                updateListView();
-                print(count);
+                
               },
               child: Text('save',
                 style: TextStyle(
