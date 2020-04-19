@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
@@ -49,12 +50,14 @@ class SingleBeer extends StatelessWidget {
   String volume;
   String description;
   String image;
+  String drinkId;
 
   SingleBeer(DocumentSnapshot beer){
     this.drinkName = beer['name'];
     this.volume = beer['volume'];
     this.description = beer['description'];
     this.image = beer['image'];
+    this.drinkId = beer.documentID;
   }
 
   Widget build(BuildContext context) {
@@ -110,9 +113,11 @@ class OrderBeer extends StatefulWidget {
   int towerPrice = 60000;
   int pintPrice = 11000;
   int jarPrice = 34000;
+  List<OrderProduct> productsList;
 
   OrderBeer(String beer){
     this.beer = beer;
+    this.productsList = new List<OrderProduct>();
   }
 
   @override
@@ -396,10 +401,18 @@ class _OrderBeerState extends State<OrderBeer> {
                           }, duration: Duration(milliseconds: 4000));
                           ;
                         }
-                        else{
+                        if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
+
+
+
                           Navigator.push(context, MaterialPageRoute(builder: (
                               context) => PreOrderPage()),);
-                        };
+                        }
+                        else{
+                          return Container(
+
+                          );
+                        }
                       },
                       child: Text('Add to order',
                         style: TextStyle(

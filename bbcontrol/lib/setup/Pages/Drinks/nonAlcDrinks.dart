@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
@@ -151,6 +152,8 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                               ;
                             }
                             else{
+                              DatabaseHelper db = new DatabaseHelper();
+                              print(db.getCount());
                               Navigator.push(context, MaterialPageRoute(builder: (
                                   context) => PreOrderPage()),);
                             };
