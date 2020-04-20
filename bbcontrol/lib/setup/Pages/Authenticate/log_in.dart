@@ -4,8 +4,10 @@ import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
+import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -19,6 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   String _email, _password;
   String error;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
 
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -86,6 +90,29 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   color: const Color(0xFFD7384A),
                   onPressed: () async {
+                    showToast(context);
+                    if(!cStatus){
+                      showOverlayNotification((context) {
+                        return Card(
+                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: SafeArea(
+                            child: ListTile(
+                              title: Text('Connection Error',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
+                              ),
+                              subtitle: Text('Please try to log in again later.',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              ),
+                              trailing: IconButton(
+                                  icon: Icon(Icons.close, color: Colors.white,),
+                                  onPressed: () {
+                                    OverlaySupportEntry.of(context).dismiss();
+                                  }),
+                            ),
+                          ),
+                          color: Colors.blueGrey,);
+                      }, duration: Duration(milliseconds: 4000));;
+                    }
                     ColorLoader5(
                       dotOneColor: Colors.redAccent,
                       dotTwoColor: Colors.blueAccent,
@@ -99,7 +126,14 @@ class _LoginPageState extends State<LoginPage> {
                       dynamic result = await _auth.signIn(_email, _password);
                       if(result == null){
                         setState(() => error = 'Could not sign you in. Please, check your data and try again.');
-                        print(error);
+                        return Container(
+                          margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
+                          child: Text(error,
+                            style: TextStyle(
+                              color: const Color(0xFFD7384A),
+                            ),),
+                          color: Colors.black12,
+                        );
                       }
                     }
                   },
@@ -143,4 +177,12 @@ class _LoginPageState extends State<LoginPage> {
         )
     );
   }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+    });
+  }
+
 }
