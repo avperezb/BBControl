@@ -50,14 +50,11 @@ class _PreOrderPageState extends State<PreOrderPage> {
                 .of(context)
                 .size
                 .height * 0.1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.55,
+                  width: MediaQuery.of(context).size.width,
                   child: RaisedButton(
                     padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
                     shape: RoundedRectangleBorder(
@@ -131,9 +128,10 @@ class _PreOrderPageState extends State<PreOrderPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Quantity',
+                        Text('Product details',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18
                           ),
                         ),
                         Text('Product',
@@ -143,7 +141,8 @@ class _PreOrderPageState extends State<PreOrderPage> {
                         ),
                         Text('Price',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18
                           ),
                         ),
                       ],
@@ -156,6 +155,20 @@ class _PreOrderPageState extends State<PreOrderPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                    width: 50,
+                                    child: Text(orderProduct.quantity.toString())
+                                ),
+                                Container(
+                                    width: 100,
+                                    child: Text(orderProduct.productName)),
+                              ],
+                            ),
+                            Container(
+                                child: Text(formatCurrency.format(orderProduct.price*orderProduct.quantity))
+                            ),
                             Container(
                                 width: 50,
                                 child: Text(orderProduct.quantity.toString())
@@ -165,6 +178,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                 child: Text(orderProduct.productName)),
                             Text(formatCurrency.format(orderProduct.price*orderProduct.quantity)),
                           ],
+
                         ),
                       ),
                       subtitle: Text(orderProduct.foodComments),
