@@ -24,13 +24,56 @@ class ReservationsList extends StatelessWidget {
               centerTitle: true,
               backgroundColor: const Color(0xFFFF6B00),
             ),
-            body: ColorLoader5(
-              dotOneColor: Colors.redAccent,
-              dotTwoColor: Colors.blueAccent,
-              dotThreeColor: Colors.green,
-              dotType: DotType.circle,
-              dotIcon: Icon(Icons.adjust),
-              duration: Duration(seconds: 1),
+            body: Center(
+              child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFffcc94),
+                    shape: BoxShape.circle,
+
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                        child: Text('Oops!',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 200,
+                        child: Text('It looks like you don\'t have any reservations at the moment',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          child: Text('ADD A RESERVATION',
+                            style: TextStyle(
+                              color: const Color(0xFFD7384A),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationView()),);
+                          },
+                        ),
+                      )
+                    ],
+                  )
+              ),
             ),
           );
         }
@@ -43,14 +86,10 @@ class ReservationsList extends StatelessWidget {
             ),
             bottomSheet: Card(
               elevation: 6.0,
-              child: Container(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.1,
+              child: Container(height: MediaQuery.of(context).size.height * 0.1,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                   child: RaisedButton(
                     padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
                     shape: RoundedRectangleBorder(

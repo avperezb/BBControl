@@ -144,8 +144,11 @@ class _ReserveTableState extends State<ReserveTable> {
                     if (input == null) {
                       return 'Please select a time';
                     }
+                    else if(input.hour < 15){
+                      return 'The minimum starting hour is 03:00 PM';
+                    }
                   },
-                  format: formatHour,
+                  format: DateFormat("hh:mm a"),
                   decoration:const InputDecoration(
                       icon: const Icon(Icons.watch_later,
                           color: const Color(0xFFD8AE2D)
@@ -155,7 +158,7 @@ class _ReserveTableState extends State<ReserveTable> {
                   onShowPicker: (context, currentValue) async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime(2020, 4, 22, 15)),
                     );
                     _startNoFormat = time;
                     return DateTimeField.convert(time);
@@ -170,8 +173,12 @@ class _ReserveTableState extends State<ReserveTable> {
                     if (input == null) {
                       return 'Please select a time';
                     }
+                    else if(input.difference((DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute)))
+                        > Duration(hours: 2)){
+                      return 'A reservation can\'t last more than 2 hours';
+                    }
                   },
-                  format: formatHour,
+                  format: DateFormat("hh:mm a"),
                   decoration:const InputDecoration(
                       icon: const Icon(Icons.access_time,
                           color: const Color(0xFFD8AE2D)
