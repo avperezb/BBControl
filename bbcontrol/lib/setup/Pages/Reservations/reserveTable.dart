@@ -5,6 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart' as res;
+import 'package:overlay_support/overlay_support.dart';
+
+import '../Services/connectivity.dart';
+import 'reservationsList.dart';
 
 class ReserveTable extends StatefulWidget {
   res.Table table;
@@ -20,6 +24,8 @@ class _ReserveTableState extends State<ReserveTable> {
   DateTime _startTime;
   TimeOfDay _startNoFormat;
   DateTime _endTime;
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
   ReservationsFirestoreClass _reservationsFirestoreClass = ReservationsFirestoreClass();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formatDate = DateFormat("yMd");
@@ -34,7 +40,7 @@ class _ReserveTableState extends State<ReserveTable> {
         ),
         bottomSheet: Container(
           width: MediaQuery.of(context).size.width,
-          margin: EdgeInsets.fromLTRB(15, MediaQuery.of(context).size.height*.43, 15, 15),
+          margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
           child: RaisedButton(
             padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
             shape: RoundedRectangleBorder(
@@ -43,16 +49,41 @@ class _ReserveTableState extends State<ReserveTable> {
             color: const Color(0xFFD7384A),
             onPressed: () async{
               if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                Reservation reservation = new Reservation(_date, _endTime, _startTime, widget.table.tableNumber);
-
-                await _reservationsFirestoreClass.addReservation(reservation);
-                bool statusOp = _reservationsFirestoreClass
-                    .getOperationStatus();
-                if (!statusOp) {
-                  //
-                } else {
-
+                showToast(context);
+                if(!cStatus) {
+                  showOverlayNotification((context) {
+                    return Card(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: SafeArea(
+                        child: ListTile(
+                          title: Text('Connection Error',
+                              style: TextStyle(fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)
+                          ),
+                          subtitle: Text(
+                            'Check your connection and try again.',
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.white),
+                          ),
+                          trailing: IconButton(
+                              icon: Icon(
+                                Icons.close, color: Colors.white,),
+                              onPressed: () {
+                                OverlaySupportEntry.of(context)
+                                    .dismiss();
+                              }),
+                        ),
+                      ),
+                      color: Colors.blueGrey,);
+                  }, duration: Duration(milliseconds: 4000));
+                }
+                else {
+                  _formKey.currentState.save();
+                  Reservation reservation = new Reservation(
+                      _date, _endTime, _startTime, widget.table.tableNumber);
+                  await _reservationsFirestoreClass.addReservation(reservation);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList()),);
                 }
               }
             },
@@ -81,11 +112,11 @@ class _ReserveTableState extends State<ReserveTable> {
                 child: DateTimeField(
                     validator: (input) {
                       if (input == null) {
-                        return 'Please enter your birth date';
+                        return 'Please enter a date';
                       }
                       else{
                         if(input.isBefore(new DateTime.now())){
-                          return  'Not a valid date';
+                          return  'The minimum date is ${formatDate.format(DateTime.now().add(Duration(days: 1)))}';
                         }
                       }
                     },
@@ -100,7 +131,7 @@ class _ReserveTableState extends State<ReserveTable> {
                       return showDatePicker(
                           context: context,
                           firstDate: DateTime(1900),
-                          initialDate: currentValue ?? DateTime.now(),
+                          initialDate: currentValue ?? DateTime.now().add(Duration(days: 1)),
                           lastDate: DateTime(2100));
                     },
                     onSaved: (input) => _date = input
@@ -162,5 +193,13 @@ class _ReserveTableState extends State<ReserveTable> {
           ),
         )
     );
+  }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+      print(cStatus.toString()+'hhhhhhhhhhhhh');
+    });
   }
 }

@@ -4,6 +4,9 @@ import 'package:bbcontrol/setup/Pages/Reservations/reserveTable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
+
+import '../Services/connectivity.dart';
 
 class ReservationView extends StatefulWidget {
   @override
@@ -13,6 +16,8 @@ class ReservationView extends StatefulWidget {
 class _ReservationViewState extends State<ReservationView> {
   int numSeats = 0;
   Table selected;
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
   callback(int seats, Table table){
     setState(() {
       selected = table;
@@ -108,7 +113,70 @@ class _ReservationViewState extends State<ReservationView> {
                       ),
                       color: const Color(0xFFD7384A),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReserveTable(selected)));
+                        if(selected != null) {
+                          showToast(context);
+                          if(!cStatus) {
+                            showOverlayNotification((context) {
+                              return Card(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                child: SafeArea(
+                                  child: ListTile(
+                                    title: Text('Connection Error',
+                                        style: TextStyle(fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)
+                                    ),
+                                    subtitle: Text(
+                                      'Products will be added when connection is back.',
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
+                                    trailing: IconButton(
+                                        icon: Icon(
+                                          Icons.close, color: Colors.white,),
+                                        onPressed: () {
+                                          OverlaySupportEntry.of(context)
+                                              .dismiss();
+                                        }),
+                                  ),
+                                ),
+                                color: Colors.blueGrey,);
+                            }, duration: Duration(milliseconds: 4000));
+                          }
+                          else {
+                            Navigator.pop(context);
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => ReserveTable(selected)));
+                          }
+                        }
+                        else{
+                          showOverlayNotification((context) {
+                            return Card(
+                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: SafeArea(
+                                child: ListTile(
+                                  title: Text('Select a table',
+                                      style: TextStyle(fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)
+                                  ),
+                                  subtitle: Text(
+                                    'Please select a table to reserve.',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                  trailing: IconButton(
+                                      icon: Icon(
+                                        Icons.close, color: Colors.white,),
+                                      onPressed: () {
+                                        OverlaySupportEntry.of(context)
+                                            .dismiss();
+                                      }),
+                                ),
+                              ),
+                              color: Color(0xFF2A8EBA),);
+                          }, duration: Duration(milliseconds: 4000));
+                        }
                       },
                       child: Text('Reserve table',
                         style: TextStyle(
@@ -124,27 +192,34 @@ class _ReservationViewState extends State<ReservationView> {
           }
         });
   }
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+      print(cStatus.toString()+'hhhhhhhhhhhhh');
+    });
+  }
 
   getPositionedList(AsyncSnapshot<dynamic> snapshot){
     bool leftPlacement = false;
     return ListView(
       children:
-        snapshot.data.documents.map<Widget>((DocumentSnapshot table ){
-          if(leftPlacement){
-            leftPlacement = false;
-            return Container(
-                margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
-                child: Table(table['seats'], table['available'], table['table_number'], callback)
-            );
-          }
-          else{
-            leftPlacement = true;
-            return Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
-                child: Table(table['seats'], table['available'], table['table_number'], callback)
-            );
-          }
-        }).toList(),
+      snapshot.data.documents.map<Widget>((DocumentSnapshot table ){
+        if(leftPlacement){
+          leftPlacement = false;
+          return Container(
+              margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
+              child: Table(table['seats'], table['available'], table['table_number'], callback)
+          );
+        }
+        else{
+          leftPlacement = true;
+          return Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
+              child: Table(table['seats'], table['available'], table['table_number'], callback)
+          );
+        }
+      }).toList(),
     );
 
   }
