@@ -1,4 +1,5 @@
 import 'package:bbcontrol/Setup/Database/database_creator.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/reservation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class ReservationsList extends StatelessWidget {
                             ),
                           ),
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationView()),);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation()),);
                           },
                         ),
                       )
@@ -97,7 +98,7 @@ class ReservationsList extends StatelessWidget {
                     ),
                     color: const Color(0xFFD7384A),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationView()),);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation()),);
                     },
                     child: Text('Add a reservation',
                       style: TextStyle(
@@ -116,8 +117,9 @@ class ReservationsList extends StatelessWidget {
                   .height * 0.77,
               margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: ListView(
-                children: snapshot.data.documents.map<ReservationTile>((DocumentSnapshot reservation){
-                  return ReservationTile(reservation['date'], reservation['start'], reservation['end'], reservation['table_number']);
+                children:
+                snapshot.data.documents.map<ReservationTile>((DocumentSnapshot reservation){
+                  return new ReservationTile(reservation['date'], reservation['start'], reservation['end'], reservation['preferences'] ,reservation['num_people']);
                 }).toList(),
               ),
             ),
@@ -132,14 +134,16 @@ class ReservationTile extends StatelessWidget {
   DateTime _date;
   DateTime _startTime;
   DateTime _endTime;
-  int _tableNumber;
+  int _numPeople;
+  List _preferences;
   final formatDate = DateFormat("yMd");
   final formatHour = DateFormat("HH:mm a");
-  ReservationTile(Timestamp date, Timestamp startTime, Timestamp endTime, int tableNumber){
+  ReservationTile(Timestamp date, Timestamp start, Timestamp end, List preferences, int numPeople){
     this._date = DateTime.parse(date.toDate().toString());
-    this._startTime = DateTime.parse(startTime.toDate().toString());
-    this._endTime = DateTime.parse(endTime.toDate().toString());
-    this._tableNumber = tableNumber;
+    this._startTime = DateTime.parse(start.toDate().toString());
+    this._endTime = DateTime.parse(end.toDate().toString());
+    this._numPeople = numPeople;
+    this._preferences = preferences;
   }
   @override
   Widget build(BuildContext context) {
@@ -164,17 +168,35 @@ class ReservationTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text('Table $_tableNumber'),
                 getReservationStatus(),
+                Container(
+                  width: 50,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                          margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          child: Icon(Icons.people_outline)
+                      ),
+                      Text('$_numPeople')
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Text('Date: ${formatDate.format(_date)}'),
-              Text('Starting hour: ${formatHour.format(_startTime)}'),
-              Text('Ending hour: ${formatHour.format(_endTime)}'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Date: ${formatDate.format(_date)}'),
+                  Text('Start time: ${formatHour.format(_startTime)}'),
+                  Text('End time: ${formatHour.format(_endTime)}'),
+                ],
+              ),
+              getPreferences(),
             ],
           ),
         ),
@@ -182,19 +204,44 @@ class ReservationTile extends StatelessWidget {
     );
   }
 
+  getPreferences(){
+    if(_preferences.isNotEmpty){
+      List<IconData> icons = [];
+      if(_preferences.contains('near arcade')) icons.add(Icons.videogame_asset);
+      if(_preferences.contains('near tv')) icons.add(Icons.tv);
+      if(_preferences.contains('near bar')) icons.add(Icons.local_bar);
+      return Row(
+        children: <Widget>[
+          for(int i = 0; i < icons.length; i++)
+            Container(
+                margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child:(
+                    Icon(icons[i],
+                      color: Colors.grey[600],)
+                )
+            )
+
+        ],
+      );
+    }
+    else return Container();
+  }
+
   getReservationStatus(){
     bool active = (_date.isAfter(DateTime.now())) ? true : false;
     if(active)
-      return Text('Active',
+      return Text('Active reservation',
         style: TextStyle(
-            fontSize: 13,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             color: Colors.green[800]
         ),
       );
     else
-      Text('Due',
+      Text('Due reservation',
         style: TextStyle(
-            fontSize: 13,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             color: Colors.red[800]
         ),
       );

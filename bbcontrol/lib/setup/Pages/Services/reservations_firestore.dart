@@ -32,14 +32,4 @@ class ReservationsFirestoreClass {
     return done;
   }
 
-  /*Future updateReservation(String fullName, String email, String,
-      DateTime birthDate, num phoneNumber) async {
-    return await _ordersCollectionReference.document(id).setData({
-      'id': id,
-      'fullName': fullName,
-      'email': email,
-      'birthDate': birthDate,
-      'phoneNumber': phoneNumber
-    });
-  }*/
 }

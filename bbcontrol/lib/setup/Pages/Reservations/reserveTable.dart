@@ -81,9 +81,9 @@ class _ReserveTableState extends State<ReserveTable> {
                 }
                 else {
                   _formKey.currentState.save();
-                  Reservation reservation = new Reservation(
+                /*  Reservation reservation = new Reservation(
                       _date, _endTime, _startTime, widget.table.tableNumber);
-                  await _reservationsFirestoreClass.addReservation(reservation);
+                  await _reservationsFirestoreClass.addReservation(reservation);*/
                   Navigator.pop(context);
                 }
               }
