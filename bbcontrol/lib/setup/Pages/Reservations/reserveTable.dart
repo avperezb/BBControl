@@ -1,3 +1,4 @@
+import 'package:bbcontrol/models/reservation.dart';
 import 'package:bbcontrol/setup/Pages/Services/reservations_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +8,6 @@ import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart' as res;
 
 class ReserveTable extends StatefulWidget {
   res.Table table;
-  ReservationsFirestoreClass _reservationsFirestoreClass = ReservationsFirestoreClass();
   ReserveTable(res.Table table){
     this.table = table;
   }
@@ -20,6 +20,7 @@ class _ReserveTableState extends State<ReserveTable> {
   DateTime _startTime;
   TimeOfDay _startNoFormat;
   DateTime _endTime;
+  ReservationsFirestoreClass _reservationsFirestoreClass = ReservationsFirestoreClass();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formatDate = DateFormat("yMd");
   final formatHour = DateFormat("HH:mm a");
@@ -40,9 +41,19 @@ class _ReserveTableState extends State<ReserveTable> {
               borderRadius: new BorderRadius.circular(10.0),
             ),
             color: const Color(0xFFD7384A),
-            onPressed: () {
+            onPressed: () async{
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
+                Reservation reservation = new Reservation(_date, _endTime, _startTime, widget.table.tableNumber);
+
+                await _reservationsFirestoreClass.addReservation(reservation);
+                bool statusOp = _reservationsFirestoreClass
+                    .getOperationStatus();
+                if (!statusOp) {
+                  //
+                } else {
+
+                }
               }
             },
             child: Text('Reserve table',
@@ -60,10 +71,10 @@ class _ReserveTableState extends State<ReserveTable> {
               Container(
                 margin: EdgeInsets.fromLTRB(10, 20, 0, 20),
                 child: Text('Table ${widget.table.tableNumber}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
@@ -73,7 +84,7 @@ class _ReserveTableState extends State<ReserveTable> {
                         return 'Please enter your birth date';
                       }
                       else{
-                        if(!input.isBefore(new DateTime.now())){
+                        if(input.isBefore(new DateTime.now())){
                           return  'Not a valid date';
                         }
                       }
@@ -96,30 +107,30 @@ class _ReserveTableState extends State<ReserveTable> {
                 ),
               ),
               Container(
-                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-                  child: DateTimeField(
-                    validator: (input) {
-                      if (input == null) {
-                        return 'Please select a time';
-                      }
-                    },
-                    format: formatHour,
-                    decoration:const InputDecoration(
-                        icon: const Icon(Icons.watch_later,
-                            color: const Color(0xFFD8AE2D)
-                        ),
-                        labelText: 'Starting time'
-                    ),
-                    onShowPicker: (context, currentValue) async {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      _startNoFormat = time;
-                      return DateTimeField.convert(time);
-                    },
-                    onSaved: (input) => {_startTime = input},
+                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                child: DateTimeField(
+                  validator: (input) {
+                    if (input == null) {
+                      return 'Please select a time';
+                    }
+                  },
+                  format: formatHour,
+                  decoration:const InputDecoration(
+                      icon: const Icon(Icons.watch_later,
+                          color: const Color(0xFFD8AE2D)
+                      ),
+                      labelText: 'Starting time'
                   ),
+                  onShowPicker: (context, currentValue) async {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    _startNoFormat = time;
+                    return DateTimeField.convert(time);
+                  },
+                  onSaved: (input) => {_startTime = input},
+                ),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),

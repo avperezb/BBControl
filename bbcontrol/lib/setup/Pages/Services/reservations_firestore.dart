@@ -14,6 +14,7 @@ class ReservationsFirestoreClass {
   Future addReservation(Reservation reservation) async {
     String message = '';
     try {
+      print(reservation.toJson());
       await _reservationsCollectionReference.document().setData(
           reservation.toJson());
     } catch (e) {
