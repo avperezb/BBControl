@@ -312,7 +312,10 @@ class Table extends StatefulWidget {
 }
 
 class _TableState extends State<Table> {
-  final icons = [Icons.looks_one, Icons.looks_two, Icons.looks_3, Icons.looks_4];
+  final icons = [Icons.looks_one,
+    Icons.looks_two,
+    Icons.looks_3,
+    Icons.looks_4];
   bool selected = false;
   bool previousState = false;
   Widget build(BuildContext context) {
