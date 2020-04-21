@@ -1,3 +1,4 @@
+import 'package:age/age.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
@@ -6,9 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:string_validator/string_validator.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'log_in.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -25,20 +24,21 @@ class _SignUpState extends State<SignUpPage>{
   String _fullName;
   num _phoneNumber;
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  bool cStatus = true;
+  bool isConnected = true;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final format = DateFormat("yMd");
 
   Widget build(BuildContext context) {
     return new Scaffold(
+      backgroundColor: Colors.white,
       appBar: new AppBar(
         title: Text('Registration',
           style: TextStyle(
               color: Colors.white
           ),
         ),
-        backgroundColor: Color(0xFFFF6B00),
+        backgroundColor: Color(0xFFD7384A),
       ),
       body: Form(
         key: _formKey,
@@ -82,6 +82,7 @@ class _SignUpState extends State<SignUpPage>{
                     hintText: 'Enter your first and last name',
                     labelText: 'Name',
                   ),
+                  maxLength: 40,
                 )
             ),
             Container(
@@ -94,7 +95,14 @@ class _SignUpState extends State<SignUpPage>{
                               return 'Please enter your birth date';
                             }
                             else{
-                              if(!input.isBefore(new DateTime.now())){
+                              if(input.isBefore(new DateTime.now())){
+                                var age = Age.dateDifference(
+                                    fromDate: input, toDate: new DateTime.now(), includeToDate: false);
+                                if(age.years < 18) {
+                                  return 'You must be 18 years old or above';
+                                }
+                              }
+                              else {
                                 return  'Not a valid date';
                               }
                             }
@@ -143,13 +151,18 @@ class _SignUpState extends State<SignUpPage>{
                 child: TextFormField(
                   keyboardType: TextInputType.phone,
                   validator: (input){
-                    if(input.isEmpty){
+                    if(input.isNotEmpty){
+                      String patttern = r'(^(?:[+0]9)?[0-9]{10}$)';
+                      RegExp regExp = new RegExp(patttern);
+                      if (!regExp.hasMatch(input)) {
+                        return 'Please enter valid mobile number';
+                      }
+                    }
+                    else{
                       return 'Please enter your phone number';
                     }
-                    if(input.isNotEmpty && !isNumeric(input)){
-                      return 'This field cannot contain letters';
-                    }
                   },
+                  maxLength: 10,
                   onSaved: (input) => _phoneNumber = num.parse(input),
                   decoration: InputDecoration(
                     icon: const Icon(Icons.phone,
@@ -196,33 +209,22 @@ class _SignUpState extends State<SignUpPage>{
                     dotIcon: Icon(Icons.adjust),
                     duration: Duration(seconds: 2),
                   );
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
-                    dynamic result = await _auth.signUp(
-                        _email, _password, _fullName, _phoneNumber,
-                        _birthDate);
-                    showToast(context);
-                    if(!cStatus){
-                      showOverlayNotification((context) {
-                        return Card(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: SafeArea(
-                            child: ListTile(
-                              title: Text('Connection Error',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
-                              ),
-                              subtitle: Text('Please try to log in again later.',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
-                              trailing: IconButton(
-                                  icon: Icon(Icons.close, color: Colors.white,),
-                                  onPressed: () {
-                                    OverlaySupportEntry.of(context).dismiss();
-                                  }),
-                            ),
-                          ),
-                          color: Colors.blueGrey,);
-                      }, duration: Duration(milliseconds: 4000));;
+                      checkConnectivity(context);
+                      if(!isConnected){
+                        showOverlayNotification((context) {
+                          return connectionNotification();
+                        }, duration: Duration(milliseconds: 4000));;
+                      }
+                      else{
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          dynamic result = await _auth.signUp(
+                              _email, _password, _fullName, _phoneNumber,
+                              _birthDate);
+                        if (result != null){
+                        print(_email + _password);
+                        Navigator.pop(context);
+                      }
                     }
                   }
                 },
@@ -233,29 +235,37 @@ class _SignUpState extends State<SignUpPage>{
                   ),),
               ),
             ),
-            Container(
-              margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
-              child: FlatButton(
-                  textColor: const Color(0xFFD7384A),
-                  child: Text(
-                    'Log in now',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  onPressed: () {
-                    //Se vuelve a la página de Log in
-                    Navigator.of(context).pop();
-                  }
-              ),
-            ),
           ],
         ),
       ),
     );
   }
-  void showToast(BuildContext context) async {
+  void checkConnectivity(BuildContext context) async {
     await checkConnection.initConnectivity();
     setState(() {
-      cStatus = checkConnection.getConnectionStatus(context);
+      isConnected = checkConnection.getConnectionStatus(context);
     });
   }
+
+  Widget connectionNotification(){
+    return Card(
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: SafeArea(
+        child: ListTile(
+          title: Text('Connection Error',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
+          ),
+          subtitle: Text('Please try to log in again later.',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          trailing: IconButton(
+              icon: Icon(Icons.close, color: Colors.white,),
+              onPressed: () {
+                OverlaySupportEntry.of(context).dismiss();
+              }),
+        ),
+      ),
+      color: Colors.blueGrey,);
+  }
 }
+

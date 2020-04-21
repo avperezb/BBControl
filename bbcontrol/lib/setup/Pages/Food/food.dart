@@ -231,7 +231,6 @@ class _FoodListState extends State<FoodList> {
     await checkConnection.initConnectivity();
     setState(() {
       cStatus = checkConnection.getConnectionStatus(context);
-      print(cStatus.toString()+'hhhhhhhhhhhhh');
     });
   }
 
