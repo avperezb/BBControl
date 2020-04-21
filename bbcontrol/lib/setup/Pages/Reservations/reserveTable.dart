@@ -24,6 +24,7 @@ class _ReserveTableState extends State<ReserveTable> {
   DateTime _startTime;
   TimeOfDay _startNoFormat;
   DateTime _endTime;
+  bool _autovalidate = false;
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
   ReservationsFirestoreClass _reservationsFirestoreClass = ReservationsFirestoreClass();
@@ -174,8 +175,9 @@ class _ReserveTableState extends State<ReserveTable> {
                       return 'Please select a time';
                     }
                     else if(input.difference((DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute)))
-                        > Duration(hours: 2)){
-                      return 'A reservation can\'t last more than 2 hours';
+                        > Duration(hours: 3) || (DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute))
+                        .difference(input) > Duration(hours:  3)){
+                      return 'A reservation can\'t last more than 3 hours';
                     }
                   },
                   format: DateFormat("hh:mm a"),
