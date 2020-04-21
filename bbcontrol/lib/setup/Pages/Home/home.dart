@@ -60,7 +60,7 @@ class HomeState extends State<Home>{
                         color: const Color(0xFF69B3E7),
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => ReservationView()),);
+                              context) => ReservationsList()),);
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,

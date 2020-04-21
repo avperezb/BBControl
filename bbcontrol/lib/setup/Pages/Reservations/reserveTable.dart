@@ -1,14 +1,18 @@
 import 'package:bbcontrol/models/reservation.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/table.dart';
 import 'package:bbcontrol/setup/Pages/Services/reservations_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart' as res;
+import 'package:overlay_support/overlay_support.dart';
+
+import '../Services/connectivity.dart';
+import 'reservationsList.dart';
 
 class ReserveTable extends StatefulWidget {
-  res.Table table;
-  ReserveTable(res.Table table){
+  SingleTable table;
+  ReserveTable(SingleTable table){
     this.table = table;
   }
   @override
@@ -20,6 +24,8 @@ class _ReserveTableState extends State<ReserveTable> {
   DateTime _startTime;
   TimeOfDay _startNoFormat;
   DateTime _endTime;
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
   ReservationsFirestoreClass _reservationsFirestoreClass = ReservationsFirestoreClass();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formatDate = DateFormat("yMd");
@@ -34,7 +40,7 @@ class _ReserveTableState extends State<ReserveTable> {
         ),
         bottomSheet: Container(
           width: MediaQuery.of(context).size.width,
-          margin: EdgeInsets.fromLTRB(15, MediaQuery.of(context).size.height*.43, 15, 15),
+          margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
           child: RaisedButton(
             padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
             shape: RoundedRectangleBorder(
@@ -43,16 +49,41 @@ class _ReserveTableState extends State<ReserveTable> {
             color: const Color(0xFFD7384A),
             onPressed: () async{
               if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                Reservation reservation = new Reservation(_date, _endTime, _startTime, widget.table.tableNumber);
-
-                await _reservationsFirestoreClass.addReservation(reservation);
-                bool statusOp = _reservationsFirestoreClass
-                    .getOperationStatus();
-                if (!statusOp) {
-                  //
-                } else {
-
+                showToast(context);
+                if(!cStatus) {
+                  showOverlayNotification((context) {
+                    return Card(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: SafeArea(
+                        child: ListTile(
+                          title: Text('Connection Error',
+                              style: TextStyle(fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)
+                          ),
+                          subtitle: Text(
+                            'Check your connection and try again.',
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.white),
+                          ),
+                          trailing: IconButton(
+                              icon: Icon(
+                                Icons.close, color: Colors.white,),
+                              onPressed: () {
+                                OverlaySupportEntry.of(context)
+                                    .dismiss();
+                              }),
+                        ),
+                      ),
+                      color: Colors.blueGrey,);
+                  }, duration: Duration(milliseconds: 4000));
+                }
+                else {
+                  _formKey.currentState.save();
+                  Reservation reservation = new Reservation(
+                      _date, _endTime, _startTime, widget.table.tableNumber);
+                  await _reservationsFirestoreClass.addReservation(reservation);
+                  Navigator.pop(context);
                 }
               }
             },
@@ -81,11 +112,11 @@ class _ReserveTableState extends State<ReserveTable> {
                 child: DateTimeField(
                     validator: (input) {
                       if (input == null) {
-                        return 'Please enter your birth date';
+                        return 'Please enter a date';
                       }
                       else{
                         if(input.isBefore(new DateTime.now())){
-                          return  'Not a valid date';
+                          return  'The minimum date is ${formatDate.format(DateTime.now().add(Duration(days: 1)))}';
                         }
                       }
                     },
@@ -100,7 +131,7 @@ class _ReserveTableState extends State<ReserveTable> {
                       return showDatePicker(
                           context: context,
                           firstDate: DateTime(1900),
-                          initialDate: currentValue ?? DateTime.now(),
+                          initialDate: currentValue ?? DateTime.now().add(Duration(days: 1)),
                           lastDate: DateTime(2100));
                     },
                     onSaved: (input) => _date = input
@@ -113,8 +144,11 @@ class _ReserveTableState extends State<ReserveTable> {
                     if (input == null) {
                       return 'Please select a time';
                     }
+                    else if(input.hour < 15){
+                      return 'The minimum starting hour is 03:00 PM';
+                    }
                   },
-                  format: formatHour,
+                  format: DateFormat("hh:mm a"),
                   decoration:const InputDecoration(
                       icon: const Icon(Icons.watch_later,
                           color: const Color(0xFFD8AE2D)
@@ -124,7 +158,7 @@ class _ReserveTableState extends State<ReserveTable> {
                   onShowPicker: (context, currentValue) async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime(2020, 4, 22, 15)),
                     );
                     _startNoFormat = time;
                     return DateTimeField.convert(time);
@@ -139,8 +173,12 @@ class _ReserveTableState extends State<ReserveTable> {
                     if (input == null) {
                       return 'Please select a time';
                     }
+                    else if(input.difference((DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute)))
+                        > Duration(hours: 2)){
+                      return 'A reservation can\'t last more than 2 hours';
+                    }
                   },
-                  format: formatHour,
+                  format: DateFormat("hh:mm a"),
                   decoration:const InputDecoration(
                       icon: const Icon(Icons.access_time,
                           color: const Color(0xFFD8AE2D)
@@ -162,5 +200,13 @@ class _ReserveTableState extends State<ReserveTable> {
           ),
         )
     );
+  }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+      print(cStatus.toString()+'hhhhhhhhhhhhh');
+    });
   }
 }

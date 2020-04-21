@@ -1,128 +1,205 @@
 import 'package:bbcontrol/Setup/Database/database_creator.dart';
-import 'package:bbcontrol/Setup/Pages/Reservations/reservations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../Extra/ColorLoader.dart';
+import '../Extra/DotType.dart';
+import 'reservationsAux.dart';
 
 class ReservationsList extends StatelessWidget {
   ReservationDatabase db = new ReservationDatabase();
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Today reservations'),
-          centerTitle: true,
-        backgroundColor: const Color(0xFFFF6B00),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-            color: const Color(0xFF996480),
-              child: Column(
-                children: <Widget>[
-                  Text('Table: 5',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
+    return StreamBuilder(
+      stream: Firestore.instance.collection(
+          "/Reservations")
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('My reservations'),
+              centerTitle: true,
+              backgroundColor: const Color(0xFFFF6B00),
+            ),
+            body: Center(
+              child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFffcc94),
+                    shape: BoxShape.circle,
+
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                        child: Text('Oops!',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 200,
+                        child: Text('It looks like you don\'t have any reservations at the moment',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          child: Text('ADD A RESERVATION',
+                            style: TextStyle(
+                              color: const Color(0xFFD7384A),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationView()),);
+                          },
+                        ),
+                      )
+                    ],
+                  )
+              ),
+            ),
+          );
+        }
+        else {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('My reservations'),
+              centerTitle: true,
+              backgroundColor: const Color(0xFFFF6B00),
+            ),
+            bottomSheet: Card(
+              elevation: 6.0,
+              child: Container(height: MediaQuery.of(context).size.height * 0.1,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: RaisedButton(
+                    padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(10.0),
+                    ),
+                    color: const Color(0xFFD7384A),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationView()),);
+                    },
+                    child: Text('Add a reservation',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                      ),
                     ),
                   ),
-                  Text('Seats: 4',
-                    style: TextStyle(
-                      fontSize: 17
-                  ),
-                  ),
-                  Text('Start hour: 4:00 pm',
-                    style: TextStyle(
-                        fontSize: 17
-                    ),
-                  ),
-                  Text('End hour: 6:00 pm',
-                    style: TextStyle(
-                        fontSize: 17
-                  ),
-                  ),
-                ],
+                ),
               ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-            color: const Color(0xFF996480),
-            child: Column(
-              children: <Widget>[
-                Text('Table: 7',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                  ),
-                ),
-                Text('Seats: 4',
-                  style: TextStyle(
-                      fontSize: 17
-                  ),
-                ),
-                Text('Start hour: 6:00 pm',
-                  style: TextStyle(
-                      fontSize: 17
-                  ),
-                ),
-                Text('End hour: 8:00 pm',
-                  style: TextStyle(
-                      fontSize: 17
-                  ),
-                ),
-              ],
             ),
-
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10.0, 250.0, 10.0, 0.0),
-            child: RaisedButton(
-              padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(10.0),
+            body: Container(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.77,
+              margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+              child: ListView(
+                children: snapshot.data.documents.map<ReservationTile>((DocumentSnapshot reservation){
+                  return ReservationTile(reservation['date'], reservation['start'], reservation['end'], reservation['table_number']);
+                }).toList(),
               ),
-              color: const Color(0xFFD7384A),
-              onPressed:(){ Navigator.push(context, MaterialPageRoute(builder: (context) => Reservations()));},
-              child: Text('Add new reservation',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16
-                ),),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  showList(BuildContext bc) {
-    return FutureBuilder(
-      future: db.getAllReservations(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<Reservation>> snapshot) {
-        return ListView(
-          children: <Widget>[
-            for (Reservation reservation in snapshot.data)
-              ListTile(title: Text(reservation.user))
-          ],
-        );
+          );
+        }
       },
     );
   }
-
-
 }
-/*return FutureBuilder(
-future: db.initDB(),
-builder: (BuildContext context, snapshot){
-if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
-return showList(context);
-}else{
-return Reservations();
- */
+
+class ReservationTile extends StatelessWidget {
+  DateTime _date;
+  DateTime _startTime;
+  DateTime _endTime;
+  int _tableNumber;
+  final formatDate = DateFormat("yMd");
+  final formatHour = DateFormat("HH:mm a");
+  ReservationTile(Timestamp date, Timestamp startTime, Timestamp endTime, int tableNumber){
+    this._date = DateTime.parse(date.toDate().toString());
+    this._startTime = DateTime.parse(startTime.toDate().toString());
+    this._endTime = DateTime.parse(endTime.toDate().toString());
+    this._tableNumber = tableNumber;
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.0),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 6.0,
+          ),
+        ],
+      ),
+      child: Container(
+        child: ListTile(
+          title: Container(
+            margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('Table $_tableNumber'),
+                getReservationStatus(),
+              ],
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Date: ${formatDate.format(_date)}'),
+              Text('Starting hour: ${formatHour.format(_startTime)}'),
+              Text('Ending hour: ${formatHour.format(_endTime)}'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  getReservationStatus(){
+    bool active = (_date.isAfter(DateTime.now())) ? true : false;
+    if(active)
+      return Text('Active',
+        style: TextStyle(
+            fontSize: 13,
+            color: Colors.green[800]
+        ),
+      );
+    else
+      Text('Due',
+        style: TextStyle(
+            fontSize: 13,
+            color: Colors.red[800]
+        ),
+      );
+  }
+}
 
 
 

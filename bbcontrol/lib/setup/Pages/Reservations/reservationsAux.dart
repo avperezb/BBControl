@@ -1,9 +1,13 @@
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reserveTable.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/table.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
+
+import '../Services/connectivity.dart';
 
 class ReservationView extends StatefulWidget {
   @override
@@ -12,8 +16,10 @@ class ReservationView extends StatefulWidget {
 
 class _ReservationViewState extends State<ReservationView> {
   int numSeats = 0;
-  Table selected;
-  callback(int seats, Table table){
+  SingleTable selected;
+  CheckConnectivityState checkConnection = CheckConnectivityState();
+  bool cStatus = true;
+  callback(int seats, SingleTable table){
     setState(() {
       selected = table;
       numSeats = seats;
@@ -108,7 +114,70 @@ class _ReservationViewState extends State<ReservationView> {
                       ),
                       color: const Color(0xFFD7384A),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReserveTable(selected)));
+                        if(selected != null) {
+                          showToast(context);
+                          if(!cStatus) {
+                            showOverlayNotification((context) {
+                              return Card(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                child: SafeArea(
+                                  child: ListTile(
+                                    title: Text('Connection Error',
+                                        style: TextStyle(fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)
+                                    ),
+                                    subtitle: Text(
+                                      'Products will be added when connection is back.',
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
+                                    trailing: IconButton(
+                                        icon: Icon(
+                                          Icons.close, color: Colors.white,),
+                                        onPressed: () {
+                                          OverlaySupportEntry.of(context)
+                                              .dismiss();
+                                        }),
+                                  ),
+                                ),
+                                color: Colors.blueGrey,);
+                            }, duration: Duration(milliseconds: 4000));
+                          }
+                          else {
+                            Navigator.pop(context);
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => ReserveTable(selected)));
+                          }
+                        }
+                        else{
+                          showOverlayNotification((context) {
+                            return Card(
+                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: SafeArea(
+                                child: ListTile(
+                                  title: Text('Select a table',
+                                      style: TextStyle(fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)
+                                  ),
+                                  subtitle: Text(
+                                    'Please select a table to reserve.',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                  trailing: IconButton(
+                                      icon: Icon(
+                                        Icons.close, color: Colors.white,),
+                                      onPressed: () {
+                                        OverlaySupportEntry.of(context)
+                                            .dismiss();
+                                      }),
+                                ),
+                              ),
+                              color: Color(0xFF2A8EBA),);
+                          }, duration: Duration(milliseconds: 4000));
+                        }
                       },
                       child: Text('Reserve table',
                         style: TextStyle(
@@ -124,82 +193,35 @@ class _ReservationViewState extends State<ReservationView> {
           }
         });
   }
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+      print(cStatus.toString()+'hhhhhhhhhhhhh');
+    });
+  }
 
   getPositionedList(AsyncSnapshot<dynamic> snapshot){
     bool leftPlacement = false;
     return ListView(
       children:
-        snapshot.data.documents.map<Widget>((DocumentSnapshot table ){
-          if(leftPlacement){
-            leftPlacement = false;
-            return Container(
-                margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
-                child: Table(table['seats'], table['available'], table['table_number'], callback)
-            );
-          }
-          else{
-            leftPlacement = true;
-            return Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
-                child: Table(table['seats'], table['available'], table['table_number'], callback)
-            );
-          }
-        }).toList(),
+      snapshot.data.documents.map<Widget>((DocumentSnapshot table ){
+        if(leftPlacement){
+          leftPlacement = false;
+          return Container(
+              margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
+              child: SingleTable(table['seats'], table['available'], table['table_number'], callback)
+          );
+        }
+        else{
+          leftPlacement = true;
+          return Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
+              child: SingleTable(table['seats'], table['available'], table['table_number'], callback)
+          );
+        }
+      }).toList(),
     );
 
   }
 }
-
-class Table extends StatefulWidget {
-  int seats;
-  bool available;
-  bool selected;
-  int tableNumber;
-  Function(int, Table) callback;
-  Table(int seats, bool available, int tableNumber, Function callback){
-    this.seats = seats;
-    this.available = available;
-    selected = false;
-    this.callback = callback;
-    this.tableNumber = tableNumber;
-  }
-
-  @override
-  _TableState createState() => _TableState();
-}
-
-class _TableState extends State<Table> {
-  @override
-  void initState() {
-    color = (widget.available) ? Colors.brown[600] : Colors.grey[600];
-    super.initState();
-  }
-  var icons = {
-    1 : Icons.looks_two,
-    2 : Icons.looks_two,
-    3 : Icons.looks_3,
-    4 : Icons.looks_4
-  };
-  var color;
-  bool selected = false;
-  bool previousState = false;
-
-  Widget build(BuildContext context) {
-    return IconButton(
-        icon: Icon(
-          icons[widget.seats],
-          color: color,
-          size:40,
-        ),
-        onPressed: () {
-          setState(() {
-            previousState = selected;
-            selected = !selected;
-            //     color = (selected) ? const Color(0xFF69B3E7) : Colors.brown[600];
-            widget.callback(widget.seats, widget);
-          });
-        });
-  }
-}
-
-
