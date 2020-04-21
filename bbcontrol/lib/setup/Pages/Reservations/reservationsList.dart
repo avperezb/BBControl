@@ -17,7 +17,7 @@ class ReservationsList extends StatelessWidget {
           "/Reservations")
           .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
           return Scaffold(
             appBar: AppBar(
               title: Text('My reservations'),
