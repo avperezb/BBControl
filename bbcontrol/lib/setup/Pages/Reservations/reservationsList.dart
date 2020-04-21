@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../Extra/ColorLoader.dart';
 import '../Extra/DotType.dart';
+import 'reservationsAux.dart';
 
 class ReservationsList extends StatelessWidget {
   ReservationDatabase db = new ReservationDatabase();
@@ -40,27 +41,40 @@ class ReservationsList extends StatelessWidget {
               centerTitle: true,
               backgroundColor: const Color(0xFFFF6B00),
             ),
-            bottomSheet: Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
-              child: RaisedButton(
-                padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(10.0),
-                ),
-                color: const Color(0xFFD7384A),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList()),);
-                },
-                child: Text('Add a reservation',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16
+            bottomSheet: Card(
+              elevation: 6.0,
+              child: Container(
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height * 0.1,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
+                  child: RaisedButton(
+                    padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(10.0),
+                    ),
+                    color: const Color(0xFFD7384A),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationView()),);
+                    },
+                    child: Text('Add a reservation',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
             body: Container(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.77,
               margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: ListView(
                 children: snapshot.data.documents.map<ReservationTile>((DocumentSnapshot reservation){
@@ -83,7 +97,6 @@ class ReservationTile extends StatelessWidget {
   final formatDate = DateFormat("yMd");
   final formatHour = DateFormat("HH:mm a");
   ReservationTile(Timestamp date, Timestamp startTime, Timestamp endTime, int tableNumber){
-    print(date.toString());
     this._date = DateTime.parse(date.toDate().toString());
     this._startTime = DateTime.parse(startTime.toDate().toString());
     this._endTime = DateTime.parse(endTime.toDate().toString());

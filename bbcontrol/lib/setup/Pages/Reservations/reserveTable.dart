@@ -1,18 +1,18 @@
 import 'package:bbcontrol/models/reservation.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/table.dart';
 import 'package:bbcontrol/setup/Pages/Services/reservations_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart' as res;
 import 'package:overlay_support/overlay_support.dart';
 
 import '../Services/connectivity.dart';
 import 'reservationsList.dart';
 
 class ReserveTable extends StatefulWidget {
-  res.Table table;
-  ReserveTable(res.Table table){
+  SingleTable table;
+  ReserveTable(SingleTable table){
     this.table = table;
   }
   @override
@@ -83,7 +83,7 @@ class _ReserveTableState extends State<ReserveTable> {
                   Reservation reservation = new Reservation(
                       _date, _endTime, _startTime, widget.table.tableNumber);
                   await _reservationsFirestoreClass.addReservation(reservation);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationsList()),);
+                  Navigator.pop(context);
                 }
               }
             },

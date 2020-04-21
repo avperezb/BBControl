@@ -1,6 +1,7 @@
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reserveTable.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/table.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +16,10 @@ class ReservationView extends StatefulWidget {
 
 class _ReservationViewState extends State<ReservationView> {
   int numSeats = 0;
-  Table selected;
+  SingleTable selected;
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
-  callback(int seats, Table table){
+  callback(int seats, SingleTable table){
     setState(() {
       selected = table;
       numSeats = seats;
@@ -209,14 +210,14 @@ class _ReservationViewState extends State<ReservationView> {
           leftPlacement = false;
           return Container(
               margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
-              child: Table(table['seats'], table['available'], table['table_number'], callback)
+              child: SingleTable(table['seats'], table['available'], table['table_number'], callback)
           );
         }
         else{
           leftPlacement = true;
           return Container(
               margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
-              child: Table(table['seats'], table['available'], table['table_number'], callback)
+              child: SingleTable(table['seats'], table['available'], table['table_number'], callback)
           );
         }
       }).toList(),
@@ -224,57 +225,3 @@ class _ReservationViewState extends State<ReservationView> {
 
   }
 }
-
-class Table extends StatefulWidget {
-  int seats;
-  bool available;
-  bool selected;
-  int tableNumber;
-  Function(int, Table) callback;
-  Table(int seats, bool available, int tableNumber, Function callback){
-    this.seats = seats;
-    this.available = available;
-    selected = false;
-    this.callback = callback;
-    this.tableNumber = tableNumber;
-  }
-
-  @override
-  _TableState createState() => _TableState();
-}
-
-class _TableState extends State<Table> {
-  @override
-  void initState() {
-    color = (widget.available) ? Colors.brown[600] : Colors.grey[600];
-    super.initState();
-  }
-  var icons = {
-    1 : Icons.looks_two,
-    2 : Icons.looks_two,
-    3 : Icons.looks_3,
-    4 : Icons.looks_4
-  };
-  var color;
-  bool selected = false;
-  bool previousState = false;
-
-  Widget build(BuildContext context) {
-    return IconButton(
-        icon: Icon(
-          icons[widget.seats],
-          color: color,
-          size:40,
-        ),
-        onPressed: () {
-          setState(() {
-            previousState = selected;
-            selected = !selected;
-            //     color = (selected) ? const Color(0xFF69B3E7) : Colors.brown[600];
-            widget.callback(widget.seats, widget);
-          });
-        });
-  }
-}
-
-
