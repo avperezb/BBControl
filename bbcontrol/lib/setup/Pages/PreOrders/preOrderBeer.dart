@@ -131,7 +131,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                       Radius.circular(15))
                               ),
                               child: Text(
-                                formatCurrency.format(getTotal()),
+                                formatCurrency.format(30),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w700,
@@ -173,10 +173,12 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
     jsonDecode(widget.order).forEach((name,
         content) => content.forEach((size, specs){
       if(specs['quantity'] > 0){
+        print(name + " "+ specs['quantity'].toString() + " " + size + " "+  specs['price'].toString() );
         OrderProduct op = new OrderProduct(name, specs['quantity'], size, specs['price'], "");
         auxList.add(op);
       }
     }));
+
     return auxList.map<Widget>((orderProduct) {
       return ListTile(
         title: Container(
@@ -222,6 +224,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
 
           ),
         ),
+        subtitle: Text(orderProduct.beerSize),
       );
     }).toList();
   }
