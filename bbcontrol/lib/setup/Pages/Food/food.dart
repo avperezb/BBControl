@@ -91,7 +91,7 @@ class _FoodListState extends State<FoodList> {
                 appBar: AppBar(
                   title: Text('Food'),
                   centerTitle: true,
-                  backgroundColor: const Color(0xFFFF6B00),
+                  backgroundColor: const Color(0xFFD7384A),
                 ),
                 body :
                 ColorLoader5(
@@ -109,7 +109,7 @@ class _FoodListState extends State<FoodList> {
                 appBar: AppBar(
                   title: Text('Food'),
                   centerTitle: true,
-                  backgroundColor: const Color(0xFFFF6B00),
+                  backgroundColor: const Color(0xFFD7384A),
                 ),
                 bottomSheet: Card(
                   elevation: 6.0,
@@ -182,17 +182,39 @@ class _FoodListState extends State<FoodList> {
 
                               print(sumQuantity);
                               if(sumQuantity > 0){
-                                jsonDecode(widget.mealPrices).forEach((name, content) async {
-                                  if(content['quantity'] > 0){
-                                    DatabaseHelper databaseHelper = new DatabaseHelper();
-                                    OrderProduct op = OrderProduct(name, content['quantity'], "", content['price'], "");
-                                   await databaseHelper.insertPreOrder(op);
-                                  }
-                                });
-                              Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => PreOrderPage()),);
-                            }
-                              },
+                                Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(builder: (
+                                    context) => PreOrderPage(widget.mealPrices)),);
+                              }
+                              else{
+                                showOverlayNotification((context) {
+                                  return Card(
+                                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: SafeArea(
+                                      child: ListTile(
+                                        title: Text('No products selected',
+                                            style: TextStyle(fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)
+                                        ),
+                                        subtitle: Text(
+                                          'Select the products you would like to purchase.',
+                                          style: TextStyle(
+                                              fontSize: 16, color: Colors.white),
+                                        ),
+                                        trailing: IconButton(
+                                            icon: Icon(
+                                              Icons.close, color: Colors.white,),
+                                            onPressed: () {
+                                              OverlaySupportEntry.of(context)
+                                                  .dismiss();
+                                            }),
+                                      ),
+                                    ),
+                                    color: Colors.blue,);
+                                }, duration: Duration(milliseconds: 4000));
+                              }
+                            },
                             child: Text('Add to order',
                               style: TextStyle(
                                   color: Colors.white,

@@ -4,6 +4,7 @@ import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
+import 'package:bbcontrol/setup/Pages/PreOrders/preOrderBeer.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -125,43 +126,47 @@ class OrderBeer extends StatefulWidget {
 }
 
 class _OrderBeerState extends State<OrderBeer> {
+  var order;
   var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
-
   int glassTotal = 0;
   int towerTotal = 0;
   int pintTotal = 0;
   int jarTotal = 0;
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
-
   String accumulateTotal = '\$0';
+  int getTotalOrder(){
+    int total = glassTotal*widget.glassPrice + towerTotal*widget.towerPrice +
+        pintTotal*widget.pintPrice + jarTotal*widget.jarPrice;
+    return total;
+  }
 
+  callback(int quantity, String size){
+    setState(() {
+
+      if(size == 'Glass') glassTotal = quantity;
+      else if(size == 'Tower') towerTotal = quantity;
+      else if(size == 'Pint') pintTotal = quantity;
+      else if(size == 'Jar') jarTotal = quantity;
+
+      int total = getTotalOrder();
+      accumulateTotal = formatCurrency.format(total);
+    });
+  }
   Widget build(BuildContext context) {
-
-    int getTotalOrder(){
-      int total = glassTotal*widget.glassPrice + towerTotal*widget.towerPrice +
-          pintTotal*widget.pintPrice + jarTotal*widget.jarPrice;
-      return total;
-    }
-
-    callback(int quantity, String size){
-      setState(() {
-
-        if(size == 'Glass') glassTotal = quantity;
-        else if(size == 'Tower') towerTotal = quantity;
-        else if(size == 'Pint') pintTotal = quantity;
-        else if(size == 'Jar') jarTotal = quantity;
-
-        int total = getTotalOrder();
-        accumulateTotal = formatCurrency.format(total);
-      });
-    }
-
+    order =
+    '{"${widget.beer}" : {'
+        '"jar" : {"quantity": $jarTotal, "price": ${widget.jarPrice}},'
+        '"glass" : {"quantity": $glassTotal, "price": ${widget.glassPrice}}, '
+        '"pint" : {"quantity": $pintTotal, "price": ${widget.pintPrice}},'
+        '"tower" : {"quantity": $towerTotal, "price": ${widget.towerPrice}}'
+        '}}';
+    print(jsonDecode(order));
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.beer),
           centerTitle: true,
-          backgroundColor: const Color(0xFFFF6B00),
+          backgroundColor: const Color(0xFFD7384A),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -371,47 +376,17 @@ class _OrderBeerState extends State<OrderBeer> {
                       ),
                       color: const Color(0xFFD7384A),
                       onPressed:(){
-                        showToast(context);
+                        getConnState(context);
                         if(!cStatus) {
-                          showOverlayNotification((context) {
-                            return Card(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              child: SafeArea(
-                                child: ListTile(
-                                  title: Text('Connection Error',
-                                      style: TextStyle(fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white)
-                                  ),
-                                  subtitle: Text(
-                                    'Products will be added when connection is back.',
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
-                                  trailing: IconButton(
-                                      icon: Icon(
-                                        Icons.close, color: Colors.white,),
-                                      onPressed: () {
-                                        OverlaySupportEntry.of(context)
-                                            .dismiss();
-                                      }),
-                                ),
-                              ),
-                              color: Colors.blueGrey,);
-                          }, duration: Duration(milliseconds: 4000));
-                          ;
+                          noConnectionToast();
                         }
                         if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
-
-
-
+                          print(jsonDecode(order));
                           Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => PreOrderPage()),);
+                              context) => PreOrderBeer(order)),);
                         }
                         else{
-                          return Container(
-
-                          );
+                          noProductsToast();
                         }
                       },
                       child: Text('Add to order',
@@ -429,8 +404,65 @@ class _OrderBeerState extends State<OrderBeer> {
 
     );
   }
+  noProductsToast(){
+    return  showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('No products selected',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Select the products you would like to purchase.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blue,);
+    }, duration: Duration(milliseconds: 4000));
+  }
 
-  void showToast(BuildContext context) async {
+  noConnectionToast(){
+    return showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Products will be added when connection is back.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blueGrey,);
+    }, duration: Duration(milliseconds: 4000));
+  }
+
+  void getConnState(BuildContext context) async {
     await checkConnection.initConnectivity();
     setState(() {
       cStatus = checkConnection.getConnectionStatus(context);

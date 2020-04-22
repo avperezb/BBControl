@@ -39,7 +39,7 @@ class _MakeReservationState extends State<MakeReservation> {
         appBar: AppBar(
           title: Text('Make a reservation',),
           centerTitle: true,
-          backgroundColor: const Color(0xFFFF6B00),
+          backgroundColor: const Color(0xFFD7384A),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

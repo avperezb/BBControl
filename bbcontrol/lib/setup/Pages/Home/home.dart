@@ -3,6 +3,7 @@ import 'package:bbcontrol/Setup/Pages/Reservations/reservationsList.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/database_creator.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
+import 'package:bbcontrol/setup/Pages/Order/order.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,7 +34,7 @@ class HomeState extends State<Home>{
         appBar: AppBar(
           title: Text('Menu'),
           centerTitle: true,
-          backgroundColor: const Color(0xFFFF6B00),
+          backgroundColor: const Color(0xFFD7384A),
           actions: <Widget>[
             FlatButton.icon(
               icon: Icon(Icons.person),
@@ -247,7 +248,9 @@ class HomeState extends State<Home>{
                       child: FlatButton(
                         padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                         color: const Color(0xFFB6B036),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute( builder: (context) =>OrderPage()));
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[

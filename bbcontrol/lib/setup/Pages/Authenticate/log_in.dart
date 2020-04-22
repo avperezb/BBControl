@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget build(BuildContext context) {
     return new Scaffold(
+        resizeToAvoidBottomPadding: false,
         backgroundColor: Colors.white,
         bottomSheet: SolidBottomSheet(
             maxHeight:50.0,

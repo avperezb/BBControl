@@ -9,12 +9,12 @@ class OrdersFirestoreClass {
   OrdersFirestoreClass({this.id});
 
   final CollectionReference _ordersCollectionReference = Firestore.instance
-      .collection('Orders');
+      .collection('PreOrders');
 
   Future addProductToOrder(FinalOrderProduct orderProduct) async {
     String message = '';
     try {
-      await _ordersCollectionReference.document(orderProduct.id).setData(
+      await _ordersCollectionReference.document().setData(
           orderProduct.toJson());
     } catch (e) {
       message = e.message;

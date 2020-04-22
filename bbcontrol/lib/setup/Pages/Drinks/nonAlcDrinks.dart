@@ -154,7 +154,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                               DatabaseHelper db = new DatabaseHelper();
                               print(db.getCount());
                               Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => PreOrderPage()),);
+                                  context) => PreOrderPage(widget.jsonOrder)),);
                             }
                           },
                           child: Text('Add to order',
@@ -179,7 +179,6 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                         children: snapshot.data.documents.map<SingleDrink>((DocumentSnapshot drink ){
                           return SingleDrink(drink['name'], drink['price'], drink['image'], callback);
                         }).toList(),
-                        //widget.drinkNames.map((drink) => SingleDrink(drink, drinks, callback)).toList(),
                       ),
                     ),
                   )

@@ -49,6 +49,12 @@ class DatabaseHelper{
     await db.execute('CREATE TABLE $preOrderTable($colId TEXT PRIMARY KEY, $colProductName TEXT,'
     '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT)');
   }
+  
+  void deleteDB() async{
+    Database db = await this.database;
+    await db.execute('DELETE FROM $preOrderTable');
+  }
+
   //Create DB table
   void populateDb(Database database, int version) async {
     await database.execute("CREATE TABLE PreOrders ("
