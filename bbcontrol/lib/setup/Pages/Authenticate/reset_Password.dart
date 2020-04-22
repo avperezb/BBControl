@@ -66,11 +66,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     border:const OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.grey, width: 0.0),
                     ),
-                    prefixIcon: const Icon(Icons.email,
-                        color: const Color(0xFFD7384A)
-                    ),
-                    hintText: 'Enter an email address',
-                    labelText: 'Email',
+                    hintText: 'Enter your email address',
                     contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                   ),
                 )
@@ -87,41 +83,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     checkConnectivity(context);
                     if(!isConnected){
                       showOverlayNotification((context) {
-                        return Card(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: SafeArea(
-                            child: ListTile(
-                              title: Text('Connection Error',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
-                              ),
-                              subtitle: Text('Please try to log in again later.',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
-                              trailing: IconButton(
-                                  icon: Icon(Icons.close, color: Colors.white,),
-                                  onPressed: () {
-                                    OverlaySupportEntry.of(context).dismiss();
-                                  }),
-                            ),
-                          ),
-                          color: Colors.blueGrey,);
-                      }, duration: Duration(milliseconds: 4000));;
+                        return connectionNotification(context);
+                      }, duration: Duration(milliseconds: 4000));
                     }
-                    ColorLoader5(
-                      dotOneColor: Colors.redAccent,
-                      dotTwoColor: Colors.blueAccent,
-                      dotThreeColor: Colors.green,
-                      dotType: DotType.circle,
-                      dotIcon: Icon(Icons.adjust),
-                      duration: Duration(seconds: 1),
-                    );
+                    loaderFunction();
                     if(_formKey.currentState.validate()) {
                       _formKey.currentState.save();
                       dynamic result = await _auth.resetPassword(_email);
                       if (result == null) {
                         setState(() =>
-                        error =
-                        'Could not sign you in. Please, check your data and try again.');
+                        error =  'Could not sign you in. Please, check your data and try again.');
                         return Container(
                           margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
                           child: Text(error,
@@ -180,4 +151,37 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       isConnected = checkConnection.getConnectionStatus(context);
     });
   }
+
+  Widget loaderFunction(){
+    return ColorLoader5(
+      dotOneColor: Colors.redAccent,
+      dotTwoColor: Colors.blueAccent,
+      dotThreeColor: Colors.green,
+      dotType: DotType.circle,
+      dotIcon: Icon(Icons.adjust),
+      duration: Duration(seconds: 2),
+    );
+  }
+
+  Widget connectionNotification(BuildContext context){
+    return Card(
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: SafeArea(
+        child: ListTile(
+          title: Text('Connection Error',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
+          ),
+          subtitle: Text('Please try to log in again later.',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          trailing: IconButton(
+              icon: Icon(Icons.close, color: Colors.white,),
+              onPressed: () {
+                OverlaySupportEntry.of(context).dismiss();
+              }),
+        ),
+      ),
+      color: Colors.blueGrey,);
+  }
+
 }

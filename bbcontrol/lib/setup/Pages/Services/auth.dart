@@ -6,6 +6,10 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CustomersFirestoreClass _firestoreService = CustomersFirestoreClass();
+  Customer _currentCustomer;
+
+  Customer get currentCustomer => _currentCustomer;
+
   //Create object based on FirebaseUser
   Customer _userFromFirebaseUser(FirebaseUser user){
     return user != null ? Customer(id: user.uid) : null;

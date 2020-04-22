@@ -144,6 +144,7 @@ class _SignUpState extends State<SignUpPage>{
                     hintText: 'Enter an email address',
                     labelText: 'Email',
                   ),
+                  maxLength: 30,
                 )
             ),
             Container(
@@ -201,27 +202,20 @@ class _SignUpState extends State<SignUpPage>{
                 ),
                 color: const Color(0xFFD7384A),
                 onPressed:  () async {
-                  ColorLoader5(
-                    dotOneColor: Colors.redAccent,
-                    dotTwoColor: Colors.blueAccent,
-                    dotThreeColor: Colors.green,
-                    dotType: DotType.circle,
-                    dotIcon: Icon(Icons.adjust),
-                    duration: Duration(seconds: 2),
-                  );
-                      checkConnectivity(context);
-                      if(!isConnected){
-                        showOverlayNotification((context) {
-                          return connectionNotification();
-                        }, duration: Duration(milliseconds: 4000));;
-                      }
-                      else{
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
-                          dynamic result = await _auth.signUp(
-                              _email, _password, _fullName, _phoneNumber,
-                              _birthDate);
-                        if (result != null){
+                  loaderFunction();
+                  checkConnectivity(context);
+                  if(!isConnected){
+                    showOverlayNotification((context) {
+                      return connectionNotification();
+                    }, duration: Duration(milliseconds: 4000));
+                  }
+                  else{
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      dynamic result = await _auth.signUp(
+                          _email, _password, _fullName, _phoneNumber,
+                          _birthDate);
+                      if (result != null){
                         print(_email + _password);
                         Navigator.pop(context);
                       }
@@ -266,6 +260,17 @@ class _SignUpState extends State<SignUpPage>{
         ),
       ),
       color: Colors.blueGrey,);
+  }
+
+  Widget loaderFunction(){
+    return ColorLoader5(
+      dotOneColor: Colors.redAccent,
+      dotTwoColor: Colors.blueAccent,
+      dotThreeColor: Colors.green,
+      dotType: DotType.circle,
+      dotIcon: Icon(Icons.adjust),
+      duration: Duration(seconds: 2),
+    );
   }
 }
 
