@@ -1,14 +1,18 @@
 import 'package:bbcontrol/Setup/Pages/Food/food.dart';
 import 'package:bbcontrol/Setup/Pages/Reservations/reservationsList.dart';
 import 'package:bbcontrol/models/customer.dart';
+import 'package:bbcontrol/models/navigation_model.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
+import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
+import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
+import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
-import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -23,9 +27,11 @@ class Home extends StatefulWidget {
 
   @override
   HomeState createState() => HomeState();
+
+
 }
 
-class HomeState extends State<Home>{
+class HomeState extends State<Home> {
 
   CheckConnectivityState checkConnection = CheckConnectivityState();
   DatabaseHelper databaseHelper = DatabaseHelper();
@@ -33,19 +39,30 @@ class HomeState extends State<Home>{
   List<OrderProduct> orderList;
   int count = 0;
   final iconSize = 60.0;
+  final database = Firestore.instance;
 
   Widget build(BuildContext context) {
+
+    print('holaaa'+widget.customer.id.toString());
     return new StreamBuilder(
-        stream: Firestore.instance.collection('/Customers').document('{$widget.customer.id}').get().asStream(),
-        builder: (context, snapshot) {
-          if(snapshot.hasData){
-            var customer = snapshot.data;
-            print('holaaaa'+customer['fullName']);
+      stream: database.collection('Customers').document('${widget.customer.id}').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return ColorLoader5(
+            dotOneColor: Colors.redAccent,
+            dotTwoColor: Colors.blueAccent,
+            dotThreeColor: Colors.green,
+            dotType: DotType.circle,
+            dotIcon: Icon(Icons.adjust),
+            duration: Duration(seconds: 1),
+          );
+        }
+        else {
           return Scaffold(
             appBar: AppBar(
               title: Text('Menu'),
               centerTitle: true,
-              backgroundColor: const Color(0xFFFF6B00),
+              backgroundColor: const Color(0xFF8c7c9c),
             ),
             body: Builder(
               builder: (context) =>
@@ -196,7 +213,7 @@ class HomeState extends State<Home>{
                                         FlatButton(
                                           padding: EdgeInsets.fromLTRB(
                                               0.0, 90.0, 0.0, 90.0),
-                                          color: const Color(0xFF996480),
+                                          color: const Color(0xFF9c6483),
                                           onPressed: () {
                                             Navigator.push(context,
                                                 MaterialPageRoute(
@@ -294,25 +311,79 @@ class HomeState extends State<Home>{
                     ],
                   ),
             ),
-            endDrawer: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  SizedBox(
-                    height: 88.0,
-                    child: DrawerHeader(
-                      child: Text('${snapshot.data["fullName"]}',
-                          style: TextStyle(fontSize: 20)),
-                      decoration: BoxDecoration(
-                          color: Colors.blue
-                      ),
-                    ),
-                  ),
+            endDrawer: new MenuDrawer(
+            ),
+          );
+        }
+      },
+    );
+  }
+  void choiceAction(String choice){
+    print(choice);
+  }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+    });
+  }
+
+  void createDB() {
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+  }
+}
+
+class MenuDrawer extends StatefulWidget {
+  @override
+  _MenuDrawerState createState() => _MenuDrawerState();
+}
+
+class _MenuDrawerState extends State<MenuDrawer> {
+  double maxWidth = 200;
+  NavigationModel option1 = new NavigationModel(
+      'My profile', Icons.account_circle);
+  NavigationModel option2 = new NavigationModel("My orders", Icons.view_list);
+  NavigationModel option3 = new NavigationModel("Settings", Icons.settings);
+  NavigationModel option4 = new NavigationModel("Log out", Icons.exit_to_app);
+  final AuthService _auth = AuthService();
+  bool isSwitched = false;
+  bool isButtonExpensesDisabled = true;
+
+  @override
+  Widget build(BuildContext context) {
+    List<NavigationModel> options = [option1, option2, option3, option4];
+    /*return Container(
+      width: 240.0,
+      child:new Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            SizedBox(
+              height: 110.0,
+              child: DrawerHeader(
+                padding: EdgeInsets.all(20),
+                child: Text('fullName:(', textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 20)),
+                decoration: BoxDecoration(
+                    color: Colors.blue
+                ),
+              ),
+            ),
+            ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: ListTile.divideTiles(
+                context: context,
+                tiles: [
                   ListTile(
                     leading: Icon(Icons.person),
                     title: Text('My profile', textAlign: TextAlign.right,
                         style: TextStyle(fontSize: 20)),
+                    contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    dense: true,
                     onTap: () {
+
                       // Update the state of the app
                       // ...
                       // Then close the drawer
@@ -322,6 +393,8 @@ class HomeState extends State<Home>{
                   ListTile(
                     title: Text('My orders', textAlign: TextAlign.right,
                         style: TextStyle(fontSize: 20)),
+                    subtitle: Text("Sample Subtitle", textAlign: TextAlign.right,),
+                    trailing: new Icon(Icons.fastfood),
                     onTap: () {
                       // Update the state of the app
                       // ...
@@ -350,25 +423,182 @@ class HomeState extends State<Home>{
                     },
                   ),
                 ],
+              ).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }*/
+    return Container(
+      child: new Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            SizedBox(
+              height: 150.0,
+              child: DrawerHeader(
+                padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
+                child: Text('$',
+                    style: TextStyle(fontSize: 20)),
+                decoration: BoxDecoration(
+                    color: const Color(0xFF8c7c9c)
+                ),
               ),
             ),
-          );
-        }});
+            Card( ////                         <-- Card widget
+              child: ListTile(
+                leading: Icon(option1.icon),
+                title: Text(option1.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                onTap: action1,
+              ),
+            ),
+            Card( //                           <-- Card widget
+              child: ListTile(
+                leading: Icon(option2.icon),
+                title: Text(option2.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                onTap: action2,
+              ),
+            ),
+            Card( //                           <-- Card widget
+              child: ExpansionTile(
+                initiallyExpanded: false,
+                leading: Icon(option3.icon),
+                title: Text(option3.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                trailing: Icon(Icons.expand_more),
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                    child: Row(
+                      children: <Widget>[
+                        FlatButton(
+                          textColor: Colors.blueGrey,
+                          child: Text(
+                            'Expenses Control',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w400),
+                          ),
+                          color: Colors.transparent,
+                          onPressed: () {
+                            if (!isSwitched) {
+                              //Open configuration for this
+                            }
+                          },
+                        ),
+                        Switch(
+                          value: isSwitched,
+                          onChanged: (value) {
+                            if (!isSwitched) {
+                              setState(() {
+                                isSwitched = value;
+                              });
+                            }
+                            else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    _buildAboutDialog(context),
+                              );
+                              // Perform some action
+
+                            }
+                          },
+                          activeTrackColor: Colors.lightGreenAccent,
+                          activeColor: Colors.green,
+                        ),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                    child: Row(
+                      children: <Widget>[
+                        FlatButton(
+                          textColor: Colors.blueGrey,
+                          child: Text(
+                            'Drunk Mode',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w400),
+                          ),
+                          color: Colors.transparent,
+                          onPressed: () {
+                            print('holaaa');
+                          },
+                        ),
+                        Container(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: Icon(option4.icon),
+                title: Text(option4.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                onTap: action4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  void choiceAction(String choice){
-    print(choice);
+  void action1() {
+
   }
 
-  void showToast(BuildContext context) async {
-    await checkConnection.initConnectivity();
-    setState(() {
-      cStatus = checkConnection.getConnectionStatus(context);
-    });
+  void action2() {
+
   }
 
-  void createDB() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+  void action3() {
+
+  }
+
+  void action4() {
+    Navigator.pop(context);
+    _auth.signOut();
+  }
+
+  Widget _buildAboutDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('About Pop up'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildAboutText(),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Okay, got it!'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAboutText() {
+    return new RichText(
+      text: new TextSpan(
+        text: 'Android Popup Menu displays the menu below the anchor text if space is available otherwise above the anchor text. It disappears if you click outside the popup menu.\n\n',
+        style: const TextStyle(color: Colors.black87),
+        children: <TextSpan>[
+        ],
+      ),
+    );
   }
 }
+
 

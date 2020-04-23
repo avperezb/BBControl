@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                       else {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
-                          dynamic result = await _auth.signIn(
+                          Customer result = await _auth.signIn(
                               _email, _password);
                           if (result == null) {
                             setState(() =>
@@ -152,6 +152,10 @@ class _LoginPageState extends State<LoginPage> {
                             'Could not sign you in. Check your data and try again.');
                           }
                           else {
+                            print(result.fullName);
+                            print(result.id);
+                            print(result.phoneNumber);
+                            print(result.birthDate);
                             Navigator.push(context, MaterialPageRoute(builder: (
                                 context) => Home(customer: result)));
                           }
