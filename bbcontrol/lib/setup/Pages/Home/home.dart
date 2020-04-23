@@ -29,8 +29,6 @@ class Home extends StatefulWidget {
 
   @override
   HomeState createState() => HomeState();
-
-
 }
 
 class HomeState extends State<Home> {
@@ -42,347 +40,292 @@ class HomeState extends State<Home> {
   int count = 0;
   final iconSize = 60.0;
   final database = Firestore.instance;
-  final AuthService _auth = AuthService();
   bool isConnected = true;
 
   Widget build(BuildContext context) {
 
     print('holaaa'+widget.customer.id.toString());
     return new StreamBuilder(
-      stream: database.collection('Customers').document('${widget.customer.id}').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return ColorLoader5(
-            dotOneColor: Colors.redAccent,
-            dotTwoColor: Colors.blueAccent,
-            dotThreeColor: Colors.green,
-            dotType: DotType.circle,
-            dotIcon: Icon(Icons.adjust),
-            duration: Duration(seconds: 1),
+        stream: database.collection('Customers').document('${widget.customer.id}').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return ColorLoader5(
+              dotOneColor: Colors.redAccent,
+              dotTwoColor: Colors.blueAccent,
+              dotThreeColor: Colors.green,
+              dotType: DotType.circle,
+              dotIcon: Icon(Icons.adjust),
+              duration: Duration(seconds: 1),
+            );
+          }
+          return Scaffold(
+              appBar: AppBar(
+                title: Text('Menu'),
+                centerTitle: true,
+                backgroundColor: const Color(0xFF8c7c9c),
+              ),
+              body: Builder(
+                builder: (context) =>
+                    ListView(
+                      children: <Widget>[ Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Container(
+                            height: (MediaQuery
+                                .of(context)
+                                .size
+                                .height - AppBar().preferredSize.height -
+                                24.0) / 6,
+                            child: FlatButton(
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0, 10.0, 0.0, 10.0),
+                              color: const Color(0xFF69B3E7),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => ReservationsList()),);
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(Icons.group,
+                                      size: iconSize,
+                                      color: Colors.white),
+                                  Text('Reservations',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),)
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 4 / 9,
+                                    child: FlatButton(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0, 90.0, 0.0, 90.0),
+                                      color: const Color(0xFFD7384A),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context, MaterialPageRoute(
+                                            builder: (context) =>
+                                                DrinksTabs()),);
+                                      },
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        children: <Widget>[
+                                          Icon(Icons.local_bar,
+                                              size: iconSize,
+                                              color: Colors.white),
+                                          Text('Drinks',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 2 / 9,
+                                    child: FlatButton(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0, 25.0, 0.0, 25.0),
+                                      color: const Color(0xFFFF6B00),
+                                      onPressed: () {},
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        children: <Widget>[
+                                          Icon(Icons.directions_car,
+                                              size: iconSize,
+                                              color: Colors.white),
+                                          Text('Request cab',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: <Widget>[
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 2 / 9,
+                                    child: FlatButton(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0, 25.0, 0.0, 25.0),
+                                      color: const Color(0xFFD8AE2D),
+                                      onPressed: () {},
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        children: <Widget>[
+                                          Icon(Icons.local_offer,
+                                              size: iconSize,
+                                              color: Colors.white),
+                                          Text('Special offers',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 4 / 9,
+                                    child: Builder(
+                                      builder: (context) =>
+                                          FlatButton(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0.0, 90.0, 0.0, 90.0),
+                                            color: const Color(0xFF996480),
+                                            onPressed: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          FoodList()));
+                                              showToast(context);
+                                              if (!cStatus) {
+                                                showOverlayNotification((
+                                                    context) {
+                                                  return Card(
+                                                    margin: const EdgeInsets
+                                                        .fromLTRB(0, 0, 0, 0),
+                                                    child: SafeArea(
+                                                      child: ListTile(
+                                                        title: Text(
+                                                            'Connection Error',
+                                                            style: TextStyle(
+                                                                fontSize: 18,
+                                                                fontWeight: FontWeight
+                                                                    .bold,
+                                                                color: Colors
+                                                                    .white)
+                                                        ),
+                                                        subtitle: Text(
+                                                          'Orders will be added when connection is back.',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors
+                                                                  .white),
+                                                        ),
+                                                        trailing: IconButton(
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                              color: Colors
+                                                                  .white,),
+                                                            onPressed: () {
+                                                              OverlaySupportEntry
+                                                                  .of(context)
+                                                                  .dismiss();
+                                                            }),
+                                                      ),
+                                                    ),
+                                                    color: Colors.blueGrey,);
+                                                }, duration: Duration(
+                                                    milliseconds: 4000));
+                                                ;
+                                              }
+                                            },
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment
+                                                  .center,
+                                              children: <Widget>[
+                                                Icon(Icons.room_service,
+                                                    size: iconSize,
+                                                    color: Colors.white),
+                                                Text('Food',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),)
+                                              ],
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: (MediaQuery
+                                .of(context)
+                                .size
+                                .height - AppBar().preferredSize.height -
+                                24.0) / 6,
+                            child: FlatButton(
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0, 10.0, 0.0, 10.0),
+                              color: const Color(0xFFB6B036),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => OrderPage()));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(Icons.shopping_cart,
+                                      size: iconSize,
+                                      color: Colors.white),
+                                  Text('My order',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),)
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ],
+                    ),
+              ),
+              endDrawer: new MenuDrawer(),
           );
         }
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Menu'),
-          centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
-          actions: <Widget>[
-            FlatButton.icon(
-              icon: Icon(Icons.person),
-              label: Text('Log out'),
-              onPressed: () async {
-                await _auth.signOut();
-              },
-            )
-          ],
-        ),
-        body: Builder(
-          builder: (context) =>
-              ListView(
-                children: <Widget>[ Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Container(
-                      height: (MediaQuery
-                          .of(context)
-                          .size
-                          .height - AppBar().preferredSize.height - 24.0) / 6,
-                      child: FlatButton(
-                        padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                        color: const Color(0xFF69B3E7),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => ReservationsList()),);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(Icons.group,
-                                size: iconSize,
-                                color: Colors.white),
-                            Text('Reservations',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),)
-                          ],
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: (MediaQuery
-                              .of(context)
-                              .size
-                              .height - AppBar().preferredSize.height - 24.0) /
-                              6,
-                          child: FlatButton(
-                            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                            color: const Color(0xFF69B3E7),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => ReservationsList()),);
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(Icons.group,
-                                    size: iconSize,
-                                    color: Colors.white),
-                                Text('Reservations',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),)
-                              ],
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                Container(
-                                  width: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .width / 2,
-                                  height: (MediaQuery
-                                      .of(context)
-                                      .size
-                                      .height - AppBar().preferredSize.height -
-                                      24.0) * 4 / 9,
-                                  child: FlatButton(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.0, 90.0, 0.0, 90.0),
-                                    color: const Color(0xFFD7384A),
-                                    onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(
-                                          builder: (context) => DrinksTabs()),);
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .center,
-                                      children: <Widget>[
-                                        Icon(Icons.local_bar,
-                                            size: iconSize,
-                                            color: Colors.white),
-                                        Text('Drinks',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .width / 2,
-                                  height: (MediaQuery
-                                      .of(context)
-                                      .size
-                                      .height - AppBar().preferredSize.height -
-                                      24.0) * 2 / 9,
-                                  child: FlatButton(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.0, 25.0, 0.0, 25.0),
-                                    color: const Color(0xFFFF6B00),
-                                    onPressed: () {},
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .center,
-                                      children: <Widget>[
-                                        Icon(Icons.directions_car,
-                                            size: iconSize,
-                                            color: Colors.white),
-                                        Text('Request cab',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: <Widget>[
-                                Container(
-                                  width: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .width / 2,
-                                  height: (MediaQuery
-                                      .of(context)
-                                      .size
-                                      .height - AppBar().preferredSize.height -
-                                      24.0) * 2 / 9,
-                                  child: FlatButton(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.0, 25.0, 0.0, 25.0),
-                                    color: const Color(0xFFD8AE2D),
-                                    onPressed: () {},
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .center,
-                                      children: <Widget>[
-                                        Icon(Icons.local_offer,
-                                            size: iconSize,
-                                            color: Colors.white),
-                                        Text('Special offers',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .width / 2,
-                                  height: (MediaQuery
-                                      .of(context)
-                                      .size
-                                      .height - AppBar().preferredSize.height -
-                                      24.0) * 4 / 9,
-                                  child: Builder(
-                                    builder: (context) =>
-                                        FlatButton(
-                                          padding: EdgeInsets.fromLTRB(
-                                              0.0, 90.0, 0.0, 90.0),
-                                          color: const Color(0xFF9c6483),
-                                          onPressed: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        FoodList()));
-                                            showToast(context);
-                                            if (!cStatus) {
-                                              showOverlayNotification((
-                                                  context) {
-                                                return Card(
-                                                  margin: const EdgeInsets
-                                                      .fromLTRB(0, 0, 0, 0),
-                                                  child: SafeArea(
-                                                    child: ListTile(
-                                                      title: Text(
-                                                          'Connection Error',
-                                                          style: TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight: FontWeight
-                                                                  .bold,
-                                                              color: Colors
-                                                                  .white)
-                                                      ),
-                                                      subtitle: Text(
-                                                        'Orders will be added when connection is back.',
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: Colors
-                                                                .white),
-                                                      ),
-                                                      trailing: IconButton(
-                                                          icon: Icon(
-                                                            Icons.close,
-                                                            color: Colors
-                                                                .white,),
-                                                          onPressed: () {
-                                                            OverlaySupportEntry
-                                                                .of(context)
-                                                                .dismiss();
-                                                          }),
-                                                    ),
-                                                  ),
-                                                  color: Colors.blueGrey,);
-                                              }, duration: Duration(
-                                                  milliseconds: 4000));
-                                              ;
-                                            }
-                                          },
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .center,
-                                            children: <Widget>[
-                                              Icon(Icons.room_service,
-                                                  size: iconSize,
-                                                  color: Colors.white),
-                                              Text('Food',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),)
-                                            ],
-                                          ),
-                                        ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Container(
-                          height: (MediaQuery
-                              .of(context)
-                              .size
-                              .height - AppBar().preferredSize.height - 24.0) /
-                              6,
-                          child: FlatButton(
-                            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                            color: const Color(0xFFB6B036),
-                            onPressed: () {},
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(Icons.shopping_cart,
-                                    size: iconSize,
-                                    color: Colors.white),
-                                Text('My order',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),)
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                    Container(
-                      height: (MediaQuery
-                          .of(context)
-                          .size
-                          .height - AppBar().preferredSize.height - 24.0) / 6,
-                      child: FlatButton(
-                        padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                        color: const Color(0xFFB6B036),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute( builder: (context) =>OrderPage()));
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(Icons.shopping_cart,
-                                size: iconSize,
-                                color: Colors.white),
-                            Text('My order',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),)
-                          ],
-                        ),
-                      ],
-                    ),
-                    ],
-                  ),
-            ),
-            endDrawer: new MenuDrawer(
-            ),
-          );
-      },
     );
-  }
-  void choiceAction(String choice){
-    print(choice);
   }
 
   void showToast(BuildContext context) async {
@@ -398,6 +341,11 @@ class HomeState extends State<Home> {
 }
 
 class MenuDrawer extends StatefulWidget {
+  StreamBuilder fromHome;
+  Function (StreamBuilder) callback;
+  MenuDrawer(StreamBuilder sb){
+    this.fromHome = sb;
+  } uff mk espere
   @override
   _MenuDrawerState createState() => _MenuDrawerState();
 }
@@ -413,86 +361,10 @@ class _MenuDrawerState extends State<MenuDrawer> {
   bool isSwitched = false;
   bool isButtonExpensesDisabled = true;
 
+
   @override
   Widget build(BuildContext context) {
     List<NavigationModel> options = [option1, option2, option3, option4];
-    /*return Container(
-      width: 240.0,
-      child:new Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            SizedBox(
-              height: 110.0,
-              child: DrawerHeader(
-                padding: EdgeInsets.all(20),
-                child: Text('fullName:(', textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 20)),
-                decoration: BoxDecoration(
-                    color: Colors.blue
-                ),
-              ),
-            ),
-            ListView(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              children: ListTile.divideTiles(
-                context: context,
-                tiles: [
-                  ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text('My profile', textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 20)),
-                    contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    dense: true,
-                    onTap: () {
-
-                      // Update the state of the app
-                      // ...
-                      // Then close the drawer
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: Text('My orders', textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 20)),
-                    subtitle: Text("Sample Subtitle", textAlign: TextAlign.right,),
-                    trailing: new Icon(Icons.fastfood),
-                    onTap: () {
-                      // Update the state of the app
-                      // ...
-                      // Then close the drawer
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: Text('Settings', textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 20)),
-                    onTap: () {
-                      // Update the state of the app
-                      // ...
-                      // Then close the drawer
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: Text('Log out', textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 20)),
-                    onTap: () {
-                      // Update the state of the app
-                      // ...
-                      // Then close the drawer
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
     return Container(
       child: new Drawer(
         child: ListView(
@@ -502,7 +374,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               height: 150.0,
               child: DrawerHeader(
                 padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
-                child: Text('$',
+                child: Text('33',
                     style: TextStyle(fontSize: 20)),
                 decoration: BoxDecoration(
                     color: const Color(0xFF8c7c9c)
