@@ -1,275 +1,330 @@
 import 'package:bbcontrol/Setup/Pages/Food/food.dart';
 import 'package:bbcontrol/Setup/Pages/Reservations/reservationsList.dart';
+import 'package:bbcontrol/models/customer.dart';
+import 'package:bbcontrol/models/navigation_model.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
-import 'package:bbcontrol/setup/Database/database_creator.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
+import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
+import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
+import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Order/order.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bbcontrol/Setup/Pages/Drinks/drinks.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sqflite/sqflite.dart';
-import '../Services/auth.dart';
 
 
 class Home extends StatefulWidget {
+
+  const Home({
+    Key key,
+    @required this.customer
+  }): super(key: key);
+  final Customer customer;
+
   @override
   HomeState createState() => HomeState();
 }
 
-class HomeState extends State<Home>{
+class HomeState extends State<Home> {
 
   CheckConnectivityState checkConnection = CheckConnectivityState();
   DatabaseHelper databaseHelper = DatabaseHelper();
   bool cStatus = true;
-  AuthService _auth = AuthService();
   List<OrderProduct> orderList;
   int count = 0;
   final iconSize = 60.0;
+  final database = Firestore.instance;
+  bool isConnected = true;
 
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Menu'),
-          centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
-          actions: <Widget>[
-            FlatButton.icon(
-              icon: Icon(Icons.person),
-              label: Text('Log out'),
-              onPressed: () async {
-                await _auth.signOut();
-              },
-            )
-          ],
-        ),
-        body: Builder(
-          builder: (context) =>
-              ListView(
-                children: <Widget>[ Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Container(
-                      height: (MediaQuery
-                          .of(context)
-                          .size
-                          .height - AppBar().preferredSize.height - 24.0) / 6,
-                      child: FlatButton(
-                        padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                        color: const Color(0xFF69B3E7),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => ReservationsList()),);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(Icons.group,
-                                size: iconSize,
-                                color: Colors.white),
-                            Text('Reservations',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),)
-                          ],
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width / 2,
-                              height: (MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height - AppBar().preferredSize.height -
-                                  24.0) * 4 / 9,
-                              child: FlatButton(
-                                padding: EdgeInsets.fromLTRB(
-                                    0.0, 90.0, 0.0, 90.0),
-                                color: const Color(0xFFD7384A),
-                                onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => DrinksTabs()),);
-                                },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(Icons.local_bar,
-                                        size: iconSize,
-                                        color: Colors.white),
-                                    Text('Drinks',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),)
-                                  ],
-                                ),
+
+    print('holaaa'+widget.customer.id.toString());
+    return new StreamBuilder(
+        stream: database.collection('Customers').document('${widget.customer.id}').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return ColorLoader5(
+              dotOneColor: Colors.redAccent,
+              dotTwoColor: Colors.blueAccent,
+              dotThreeColor: Colors.green,
+              dotType: DotType.circle,
+              dotIcon: Icon(Icons.adjust),
+              duration: Duration(seconds: 1),
+            );
+          }
+          return Scaffold(
+              appBar: AppBar(
+                title: Text('Menu'),
+                centerTitle: true,
+                backgroundColor: const Color(0xFF8c7c9c),
+              ),
+              body: Builder(
+                builder: (context) =>
+                    ListView(
+                      children: <Widget>[ Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Container(
+                            height: (MediaQuery
+                                .of(context)
+                                .size
+                                .height - AppBar().preferredSize.height -
+                                24.0) / 6,
+                            child: FlatButton(
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0, 10.0, 0.0, 10.0),
+                              color: const Color(0xFF69B3E7),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => ReservationsList()),);
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(Icons.group,
+                                      size: iconSize,
+                                      color: Colors.white),
+                                  Text('Reservations',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),)
+                                ],
                               ),
                             ),
-                            Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width / 2,
-                              height: (MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height - AppBar().preferredSize.height -
-                                  24.0) * 2 / 9,
-                              child: FlatButton(
-                                padding: EdgeInsets.fromLTRB(
-                                    0.0, 25.0, 0.0, 25.0),
-                                color: const Color(0xFFFF6B00),
-                                onPressed: () {},
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(Icons.directions_car,
-                                        size: iconSize,
-                                        color: Colors.white),
-                                    Text('Request cab',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),)
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width / 2,
-                              height: (MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height - AppBar().preferredSize.height -
-                                  24.0) * 2 / 9,
-                              child: FlatButton(
-                                padding: EdgeInsets.fromLTRB(
-                                    0.0, 25.0, 0.0, 25.0),
-                                color: const Color(0xFFD8AE2D),
-                                onPressed: () {},
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(Icons.local_offer,
-                                        size: iconSize,
-                                        color: Colors.white),
-                                    Text('Special offers',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),)
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width / 2,
-                              height: (MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height - AppBar().preferredSize.height -
-                                  24.0) * 4 / 9,
-                              child: Builder(
-                                builder: (context) =>
-                                    FlatButton(
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 4 / 9,
+                                    child: FlatButton(
                                       padding: EdgeInsets.fromLTRB(
                                           0.0, 90.0, 0.0, 90.0),
-                                      color: const Color(0xFF996480),
+                                      color: const Color(0xFFD7384A),
                                       onPressed: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FoodList()));
-                                        showToast(context);
-                                        if(!cStatus){
-                                          showOverlayNotification((context) {
-                                            return Card(
-                                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                              child: SafeArea(
-                                                child: ListTile(
-                                                  title: Text('Connection Error',
-                                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
-                                                  ),
-                                                  subtitle: Text('Orders will be added when connection is back.',
-                                                    style: TextStyle(fontSize: 16, color: Colors.white),
-                                                  ),
-                                                  trailing: IconButton(
-                                                      icon: Icon(Icons.close, color: Colors.white,),
-                                                      onPressed: () {
-                                                        OverlaySupportEntry.of(context).dismiss();
-                                                      }),
-                                                ),
-                                              ),
-                                            color: Colors.blueGrey,);
-                                          }, duration: Duration(milliseconds: 4000));;
-                                        }
+                                        Navigator.push(
+                                          context, MaterialPageRoute(
+                                            builder: (context) =>
+                                                DrinksTabs()),);
                                       },
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment
                                             .center,
                                         children: <Widget>[
-                                          Icon(Icons.room_service,
+                                          Icon(Icons.local_bar,
                                               size: iconSize,
                                               color: Colors.white),
-                                          Text('Food',
+                                          Text('Drinks',
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),)
                                         ],
                                       ),
                                     ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 2 / 9,
+                                    child: FlatButton(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0, 25.0, 0.0, 25.0),
+                                      color: const Color(0xFFFF6B00),
+                                      onPressed: () {},
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        children: <Widget>[
+                                          Icon(Icons.directions_car,
+                                              size: iconSize,
+                                              color: Colors.white),
+                                          Text('Request cab',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: <Widget>[
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 2 / 9,
+                                    child: FlatButton(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0, 25.0, 0.0, 25.0),
+                                      color: const Color(0xFFD8AE2D),
+                                      onPressed: () {},
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        children: <Widget>[
+                                          Icon(Icons.local_offer,
+                                              size: iconSize,
+                                              color: Colors.white),
+                                          Text('Special offers',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 2,
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height -
+                                        AppBar().preferredSize.height -
+                                        24.0) * 4 / 9,
+                                    child: Builder(
+                                      builder: (context) =>
+                                          FlatButton(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0.0, 90.0, 0.0, 90.0),
+                                            color: const Color(0xFF996480),
+                                            onPressed: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          FoodList()));
+                                              showToast(context);
+                                              if (!cStatus) {
+                                                showOverlayNotification((
+                                                    context) {
+                                                  return Card(
+                                                    margin: const EdgeInsets
+                                                        .fromLTRB(0, 0, 0, 0),
+                                                    child: SafeArea(
+                                                      child: ListTile(
+                                                        title: Text(
+                                                            'Connection Error',
+                                                            style: TextStyle(
+                                                                fontSize: 18,
+                                                                fontWeight: FontWeight
+                                                                    .bold,
+                                                                color: Colors
+                                                                    .white)
+                                                        ),
+                                                        subtitle: Text(
+                                                          'Orders will be added when connection is back.',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors
+                                                                  .white),
+                                                        ),
+                                                        trailing: IconButton(
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                              color: Colors
+                                                                  .white,),
+                                                            onPressed: () {
+                                                              OverlaySupportEntry
+                                                                  .of(context)
+                                                                  .dismiss();
+                                                            }),
+                                                      ),
+                                                    ),
+                                                    color: Colors.blueGrey,);
+                                                }, duration: Duration(
+                                                    milliseconds: 4000));
+                                                ;
+                                              }
+                                            },
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment
+                                                  .center,
+                                              children: <Widget>[
+                                                Icon(Icons.room_service,
+                                                    size: iconSize,
+                                                    color: Colors.white),
+                                                Text('Food',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),)
+                                              ],
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: (MediaQuery
+                                .of(context)
+                                .size
+                                .height - AppBar().preferredSize.height -
+                                24.0) / 6,
+                            child: FlatButton(
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0, 10.0, 0.0, 10.0),
+                              color: const Color(0xFFB6B036),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => OrderPage()));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(Icons.shopping_cart,
+                                      size: iconSize,
+                                      color: Colors.white),
+                                  Text('My order',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),)
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
                       ],
                     ),
-                    Container(
-                      height: (MediaQuery
-                          .of(context)
-                          .size
-                          .height - AppBar().preferredSize.height - 24.0) / 6,
-                      child: FlatButton(
-                        padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                        color: const Color(0xFFB6B036),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute( builder: (context) =>OrderPage()));
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(Icons.shopping_cart,
-                                size: iconSize,
-                                color: Colors.white),
-                            Text('My order',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),)
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                ],
               ),
-        )
+              endDrawer: new MenuDrawer(),
+          );
+        }
     );
   }
 
@@ -284,4 +339,201 @@ class HomeState extends State<Home>{
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
   }
 }
+
+class MenuDrawer extends StatefulWidget {
+  StreamBuilder fromHome;
+  Function (StreamBuilder) callback;
+  MenuDrawer(StreamBuilder sb){
+    this.fromHome = sb;
+  } uff mk espere
+  @override
+  _MenuDrawerState createState() => _MenuDrawerState();
+}
+
+class _MenuDrawerState extends State<MenuDrawer> {
+  double maxWidth = 200;
+  NavigationModel option1 = new NavigationModel(
+      'My profile', Icons.account_circle);
+  NavigationModel option2 = new NavigationModel("My orders", Icons.view_list);
+  NavigationModel option3 = new NavigationModel("Settings", Icons.settings);
+  NavigationModel option4 = new NavigationModel("Log out", Icons.exit_to_app);
+  final AuthService _auth = AuthService();
+  bool isSwitched = false;
+  bool isButtonExpensesDisabled = true;
+
+
+  @override
+  Widget build(BuildContext context) {
+    List<NavigationModel> options = [option1, option2, option3, option4];
+    return Container(
+      child: new Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            SizedBox(
+              height: 150.0,
+              child: DrawerHeader(
+                padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
+                child: Text('33',
+                    style: TextStyle(fontSize: 20)),
+                decoration: BoxDecoration(
+                    color: const Color(0xFF8c7c9c)
+                ),
+              ),
+            ),
+            Card( ////                         <-- Card widget
+              child: ListTile(
+                leading: Icon(option1.icon),
+                title: Text(option1.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                onTap: action1,
+              ),
+            ),
+            Card( //                           <-- Card widget
+              child: ListTile(
+                leading: Icon(option2.icon),
+                title: Text(option2.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                onTap: action2,
+              ),
+            ),
+            Card( //                           <-- Card widget
+              child: ExpansionTile(
+                initiallyExpanded: false,
+                leading: Icon(option3.icon),
+                title: Text(option3.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                trailing: Icon(Icons.expand_more),
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                    child: Row(
+                      children: <Widget>[
+                        FlatButton(
+                          textColor: Colors.blueGrey,
+                          child: Text(
+                            'Expenses Control',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w400),
+                          ),
+                          color: Colors.transparent,
+                          onPressed: () {
+                            if (!isSwitched) {
+                              //Open configuration for this
+                            }
+                          },
+                        ),
+                        Switch(
+                          value: isSwitched,
+                          onChanged: (value) {
+                            if (!isSwitched) {
+                              setState(() {
+                                isSwitched = value;
+                              });
+                            }
+                            else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    _buildAboutDialog(context),
+                              );
+                              // Perform some action
+
+                            }
+                          },
+                          activeTrackColor: Colors.lightGreenAccent,
+                          activeColor: Colors.green,
+                        ),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                    child: Row(
+                      children: <Widget>[
+                        FlatButton(
+                          textColor: Colors.blueGrey,
+                          child: Text(
+                            'Drunk Mode',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w400),
+                          ),
+                          color: Colors.transparent,
+                          onPressed: () {
+                            print('holaaa');
+                          },
+                        ),
+                        Container(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: Icon(option4.icon),
+                title: Text(option4.title, style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                onTap: action4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void action1() {
+
+  }
+
+  void action2() {
+
+  }
+
+  void action3() {
+
+  }
+
+  void action4() {
+    Navigator.pop(context);
+    _auth.signOut();
+  }
+
+  Widget _buildAboutDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('About Pop up'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildAboutText(),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Okay, got it!'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAboutText() {
+    return new RichText(
+      text: new TextSpan(
+        text: 'Android Popup Menu displays the menu below the anchor text if space is available otherwise above the anchor text. It disappears if you click outside the popup menu.\n\n',
+        style: const TextStyle(color: Colors.black87),
+        children: <TextSpan>[
+        ],
+      ),
+    );
+  }
+}
+
 

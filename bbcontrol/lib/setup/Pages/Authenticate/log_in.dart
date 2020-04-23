@@ -1,16 +1,16 @@
-
-
+import 'package:bbcontrol/models/customer.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/reset_Password.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
-import 'package:string_validator/string_validator.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -25,52 +25,41 @@ class _LoginPageState extends State<LoginPage> {
   String error;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  bool cStatus = true;
+  bool isConnected = true;
 
   Widget build(BuildContext context) {
     return new Scaffold(
         resizeToAvoidBottomPadding: false,
         backgroundColor: Colors.white,
         bottomSheet: SolidBottomSheet(
-            maxHeight:50.0,
-            body: Container(
-              decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.black87, width: 0.5)),
-                  color: Colors.white
-              ),
-              child: Row(
-                children: <Widget>[
-                  Text('Not registered yet?',
-                    style: TextStyle(fontSize: 16, backgroundColor: Colors.transparent),
-                  ),
-                  FlatButton(
-                      textColor: const Color(0xFFD7384A),
-                      child: Text(
-                        'Sign up',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      color: Colors.transparent,
-                      onPressed: () async{
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
-                        ColorLoader5(
-                          dotOneColor: Colors.redAccent,
-                          dotTwoColor: Colors.blueAccent,
-                          dotThreeColor: Colors.green,
-                          dotType: DotType.circle,
-                          dotIcon: Icon(Icons.adjust),
-                          duration: Duration(seconds: 1),
-                        );
-                      }
-                  )
-                ],
-                mainAxisAlignment: MainAxisAlignment.center,
-              ),
+          maxHeight:50.0,
+          body: Container(
+            decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: Colors.black87, width: 0.5)),
+                color: Colors.white
             ),
+            child: Row(
+              children: <Widget>[
+                Text('Not registered yet?',
+                  style: TextStyle(fontSize: 16, backgroundColor: Colors.transparent),
+                ),
+                FlatButton(
+                    textColor: const Color(0xFFD7384A),
+                    child: Text(
+                      'Sign up',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    color: Colors.transparent,
+                    onPressed: () async{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                      loaderFunction();
+                    }
+                )
+              ],
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
+          ),
           showOnAppear: true,
-          onShow: (){
-            print('holaaa');
-            print((MediaQuery.of(context).viewInsets.bottom));
-          },
         ),
         body: Form(
           key: _formKey,
@@ -108,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                       labelText: 'Email',
                       contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                     ),
+                    maxLength: 30,
                   )
               ),
               Container(
@@ -144,50 +134,31 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     color: const Color(0xFFD7384A),
                     onPressed: () async {
-                      showToast(context);
-                      if(!cStatus){
+                      loaderFunction();
+                      checkConnectivity(context);
+                      if(!isConnected){
                         showOverlayNotification((context) {
-                          return Card(
-                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            child: SafeArea(
-                              child: ListTile(
-                                title: Text('Connection Error',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
-                                ),
-                                subtitle: Text('Please try to log in again later.',
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
-                                ),
-                                trailing: IconButton(
-                                    icon: Icon(Icons.close, color: Colors.white,),
-                                    onPressed: () {
-                                      OverlaySupportEntry.of(context).dismiss();
-                                    }),
-                              ),
-                            ),
-                            color: Colors.blueGrey,);
-                        }, duration: Duration(milliseconds: 4000));;
+                          return connectionNotification(context);
+                        }, duration: Duration(milliseconds: 4000));
                       }
-                      ColorLoader5(
-                        dotOneColor: Colors.redAccent,
-                        dotTwoColor: Colors.blueAccent,
-                        dotThreeColor: Colors.green,
-                        dotType: DotType.circle,
-                        dotIcon: Icon(Icons.adjust),
-                        duration: Duration(seconds: 1),
-                      );
-                      if(_formKey.currentState.validate()){
-                        _formKey.currentState.save();
-                        dynamic result = await _auth.signIn(_email, _password);
-                        if(result == null){
-                          setState(() => error = 'Could not sign you in. Please, check your data and try again.');
-                          return Container(
-                            margin: EdgeInsets.fromLTRB(10.0, 80.0, 10.0, 0.0),
-                            child: Text(error,
-                              style: TextStyle(
-                                color: const Color(0xFFD7384A),
-                              ),),
-                            color: Colors.black12,
-                          );
+                      else {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          Customer result = await _auth.signIn(
+                              _email, _password);
+                          if (result == null) {
+                            setState(() =>
+                            error =
+                            'Could not sign you in. Check your data and try again.');
+                          }
+                          else {
+                            print(result.fullName);
+                            print(result.id);
+                            print(result.phoneNumber);
+                            print(result.birthDate);
+                            Navigator.push(context, MaterialPageRoute(builder: (
+                                context) => Home(customer: result)));
+                          }
                         }
                       }
                     },
@@ -210,14 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () async {
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) => ResetPasswordPage()));
-                        ColorLoader5(
-                          dotOneColor: Colors.redAccent,
-                          dotTwoColor: Colors.blueAccent,
-                          dotThreeColor: Colors.green,
-                          dotType: DotType.circle,
-                          dotIcon: Icon(Icons.adjust),
-                          duration: Duration(seconds: 1),
-                        );
+                        loaderFunction();
                       }
                   ),
                 ],
@@ -228,11 +192,60 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void showToast(BuildContext context) async {
+  void checkConnectivity(BuildContext context) async {
     await checkConnection.initConnectivity();
     setState(() {
-      cStatus = checkConnection.getConnectionStatus(context);
+      isConnected = checkConnection.getConnectionStatus(context);
     });
+  }
+
+  Widget connectionNotification(BuildContext context){
+    return Card(
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: SafeArea(
+        child: ListTile(
+          title: Text('Connection Error',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
+          ),
+          subtitle: Text('Please try to log in again later.',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          trailing: IconButton(
+              icon: Icon(Icons.close, color: Colors.white,),
+              onPressed: () {
+                OverlaySupportEntry.of(context).dismiss();
+              }),
+        ),
+      ),
+      color: Colors.blueGrey,);
+  }
+
+  Widget loginError(String error) {
+    if (error != null) {
+      print('ppppp');
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
+        color: Colors.red,
+        child: Row(
+          children: <Widget>[
+            Icon(Icons.error_outline),
+            Expanded(child: Text(error, maxLines: 2,),)
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget loaderFunction(){
+    return ColorLoader5(
+      dotOneColor: Colors.redAccent,
+      dotTwoColor: Colors.blueAccent,
+      dotThreeColor: Colors.green,
+      dotType: DotType.circle,
+      dotIcon: Icon(Icons.adjust),
+      duration: Duration(seconds: 2),
+    );
   }
 
 }

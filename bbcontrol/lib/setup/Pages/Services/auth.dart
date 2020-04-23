@@ -6,9 +6,18 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CustomersFirestoreClass _firestoreService = CustomersFirestoreClass();
-  //Create object based on FirebaseUser
+  Customer _currentCustomer;
+
+  Future<String> getCurrentUserId() async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final userId = user.uid;
+    return userId;
+  }
+
+
+    //Create object based on FirebaseUser
   Customer _userFromFirebaseUser(FirebaseUser user){
-    return user != null ? Customer(id: user.uid) : null;
+    return user != null ? Customer(id: user.uid, fullName: user.displayName) : null;
   }
 
   //Auth change user stream
@@ -19,9 +28,13 @@ class AuthService {
 
   //Sign in email-password
   Future signIn(String _email, String _password) async{
+    print('log in');
       try{
         FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _email, password: _password)).user;
-        return _userFromFirebaseUser(user);
+        print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
+        Customer customer = await _firestoreService.getCustomer(user.uid);
+        print(customer);
+        return customer;
       }catch(e) {
         print(e.message);
         return null;
@@ -40,7 +53,10 @@ class AuthService {
         birthDate: _birthDate,
         phoneNumber: _phoneNumber
       ));
-    return _userFromFirebaseUser(user);
+      print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
+       Customer customer = await _firestoreService.getCustomer(user.uid);
+
+       return customer;
         //Display for the user that we sent an email.
       }catch(e) {
         return null;

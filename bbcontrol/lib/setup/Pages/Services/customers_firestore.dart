@@ -6,8 +6,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CustomersFirestoreClass {
 
   final String id;
+  final String fullName;
+  final String email;
+  final DateTime birthDate;
+  final int phoneNumber;
 
-  CustomersFirestoreClass({this.id});
+  CustomersFirestoreClass({this.id, this.fullName, this.email, this.birthDate, this.phoneNumber});
 
   final CollectionReference _customersCollectionReference = Firestore.instance.collection('Customers');
 
@@ -19,7 +23,16 @@ class CustomersFirestoreClass {
     }
   }
 
-  Future updateCustomerData(String fullName, String email, String, DateTime birthDate, num phoneNumber) async{
+  Future getCustomer(String uid) async{
+    try{
+      var customerInfo = await _customersCollectionReference.document(uid).get();
+      return Customer.fromData(customerInfo.data);
+    }catch(e){
+      return e.message;
+    }
+  }
+
+  Future updateCustomerData(String fullName, String email, DateTime birthDate, num phoneNumber) async{
     return await _customersCollectionReference.document(id).setData({
     'id': id,
     'fullName': fullName,

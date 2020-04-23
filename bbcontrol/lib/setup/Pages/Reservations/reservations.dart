@@ -1,13 +1,14 @@
 import 'package:bbcontrol/Setup/Database/database_creator.dart';
 import 'package:bbcontrol/Setup/Pages/Reservations/reservationsList.dart';
+import 'package:bbcontrol/models/customer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Reservations extends StatefulWidget {
-  const Reservations({Key key, @required this.user}) : super(key: key);
-  final FirebaseUser user;
+  const Reservations({Key key, @required this.customer}) : super(key: key);
+  final Customer customer;
   _ReservationsState createState() => _ReservationsState();
 }
 
@@ -284,7 +285,7 @@ class ReservationsList2 extends StatelessWidget {
                 borderRadius: new BorderRadius.circular(10.0),
               ),
               color: const Color(0xFFD7384A),
-              onPressed:(){ Navigator.push(context, MaterialPageRoute(builder: (context) => Reservations()));},
+              onPressed:(){ },
               child: Text('Add new reservation',
                 style: TextStyle(
                     color: Colors.white,
