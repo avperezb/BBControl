@@ -193,8 +193,8 @@ class _PreOrderPageState extends State<PreOrderPage> {
     List<OrderProduct> auxList = new List<OrderProduct>();
     jsonDecode(widget.order).forEach((name, content) {
       if (content['quantity'] > 0) {
-        OrderProduct op = new OrderProduct(
-            name, content['quantity'], "", content['price'], "");
+        OrderProduct op = new OrderProduct.withId(
+            name.hashCode,name, content['quantity'], "", content['price'], "");
         auxList.add(op);
       }
     });

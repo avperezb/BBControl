@@ -171,7 +171,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
         content) => content.forEach((size, specs){
       if(specs['quantity'] > 0){
         print(name + " "+ specs['quantity'].toString() + " " + size + " "+  specs['price'].toString() );
-        OrderProduct op = new OrderProduct(name, specs['quantity'], size, specs['price'], "");
+        OrderProduct op = new OrderProduct.withId(name.hashCode, name, specs['quantity'], size, specs['price'], "");
         auxList.add(op);
       }
     }));

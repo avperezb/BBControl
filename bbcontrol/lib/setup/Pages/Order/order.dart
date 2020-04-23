@@ -34,6 +34,7 @@ class _OrderPageState extends State<OrderPage> {
   int count = 0;
   bool cStatus = true;
   int total;
+  bool auxReload = true;
 
   @override
   Widget build(BuildContext context) {
@@ -127,34 +128,36 @@ class _OrderPageState extends State<OrderPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Container(
-                        width: 160,
-                        child: Row(
-                          children: <Widget>[
-                            IconButton(
-                              icon: Icon(Icons.delete_outline,
-                              color: Colors.red),
-                              onPressed: (){
-                                databaseHelper.deleteDB();
-                                Navigator.of(context)
-                                    .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                              },
-                            ),
-                            FlatButton(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              color: Colors.transparent,
-                              child: Text('EMPTY ORDER',
-                                style: TextStyle(
-                                    color: Colors.red
-                                ),
+                          width: 160,
+                          child: Row(
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.delete_outline,
+                                    color: Colors.red),
+                                onPressed: (){
+                                  databaseHelper.deleteDB();
+                                  deletedOrderToast();
+                                  Navigator.of(context)
+                                      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                                },
                               ),
-                              onPressed: (){
-                                databaseHelper.deleteDB();
-                                Navigator.of(context)
-                                    .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                              },
-                            ),
-                          ],
-                        )
+                              FlatButton(
+                                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                color: Colors.transparent,
+                                child: Text('EMPTY ORDER',
+                                  style: TextStyle(
+                                      color: Colors.red
+                                  ),
+                                ),
+                                onPressed: (){
+                                  databaseHelper.deleteDB();
+                                  deletedOrderToast();
+                                  Navigator.of(context)
+                                      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                                },
+                              ),
+                            ],
+                          )
                       )
                     ],
                   ),
@@ -203,9 +206,23 @@ class _OrderPageState extends State<OrderPage> {
                                     ],
                                   ),
                                   Container(
-                                      child: Text(formatCurrency.format(
-                                          orderProduct.price *
-                                              orderProduct.quantity))
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text(formatCurrency.format(
+                                            orderProduct.price *
+                                                orderProduct.quantity)),
+                                        IconButton(
+                                          icon: Icon( Icons.delete_outline,
+                                              color: Colors.red),
+                                          onPressed: () async{
+                                            await databaseHelper.deletePreOrder(orderProduct.productName);
+                                            setState(() {
+                                              auxReload = !auxReload;
+                                            });
+                                          },
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ],
 
@@ -353,6 +370,36 @@ class _OrderPageState extends State<OrderPage> {
           },
         )
     );
+  }
+
+  deletedOrderToast(){
+    return showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(
+            0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Order deleted',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Your cart is now empty.',
+              style: TextStyle(fontSize: 16,
+                  color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(Icons.close,
+                  color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blue,);
+    }, duration: Duration(milliseconds: 4000));
   }
 
   int getTotal(snapshot) {
