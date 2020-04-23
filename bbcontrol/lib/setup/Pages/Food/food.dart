@@ -72,7 +72,6 @@ class _FoodListState extends State<FoodList> {
   int calculateTotal(){
     int total = 0;
     Map<String, dynamic> orderMap = jsonDecode(widget.mealPrices);
-    // Map<String, dynamic> mealsMap = jsonDecode(widget.mealPrices);
     widget.mealNames.forEach((meal){
       int subtotal = orderMap[meal]['price']*orderMap[meal]['quantity'];
       total += subtotal;

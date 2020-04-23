@@ -136,7 +136,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                               await databaseHelper.insertPreOrder(op);
                             }
                           }));
-                          Navigator.push(context, MaterialPageRoute( builder: (context) => OrderPage()));
+                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
                         },
                       ),
                     )

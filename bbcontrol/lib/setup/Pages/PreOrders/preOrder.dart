@@ -108,8 +108,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                               await databaseHelper.insertPreOrder(op);
                             }
                           });
-                          Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute( builder: (context) => OrderPage()));
+                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
                         },
                         padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
                         shape: RoundedRectangleBorder(

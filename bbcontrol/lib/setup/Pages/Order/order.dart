@@ -101,8 +101,7 @@ class _OrderPageState extends State<OrderPage> {
                                     size: 45),
                                 color: const Color(0xFFD7384A),
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => DrinksTabs()),);
+                                  Navigator.pushNamedAndRemoveUntil(context, '/Drinks', ModalRoute.withName('/'));
                                 },
                               ),
                               IconButton(
@@ -110,8 +109,7 @@ class _OrderPageState extends State<OrderPage> {
                                     size: 45),
                                 color: const Color(0xFFD7384A),
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => FoodList()),);
+                                  Navigator.pushNamedAndRemoveUntil(context, '/Food', ModalRoute.withName('/'));
                                 },
                               ),
                             ],
