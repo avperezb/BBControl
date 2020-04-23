@@ -28,7 +28,10 @@ class NonAlcoholicDrinks extends StatefulWidget {
 
     for (int i = 0; i < alertSnaps.length; i++) {
       drinkNames.add(alertSnaps[i]['name']);
-      drinkPrices += '"${alertSnaps[i]['name']}" : ${alertSnaps[i]['price']},';
+      drinkPrices += '"${alertSnaps[i]['name']}": '
+          '{"id": "${alertSnaps[i].documentID}", '
+          '"price": ${alertSnaps[i]['price']} ,'
+          '"quantity": 0},';
     }
     drinkPrices = drinkPrices.substring(0, drinkPrices.length - 1);
     drinkPrices = '{$drinkPrices}';
@@ -38,7 +41,7 @@ class NonAlcoholicDrinks extends StatefulWidget {
     } );
     jsonOrder = jsonOrder.substring(0, jsonOrder.length - 1);
     jsonOrder = '{$jsonOrder}';
-
+    print(drinkPrices);
     return messages;
 
   }
@@ -51,26 +54,25 @@ class NonAlcoholicDrinks extends StatefulWidget {
 }
 
 class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
-  String accumulateTotal = '\$0';
+  int accumulateTotal = 0;
   var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
 
   callback(String drinkName, int quantity){
-    Map<String, dynamic> map = jsonDecode(widget.jsonOrder);
-    map[drinkName] = quantity;
+    Map<String, dynamic> map = jsonDecode(widget.drinkPrices);
+    map[drinkName]['quantity'] = quantity;
     setState(() {
-      widget.jsonOrder = json.encode(map);
-      accumulateTotal = formatCurrency.format(calculateTotal());
+      widget.drinkPrices = json.encode(map);
+      accumulateTotal = calculateTotal();
     });
   }
 
   int calculateTotal(){
     int total = 0;
-    Map<String, dynamic> orderMap = jsonDecode(widget.jsonOrder);
     Map<String, dynamic> drinksMap = jsonDecode(widget.drinkPrices);
     widget.drinkNames.forEach((drink){
-      int subtotal = orderMap[drink]*drinksMap[drink];
+      int subtotal = drinksMap[drink]['price']*drinksMap[drink]['quantity'];
       total += subtotal;
     });
     return total;
@@ -96,78 +98,116 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
         else {
           return Scaffold(
               bottomSheet: Card(
-                elevation: 6.0,
-                child: Container(
-                  height: MediaQuery.of(context).size.height*0.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width*0.35,
-                        child: Text(
-                          'Total: $accumulateTotal',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),
+                  elevation: 6.0,
+                  child: Container(
+                    child: RaisedButton(
+                        padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0),
                         ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width*0.55,
-                        child: RaisedButton(
-                          padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(10.0),
-                          ),
-                          color: const Color(0xFFD7384A),
-                          onPressed:(){
-                            showToast(context);
-                            if(!cStatus) {
-                              showOverlayNotification((context) {
-                                return Card(
-                                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                  child: SafeArea(
-                                    child: ListTile(
-                                      title: Text('Connection Error',
-                                          style: TextStyle(fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white)
-                                      ),
-                                      subtitle: Text(
-                                        'Products will be added when connection is back.',
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                      ),
-                                      trailing: IconButton(
-                                          icon: Icon(
-                                            Icons.close, color: Colors.white,),
-                                          onPressed: () {
-                                            OverlaySupportEntry.of(context)
-                                                .dismiss();
-                                          }),
-                                    ),
-                                  ),
-                                  color: Colors.blueGrey,);
-                              }, duration: Duration(milliseconds: 4000));
-                            }
-                            else{
-                              DatabaseHelper db = new DatabaseHelper();
-                              print(db.getCount());
-                              Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => PreOrderPage()),);
-                            }
-                          },
-                          child: Text('Add to order',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16
+                        color: const Color(0xFFD7384A),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .spaceAround,
+                          children: <Widget>[
+                            Text('Add to order',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16
+                              ),
                             ),
-                          ),
+                            Container(
+                              width: 120,
+                              padding: EdgeInsets.fromLTRB(
+                                  20, 10, 20, 10),
+                              margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(15))
+                              ),
+                              child: Text(
+                                formatCurrency.format(accumulateTotal),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                ),
+                        onPressed: () {
+                          showToast(context);
+                          if(!cStatus) {
+                            showOverlayNotification((context) {
+                              return Card(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                child: SafeArea(
+                                  child: ListTile(
+                                    title: Text('Connection Error',
+                                        style: TextStyle(fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)
+                                    ),
+                                    subtitle: Text(
+                                      'Products will be added when connection is back.',
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
+                                    trailing: IconButton(
+                                        icon: Icon(
+                                          Icons.close, color: Colors.white,),
+                                        onPressed: () {
+                                          OverlaySupportEntry.of(context)
+                                              .dismiss();
+                                        }),
+                                  ),
+                                ),
+                                color: Colors.blueGrey,);
+                            }, duration: Duration(milliseconds: 4000));
+                          }
+                          int sumQuantity = 0;
+                          jsonDecode(widget.drinkPrices).forEach((name, content){
+                            sumQuantity += content['quantity'];
+                          });
+
+                          print(sumQuantity);
+                          if(sumQuantity > 0){
+                            Navigator.push(context, MaterialPageRoute(builder: (
+                                context) => PreOrderPage(widget.drinkPrices)),);
+                          }
+                          else{
+                            showOverlayNotification((context) {
+                              return Card(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                child: SafeArea(
+                                  child: ListTile(
+                                    title: Text('No products selected',
+                                        style: TextStyle(fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)
+                                    ),
+                                    subtitle: Text(
+                                      'Select the products you would like to purchase.',
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
+                                    trailing: IconButton(
+                                        icon: Icon(
+                                          Icons.close, color: Colors.white,),
+                                        onPressed: () {
+                                          OverlaySupportEntry.of(context)
+                                              .dismiss();
+                                        }),
+                                  ),
+                                ),
+                                color: Colors.blue,);
+                            }, duration: Duration(milliseconds: 4000));
+                          }
+                        }
+                    ),
+                  )
               ),
               body : Column(
                 children: <Widget>[
@@ -179,7 +219,6 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                         children: snapshot.data.documents.map<SingleDrink>((DocumentSnapshot drink ){
                           return SingleDrink(drink['name'], drink['price'], drink['image'], callback);
                         }).toList(),
-                        //widget.drinkNames.map((drink) => SingleDrink(drink, drinks, callback)).toList(),
                       ),
                     ),
                   )

@@ -3,27 +3,24 @@ import 'dart:convert';
 import 'package:bbcontrol/models/finalOrderProduct.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
-import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
-import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Order/order.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
-import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sqflite/sqflite.dart';
 
-class PreOrderPage extends StatefulWidget {
+class PreOrderBeer extends StatefulWidget {
   String order;
-  PreOrderPage(String order){
+  PreOrderBeer(String order){
     this.order = order;
   }
   @override
-  _PreOrderPageState createState() => _PreOrderPageState();
+  _PreOrderBeerState createState() => _PreOrderBeerState();
 }
 
-class _PreOrderPageState extends State<PreOrderPage> {
+class _PreOrderBeerState extends State<PreOrderBeer> {
 
 
   List<FinalOrderProduct> finalListTemp = new List<FinalOrderProduct>();
@@ -32,9 +29,6 @@ class _PreOrderPageState extends State<PreOrderPage> {
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
   DatabaseHelper databaseHelper = DatabaseHelper();
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  List<OrderProduct> orderList;
-  List<FinalOrderProduct> finalOrderList;
-  int count = 0;
   bool cStatus = true;
 
   @override
@@ -67,49 +61,6 @@ class _PreOrderPageState extends State<PreOrderPage> {
                   children: <Widget>[
                     Container(
                       child: RaisedButton(
-                        onPressed: () async {
-                          showToast(context);
-                          if (!cStatus) {
-                            showOverlayNotification((context) {
-                              return Card(
-                                margin: const EdgeInsets.fromLTRB(
-                                    0, 0, 0, 0),
-                                child: SafeArea(
-                                  child: ListTile(
-                                    title: Text('Oops, network error',
-                                        style: TextStyle(fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)
-                                    ),
-                                    subtitle: Text(
-                                      'Your order will be added when connection is back!.',
-                                      style: TextStyle(fontSize: 16,
-                                          color: Colors.white),
-                                    ),
-                                    trailing: IconButton(
-                                        icon: Icon(Icons.close,
-                                          color: Colors.white,),
-                                        onPressed: () {
-                                          OverlaySupportEntry.of(context)
-                                              .dismiss();
-                                        }),
-                                  ),
-                                ),
-                                color: Colors.deepPurpleAccent,);
-                            }, duration: Duration(milliseconds: 4000));
-                          }
-                          DatabaseHelper databaseHelper = new DatabaseHelper();
-                          jsonDecode(widget.order).forEach((name,
-                              content) async {
-                            if (content['quantity'] > 0) {
-                              OrderProduct op = OrderProduct(
-                                  name, content['quantity'], "",
-                                  content['price'], "");
-                              await databaseHelper.insertPreOrder(op);
-                            }
-                          });
-                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
-                        },
                         padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10.0),
@@ -146,6 +97,47 @@ class _PreOrderPageState extends State<PreOrderPage> {
                             ),
                           ],
                         ),
+                        onPressed: () async {
+                          showToast(context);
+                          if (!cStatus) {
+                            showOverlayNotification((context) {
+                              return Card(
+                                margin: const EdgeInsets.fromLTRB(
+                                    0, 0, 0, 0),
+                                child: SafeArea(
+                                  child: ListTile(
+                                    title: Text('Oops, network error',
+                                        style: TextStyle(fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)
+                                    ),
+                                    subtitle: Text(
+                                      'Your order will be added when connection is back!.',
+                                      style: TextStyle(fontSize: 16,
+                                          color: Colors.white),
+                                    ),
+                                    trailing: IconButton(
+                                        icon: Icon(Icons.close,
+                                          color: Colors.white,),
+                                        onPressed: () {
+                                          OverlaySupportEntry.of(context)
+                                              .dismiss();
+                                        }),
+                                  ),
+                                ),
+                                color: Colors.deepPurpleAccent,);
+                            }, duration: Duration(milliseconds: 4000));
+                          }
+                          DatabaseHelper databaseHelper = new DatabaseHelper();
+                          jsonDecode(widget.order).forEach((name,
+                              content) => content.forEach((size, specs) async {
+                            if(specs['quantity'] > 0){
+                              OrderProduct op = new OrderProduct(name, specs['quantity'], size, specs['price'], "");
+                              await databaseHelper.insertPreOrder(op);
+                            }
+                          }));
+                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
+                        },
                       ),
                     )
                   ],
@@ -157,21 +149,6 @@ class _PreOrderPageState extends State<PreOrderPage> {
     );
   }
 
-  void updateListView() {
-    final Future<Database> dbFuture = databaseHelper.database;
-    dbFuture.then((database) {
-      Future<List<OrderProduct>> orderListFuture = databaseHelper
-          .getAllOrders();
-      orderListFuture.then((orderList) {
-        setState(() {
-          this.orderList = orderList;
-          this.count = orderList.length;
-          print(orderList);
-        });
-      });
-    });
-  }
-
   void showToast(BuildContext context) async {
     await checkConnection.initConnectivity();
     setState(() {
@@ -181,23 +158,24 @@ class _PreOrderPageState extends State<PreOrderPage> {
 
   getTotal(){
     int total = 0;
-    jsonDecode(widget.order).forEach((name, content) {
-      if (content['quantity'] > 0) {
-        total += content['price']*content['quantity'];
-      }
-    });
+    jsonDecode(widget.order).forEach((name,
+        content) => content.forEach((size, specs){
+      total += specs['quantity']*specs['price'];
+    }));
     return total;
   }
 
   getProductList() {
     List<OrderProduct> auxList = new List<OrderProduct>();
-    jsonDecode(widget.order).forEach((name, content) {
-      if (content['quantity'] > 0) {
-        OrderProduct op = new OrderProduct.withId(
-            name.hashCode,name, content['quantity'], "", content['price'], "");
+    jsonDecode(widget.order).forEach((name,
+        content) => content.forEach((size, specs){
+      if(specs['quantity'] > 0){
+        print(name + " "+ specs['quantity'].toString() + " " + size + " "+  specs['price'].toString() );
+        OrderProduct op = new OrderProduct.withId(name.hashCode, name, specs['quantity'], size, specs['price'], "");
         auxList.add(op);
       }
-    });
+    }));
+
     return auxList.map<Widget>((orderProduct) {
       return ListTile(
         title: Container(
@@ -230,7 +208,9 @@ class _PreOrderPageState extends State<PreOrderPage> {
                           0, 0, 15, 0),
                       width: 120,
                       child: Container(
-                          child: Text(orderProduct.productName)
+                          child: Text(orderProduct.productName,
+                          style: TextStyle(
+                          ),)
                       )
                   ),
                 ],
@@ -242,6 +222,14 @@ class _PreOrderPageState extends State<PreOrderPage> {
             ],
 
           ),
+        ),
+        subtitle: Container(
+          margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
+            child: Text(orderProduct.beerSize,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            )
         ),
       );
     }).toList();

@@ -8,6 +8,8 @@ import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
+import 'package:bbcontrol/setup/Pages/Order/order.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,6 +42,8 @@ class HomeState extends State<Home> {
   int count = 0;
   final iconSize = 60.0;
   final database = Firestore.instance;
+  final AuthService _auth = AuthService();
+  bool isConnected = true;
 
   Widget build(BuildContext context) {
 
@@ -57,18 +61,54 @@ class HomeState extends State<Home> {
             duration: Duration(seconds: 1),
           );
         }
-        else {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Menu'),
-              centerTitle: true,
-              backgroundColor: const Color(0xFF8c7c9c),
-            ),
-            body: Builder(
-              builder: (context) =>
-                  ListView(
-                    children: <Widget>[ Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Menu'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFFD7384A),
+          actions: <Widget>[
+            FlatButton.icon(
+              icon: Icon(Icons.person),
+              label: Text('Log out'),
+              onPressed: () async {
+                await _auth.signOut();
+              },
+            )
+          ],
+        ),
+        body: Builder(
+          builder: (context) =>
+              ListView(
+                children: <Widget>[ Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Container(
+                      height: (MediaQuery
+                          .of(context)
+                          .size
+                          .height - AppBar().preferredSize.height - 24.0) / 6,
+                      child: FlatButton(
+                        padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                        color: const Color(0xFF69B3E7),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (
+                              context) => ReservationsList()),);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(Icons.group,
+                                size: iconSize,
+                                color: Colors.white),
+                            Text('Reservations',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),)
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
                       children: <Widget>[
                         Container(
                           height: (MediaQuery
@@ -305,6 +345,30 @@ class HomeState extends State<Home> {
                               ],
                             ),
                           ),
+                      ],
+                    ),
+                    Container(
+                      height: (MediaQuery
+                          .of(context)
+                          .size
+                          .height - AppBar().preferredSize.height - 24.0) / 6,
+                      child: FlatButton(
+                        padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                        color: const Color(0xFFB6B036),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute( builder: (context) =>OrderPage()));
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(Icons.shopping_cart,
+                                size: iconSize,
+                                color: Colors.white),
+                            Text('My order',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),)
+                          ],
                         ),
                       ],
                     ),
@@ -314,7 +378,6 @@ class HomeState extends State<Home> {
             endDrawer: new MenuDrawer(
             ),
           );
-        }
       },
     );
   }

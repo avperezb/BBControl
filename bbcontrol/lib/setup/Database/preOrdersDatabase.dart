@@ -48,6 +48,12 @@ class DatabaseHelper{
     await db.execute('CREATE TABLE $preOrderTable($colId TEXT PRIMARY KEY, $colProductName TEXT,'
     '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT)');
   }
+  
+  void deleteDB() async{
+    Database db = await this.database;
+    await db.execute('DELETE FROM $preOrderTable');
+  }
+
   //Create DB table
   void populateDb(Database database, int version) async {
     await database.execute("CREATE TABLE PreOrders ("
@@ -79,9 +85,9 @@ class DatabaseHelper{
     var result = await db.update(preOrderTable, pO.toMap(), where: '$colId = ?', whereArgs: [pO.productName]);
   }
 
-  Future <int> deletePreOrder(int id) async{
+  Future <int> deletePreOrder(String name) async{
     var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $preOrderTable WHERE $colId = $id');
+    int result = await db.rawDelete('DELETE FROM $preOrderTable WHERE $colProductName = \'$name\'');
     return result;
   }
 
