@@ -23,7 +23,7 @@ class ReservationsList extends StatelessWidget {
             appBar: AppBar(
               title: Text('My reservations'),
               centerTitle: true,
-              backgroundColor: const Color(0xFFFF6B00),
+              backgroundColor: const Color(0xFFD7384A),
             ),
             body: Center(
               child: Container(
@@ -83,7 +83,7 @@ class ReservationsList extends StatelessWidget {
             appBar: AppBar(
               title: Text('My reservations'),
               centerTitle: true,
-              backgroundColor: const Color(0xFFFF6B00),
+              backgroundColor: const Color(0xFFD7384A),
             ),
             bottomSheet: Card(
               elevation: 6.0,
