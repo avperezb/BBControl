@@ -61,6 +61,42 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                   children: <Widget>[
                     Container(
                       child: RaisedButton(
+                        padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0),
+                        ),
+                        color: const Color(0xFFD7384A),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .spaceAround,
+                          children: <Widget>[
+                            Text('Add to order',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16
+                              ),
+                            ),
+                            Container(
+                              width: 120,
+                              padding: EdgeInsets.fromLTRB(
+                                  20, 10, 20, 10),
+                              margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(15))
+                              ),
+                              child: Text(
+                                formatCurrency.format(getTotal()),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         onPressed: () async {
                           showToast(context);
                           if (!cStatus) {
@@ -92,55 +128,16 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                 color: Colors.deepPurpleAccent,);
                             }, duration: Duration(milliseconds: 4000));
                           }
-
                           DatabaseHelper databaseHelper = new DatabaseHelper();
                           jsonDecode(widget.order).forEach((name,
-                              content) => content.map((size, specs) async {
+                              content) => content.forEach((size, specs) async {
                             if(specs['quantity'] > 0){
                               OrderProduct op = new OrderProduct(name, specs['quantity'], size, specs['price'], "");
                               await databaseHelper.insertPreOrder(op);
                             }
                           }));
-
-                          /*Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute( builder: (context) => OrderPage()));*/
+                          Navigator.push(context, MaterialPageRoute( builder: (context) => OrderPage()));
                         },
-                        padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10.0),
-                        ),
-                        color: const Color(0xFFD7384A),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceAround,
-                          children: <Widget>[
-                            Text('Add to order',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16
-                              ),
-                            ),
-                            Container(
-                              width: 120,
-                              padding: EdgeInsets.fromLTRB(
-                                  20, 10, 20, 10),
-                              margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(15))
-                              ),
-                              child: Text(
-                                formatCurrency.format(30),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     )
                   ],
@@ -162,7 +159,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
   getTotal(){
     int total = 0;
     jsonDecode(widget.order).forEach((name,
-        content) => content.map((size, specs) async {
+        content) => content.forEach((size, specs){
       total += specs['quantity']*specs['price'];
     }));
     return total;
@@ -193,7 +190,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Colors.blue,
                         shape: BoxShape.circle,),
                       child: Center(
                         child: Text(
@@ -211,7 +208,9 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                           0, 0, 15, 0),
                       width: 120,
                       child: Container(
-                          child: Text(orderProduct.productName)
+                          child: Text(orderProduct.productName,
+                          style: TextStyle(
+                          ),)
                       )
                   ),
                 ],
@@ -224,7 +223,14 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
 
           ),
         ),
-        subtitle: Text(orderProduct.beerSize),
+        subtitle: Container(
+          margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
+            child: Text(orderProduct.beerSize,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            )
+        ),
       );
     }).toList();
   }

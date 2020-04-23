@@ -1,3 +1,4 @@
+import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -18,6 +19,16 @@ class MyApp extends StatelessWidget {
           home: Wrapper(),
         ),
       ),
+    );
+  }
+}
+
+Route routes(RouteSettings settings) {
+  if (settings.name == '/') {
+    return MaterialPageRoute(
+      builder: (context){
+      return Home();
+      }
     );
   }
 }

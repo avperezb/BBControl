@@ -55,7 +55,7 @@ class FoodList extends StatefulWidget {
 }
 
 class _FoodListState extends State<FoodList> {
-  String accumulateTotal = '\$0';
+  int accumulateTotal = 0;
   var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
@@ -65,7 +65,7 @@ class _FoodListState extends State<FoodList> {
     map[mealName]['quantity'] = quantity;
     setState(() {
       widget.mealPrices = json.encode(map);
-      accumulateTotal = formatCurrency.format(calculateTotal());
+      accumulateTotal = calculateTotal();
     });
   }
 
@@ -112,120 +112,116 @@ class _FoodListState extends State<FoodList> {
                   backgroundColor: const Color(0xFFD7384A),
                 ),
                 bottomSheet: Card(
-                  elevation: 6.0,
-                  child: Container(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.35,
-                          child: Text(
-                            'Total: $accumulateTotal',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
+                    elevation: 6.0,
+                    child: Container(
+                      child: RaisedButton(
+                          padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(10.0),
                           ),
-                        ),
-                        Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.55,
-                          child: RaisedButton(
-                            padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(10.0),
-                            ),
-                            color: const Color(0xFFD7384A),
-                            onPressed: () {
-                              showToast(context);
-                              if(!cStatus) {
-                                showOverlayNotification((context) {
-                                  return Card(
-                                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: SafeArea(
-                                      child: ListTile(
-                                        title: Text('Connection Error',
-                                            style: TextStyle(fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white)
-                                        ),
-                                        subtitle: Text(
-                                          'Products will be added when connection is back.',
-                                          style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
-                                        ),
-                                        trailing: IconButton(
-                                            icon: Icon(
-                                              Icons.close, color: Colors.white,),
-                                            onPressed: () {
-                                              OverlaySupportEntry.of(context)
-                                                  .dismiss();
-                                            }),
-                                      ),
-                                    ),
-                                    color: Colors.blueGrey,);
-                                }, duration: Duration(milliseconds: 4000));
-                              }
-                              int sumQuantity = 0;
-                              jsonDecode(widget.mealPrices).forEach((name, content){
-                                sumQuantity += content['quantity'];
-                              });
-
-                              print(sumQuantity);
-                              if(sumQuantity > 0){
-                                Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (
-                                    context) => PreOrderPage(widget.mealPrices)),);
-                              }
-                              else{
-                                showOverlayNotification((context) {
-                                  return Card(
-                                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: SafeArea(
-                                      child: ListTile(
-                                        title: Text('No products selected',
-                                            style: TextStyle(fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white)
-                                        ),
-                                        subtitle: Text(
-                                          'Select the products you would like to purchase.',
-                                          style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
-                                        ),
-                                        trailing: IconButton(
-                                            icon: Icon(
-                                              Icons.close, color: Colors.white,),
-                                            onPressed: () {
-                                              OverlaySupportEntry.of(context)
-                                                  .dismiss();
-                                            }),
-                                      ),
-                                    ),
-                                    color: Colors.blue,);
-                                }, duration: Duration(milliseconds: 4000));
-                              }
-                            },
-                            child: Text('Add to order',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16
+                          color: const Color(0xFFD7384A),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceAround,
+                            children: <Widget>[
+                              Text('Add to order',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16
+                                ),
                               ),
-                            ),
+                              Container(
+                                width: 120,
+                                padding: EdgeInsets.fromLTRB(
+                                    20, 10, 20, 10),
+                                margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(15))
+                                ),
+                                child: Text(
+                                  formatCurrency.format(accumulateTotal),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      ],
-                    ),
-                  ),
+                          onPressed: () {
+                            showToast(context);
+                            if(!cStatus) {
+                              showOverlayNotification((context) {
+                                return Card(
+                                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  child: SafeArea(
+                                    child: ListTile(
+                                      title: Text('Connection Error',
+                                          style: TextStyle(fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white)
+                                      ),
+                                      subtitle: Text(
+                                        'Products will be added when connection is back.',
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.white),
+                                      ),
+                                      trailing: IconButton(
+                                          icon: Icon(
+                                            Icons.close, color: Colors.white,),
+                                          onPressed: () {
+                                            OverlaySupportEntry.of(context)
+                                                .dismiss();
+                                          }),
+                                    ),
+                                  ),
+                                  color: Colors.blueGrey,);
+                              }, duration: Duration(milliseconds: 4000));
+                            }
+                            int sumQuantity = 0;
+                            jsonDecode(widget.mealPrices).forEach((name, content){
+                              sumQuantity += content['quantity'];
+                            });
+
+                            print(sumQuantity);
+                            if(sumQuantity > 0){
+                              Navigator.push(context, MaterialPageRoute(builder: (
+                                  context) => PreOrderPage(widget.mealPrices)),);
+                            }
+                            else{
+                              showOverlayNotification((context) {
+                                return Card(
+                                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  child: SafeArea(
+                                    child: ListTile(
+                                      title: Text('No products selected',
+                                          style: TextStyle(fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white)
+                                      ),
+                                      subtitle: Text(
+                                        'Select the products you would like to purchase.',
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.white),
+                                      ),
+                                      trailing: IconButton(
+                                          icon: Icon(
+                                            Icons.close, color: Colors.white,),
+                                          onPressed: () {
+                                            OverlaySupportEntry.of(context)
+                                                .dismiss();
+                                          }),
+                                    ),
+                                  ),
+                                  color: Colors.blue,);
+                              }, duration: Duration(milliseconds: 4000));
+                            }
+                          }
+                      ),
+                    )
                 ),
                 body: Column(
                   children: <Widget>[
@@ -446,5 +442,4 @@ class _QuantityControlState extends State<QuantityControl> {
     );
   }
 }
-
 

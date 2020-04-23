@@ -67,7 +67,8 @@ class OrderProduct {
       'productName': _productName,
       'quantity' : _quantity,
       'beerSize' : _beerSize,
-      'price' : _price
+      'price' : _price,
+      'foodComments' : _foodComments,
     };
   }
 }

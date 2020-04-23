@@ -213,7 +213,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Colors.blue,
                         shape: BoxShape.circle,),
                       child: Center(
                         child: Text(
