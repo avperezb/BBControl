@@ -16,7 +16,7 @@ class CustomersFirestoreClass {
 
   final CollectionReference _customersCollectionReference = Firestore.instance.collection('Customers');
 
-  Future createCustomer(Employee customer) async{
+  Future createCustomer(Customer customer) async{
     try{
       await _customersCollectionReference.document(customer.id).setData(customer.toJson());
     }catch(e){
@@ -27,7 +27,7 @@ class CustomersFirestoreClass {
   Future getCustomer(String uid) async{
     try{
       var customerInfo = await _customersCollectionReference.document(uid).get();
-      return Employee.fromData(customerInfo.data);
+      return Customer.fromData(customerInfo.data);
     }catch(e){
       return e.message;
     }

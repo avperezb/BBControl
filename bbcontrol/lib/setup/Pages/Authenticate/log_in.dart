@@ -154,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                       else {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
-                          Employee result = await _auth.signIn(
+                          Customer result = await _auth.signIn(
                               _email, _password);
                           if (result == null) {
                             return 'Could not sign you in. Check your data and try again.';

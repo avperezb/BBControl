@@ -1,6 +1,6 @@
 //Class for BBC customers collection documents
 
-class Employee {
+class Customer {
 
   final String id;
   final String firstName;
@@ -9,7 +9,7 @@ class Employee {
   final DateTime birthDate;
   final int phoneNumber;
 
-  Employee({
+  Customer({
     this.id,
     this.firstName,
     this.lastName,
@@ -18,7 +18,7 @@ class Employee {
     this.phoneNumber
   });
 
-  Employee.fromData(Map<String, dynamic> data):
+  Customer.fromData(Map<String, dynamic> data):
     id = data['id'],
     firstName = data['firstName'],
     lastName = data['lastName'],

@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
     Key key,
     @required this.customer
   }): super(key: key);
-  final Employee customer;
+  final Customer customer;
 
   @override
   HomeState createState() => HomeState();
