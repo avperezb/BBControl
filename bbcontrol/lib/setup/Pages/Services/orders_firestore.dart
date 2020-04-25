@@ -19,9 +19,10 @@ class OrdersFirestoreClass {
       e.message;
     }
   }
-
   num getOperationStatus() {
     return status;
+  bool getOperationStatus(){
+    return done;
   }
 
   Future updateOrder(String fullName, String email, String,
