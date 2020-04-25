@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: StreamProvider<Customer>.value(
-        value: AuthService().user ,
+        value: AuthService().user,
         child: MaterialApp(
             home: Wrapper(),
             routes : <String, WidgetBuilder>{
