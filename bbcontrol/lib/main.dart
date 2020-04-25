@@ -2,7 +2,6 @@ import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
 import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
 import 'package:bbcontrol/setup/Pages/Food/food.dart';
 import 'package:bbcontrol/setup/Pages/Home/home.dart';
-import 'package:bbcontrol/setup/Pages/Order/order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -40,7 +39,7 @@ class RouteGenerator {
       case '/Food':
         return MaterialPageRoute(
           builder: (_) => FoodList(
-            userEmail: args,
+            userId: args,
           ),
         );
       case '/ViewProfile' :
@@ -50,7 +49,7 @@ class RouteGenerator {
       case '/Drinks' :
         return MaterialPageRoute(
           builder: (_) => DrinksTabs(
-            userEmail: args,
+            userId: args,
           ),
         );
     }

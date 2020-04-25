@@ -4,9 +4,9 @@ import './nonAlcDrinks.dart';
 import './alcoholicDrinks.dart';
 
 class DrinksTabs extends StatefulWidget {
-  String userEmail;
-  DrinksTabs({userEmail}){
-    this.userEmail = userEmail;
+  String userId;
+  DrinksTabs({userId}){
+    this.userId = userId;
   }
   @override
   _DrinksTabsState createState() => _DrinksTabsState();
@@ -55,8 +55,8 @@ class _DrinksTabsState extends State<DrinksTabs> with SingleTickerProviderStateM
         controller: controller,
         children: <Widget>[
          // AlcoholicDrinks(),
-          AlcoholicDrinks(widget.userEmail),
-          NonAlcoholicDrinks(widget.userEmail),
+          AlcoholicDrinks(widget.userId),
+          NonAlcoholicDrinks(widget.userId),
         ],
       ),
     );

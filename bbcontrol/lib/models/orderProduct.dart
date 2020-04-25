@@ -7,17 +7,22 @@ class OrderProduct {
   num _price;
   String _foodComments;
   String _userId;
+  num _status;
+  String _waiterId;
 
-  OrderProduct(this._productName,this._quantity,this._beerSize,this._price,this._foodComments, this._userId);
-  OrderProduct.withId(this._id,this._productName,this._quantity,this._beerSize,this._price,this._foodComments, this._userId);
+  OrderProduct(this._productName,this._quantity,this._beerSize,this._price,this._foodComments, this._userId, this._status, this._waiterId);
+  OrderProduct.withId(this._id,this._productName,this._quantity,this._beerSize,this._price,this._foodComments, this._userId, this._status, this._waiterId);
 
-  String get userEmail => _userId;
+  String get userId => _userId;
   String get productName => _productName;
   num get quantity => _quantity;
   String get beerSize => _beerSize;
   num get price => _price;
   String get foodComments => _foodComments;
   String get id => _id;
+  num get status => _status;
+  String get waiterId => _waiterId;
+
   set userId(String userId){
     this._userId = userId;
   }
@@ -42,6 +47,14 @@ class OrderProduct {
     this._foodComments = newComments;
   }
 
+  set status(num pstatus){
+    this._status = pstatus;
+  }
+
+  set waiterId(String waiterID){
+    this._waiterId = waiterID;
+  }
+
   OrderProduct.fromMapObject(Map<String, dynamic> map){
     this._id = map['id'];
     this._productName = map['productName'];
@@ -50,6 +63,8 @@ class OrderProduct {
     this._price = map['price'];
     this._foodComments = map['foodComments'];
     this._userId = map['user_id'];
+    this._status = map['status'];
+    this._waiterId = map['waiter_id'];
   }
 
   Map<String, dynamic> toMap() {
@@ -61,6 +76,8 @@ class OrderProduct {
     map['price'] = _price;
     map['foodComments']= _foodComments;
     map['user_id'] = _userId;
+    map['status'] = _status;
+    map['waiter_id'] = _waiterId;
 
     return map;
   }
@@ -72,7 +89,9 @@ class OrderProduct {
         _beerSize = data['beerSize'],
         _price = data['price'],
         _foodComments = data['foodComments'],
-        _userId = data['user_id'];
+        _userId = data['user_id'],
+        _status = data['status'],
+        _waiterId = data['waiter_id'];
 
   Map<String, dynamic> toJson(){
     return{
@@ -82,7 +101,9 @@ class OrderProduct {
       'beerSize' : _beerSize,
       'price' : _price,
       'foodComments' : _foodComments,
-      'user_id' : _userId
+      'user_id' : _userId,
+      'status' : _status,
+      'waiter_id' : _waiterId
     };
   }
 }

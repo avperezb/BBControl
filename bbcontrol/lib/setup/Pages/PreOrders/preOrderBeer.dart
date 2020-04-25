@@ -11,11 +11,11 @@ import 'package:uuid/uuid.dart';
 
 class PreOrderBeer extends StatefulWidget {
   String order;
-  String userEmail;
+  String userId;
 
-  PreOrderBeer(String order, String userEmail){
+  PreOrderBeer(String order, String userId){
     this.order = order;
-    this.userEmail = userEmail;
+    this.userId = userId;
   }
   @override
   _PreOrderBeerState createState() => _PreOrderBeerState();
@@ -132,7 +132,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                           jsonDecode(widget.order).forEach((name,
                               content) => content.forEach((size, specs) async {
                             if(specs['quantity'] > 0){
-                              OrderProduct op = new OrderProduct.withId(uuid.v1(),name, specs['quantity'], size, specs['price'], "",widget.userEmail);
+                              OrderProduct op = new OrderProduct.withId(uuid.v1(),name, specs['quantity'], size, specs['price'], "",widget.userId, 0, "");
                               await databaseHelper.insertPreOrder(op);
                             }
                           }));
@@ -171,7 +171,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
         content) => content.forEach((size, specs){
       if(specs['quantity'] > 0){
         print(name + " "+ specs['quantity'].toString() + " " + size + " "+  specs['price'].toString() );
-        OrderProduct op = new OrderProduct.withId(uuid.v1(), name, specs['quantity'], size, specs['price'], "", widget.userEmail);
+        OrderProduct op = new OrderProduct.withId(uuid.v1(), name, specs['quantity'], size, specs['price'], "", widget.userId, 0, "");
         auxList.add(op);
       }
     }));

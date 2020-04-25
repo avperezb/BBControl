@@ -247,6 +247,7 @@ class _OrderPageState extends State<OrderPage> {
                             child: RaisedButton(
                               onPressed: () async {
                                 for(OrderProduct orderProduct in snapshot.data){
+                                  await _ordersFirestoreClass.setInitialStatus();
                                   await _ordersFirestoreClass.addOrder(orderProduct);
                                 }
                                 databaseHelper.deleteDB();

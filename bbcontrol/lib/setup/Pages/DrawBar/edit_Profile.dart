@@ -72,6 +72,7 @@ class _ProfilePageState extends State<ProfilePage>{
           loaderFunction();
           if(snapshot.hasData){
             return Scaffold(
+              resizeToAvoidBottomPadding: false,
               appBar: AppBar(
                 title: Text('$pageTitle'),
                 backgroundColor: const Color(0xFFAD4497),
