@@ -341,11 +341,6 @@ class HomeState extends State<Home> {
 }
 
 class MenuDrawer extends StatefulWidget {
-  StreamBuilder fromHome;
-  Function (StreamBuilder) callback;
-  MenuDrawer(StreamBuilder sb){
-    this.fromHome = sb;
-  } uff mk espere
   @override
   _MenuDrawerState createState() => _MenuDrawerState();
 }

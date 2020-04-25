@@ -238,7 +238,7 @@ class ReservationTile extends StatelessWidget {
         ),
       );
     else
-      Text('Due reservation',
+     return Text('Due reservation',
         style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
