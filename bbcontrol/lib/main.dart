@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: StreamProvider<Customer>.value(
-        value: AuthService().user ,
+        value: AuthService().user,
         child: MaterialApp(
           home: Wrapper(),
           onGenerateRoute: RouteGenerator.generateRoute,
@@ -41,7 +41,7 @@ class RouteGenerator {
       case '/Food':
         return MaterialPageRoute(
           builder: (_) => FoodList(
-            userEmail: args,
+            userId: args,
           ),
         );
       case '/ViewProfile' :
@@ -51,7 +51,7 @@ class RouteGenerator {
       case '/Drinks' :
         return MaterialPageRoute(
           builder: (_) => DrinksTabs(
-            userEmail: args,
+            userId: args,
           ),
         );
       case '/Order' :

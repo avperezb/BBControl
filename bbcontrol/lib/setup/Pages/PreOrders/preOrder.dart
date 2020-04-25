@@ -11,11 +11,11 @@ import 'package:uuid/uuid.dart';
 
 class PreOrderPage extends StatefulWidget {
   String order;
-  String userEmail;
+  String userId;
   var uuid = new Uuid();
-  PreOrderPage(String order, String userEmail){
+  PreOrderPage(String order, String userId){
     this.order = order;
-    this.userEmail = userEmail;
+    this.userId = userId;
   }
   @override
   _PreOrderPageState createState() => _PreOrderPageState();
@@ -99,7 +99,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                             if (content['quantity'] > 0) {
                               OrderProduct op = OrderProduct.withId(
                                   uuid.v1(),name, content['quantity'], "",
-                                  content['price'], "", widget.userEmail);
+                                  content['price'], "", widget.userId, 0, "");
                               await databaseHelper.insertPreOrder(op);
                             }
                           });
@@ -174,7 +174,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
     jsonDecode(widget.order).forEach((name, content) {
       if (content['quantity'] > 0) {
         OrderProduct op = new OrderProduct.withId(
-            uuid.v1(),name, content['quantity'], "", content['price'], "", widget.userEmail);
+            uuid.v1(),name, content['quantity'], "", content['price'], "", widget.userId, 0, "");
         auxList.add(op);
       }
     });

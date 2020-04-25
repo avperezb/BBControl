@@ -26,9 +26,17 @@ class AuthService {
         .map(_userFromFirebaseUser);
   }
 
-  //Sign in email-password
-  Future signIn(String _email, String _password) async{
-    print('log in');
+  Future<FirebaseUser> get currentIdUser async{
+    var r = await _auth.currentUser();
+    return r;
+  }
+  String getId(){
+    return getCurrentUserId().toString();
+  }
+
+    //Sign in email-password
+    Future signIn(String _email, String _password) async{
+      print('log in');
       try{
         FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _email, password: _password)).user;
         print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
@@ -38,46 +46,45 @@ class AuthService {
       }catch(e) {
         print(e.message);
         return null;
+      }
     }
-  }
 
-  //Register email-password
-  Future signUp(String _email, String _password, String _firstName, String _lastName, num _phoneNumber, DateTime _birthDate) async{
+    //Register email-password
+    Future signUp(String _email, String _password, String _firstName, String _lastName, num _phoneNumber, DateTime _birthDate) async{
       try{
         print('holaaa');
         FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();
-      await _firestoreService.createCustomer(Customer(
-        id:  user.uid,
-        email: _email,
-        firstName: _firstName,
-        lastName: _lastName,
-        birthDate: _birthDate,
-        phoneNumber: _phoneNumber
-      ));
+        await _firestoreService.createCustomer(Customer(
+            id:  user.uid,
+            email: _email,
+            firstName: _firstName,
+            lastName: _lastName,
+            birthDate: _birthDate,
+            phoneNumber: _phoneNumber
+        ));
 
-       return user;
+        return user;
         //Display for the user that we sent an email.
       }catch(e) {
         print(e.message());
         return null;
-    }
-  }
-
-  //Sign out
-  Future signOut() async{
-    if (user!= null) {
-      try {
-        return await _auth.signOut();
-      } catch (e) {
-        print(e.toString());
-        return null;
       }
     }
-  }
 
-  Future resetPassword(String email) async{
-    return _auth.sendPasswordResetEmail(email: email);
-  }
+    //Sign out
+    Future signOut() async{
+      if (user!= null) {
+        try {
+          return await _auth.signOut();
+        } catch (e) {
+          print(e.toString());
+          return null;
+        }
+      }
+    }
 
+    Future resetPassword(String email) async{
+      return _auth.sendPasswordResetEmail(email: email);
+    }
 }

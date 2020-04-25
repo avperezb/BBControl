@@ -18,6 +18,8 @@ class DatabaseHelper{
   String colPrice = 'price';
   String coolFoodComments = 'foodComments';
   String userId = 'user_id';
+  String status = 'status';
+  String waiterId = 'waiter_id';
 
   factory DatabaseHelper(){
 
@@ -46,7 +48,7 @@ class DatabaseHelper{
 
   void _createDb(Database db, int newVersion) async{
     await db.execute('CREATE TABLE $preOrderTable($colId TEXT PRIMARY KEY, $colProductName TEXT,'
-        '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT, $userId TEXT)');
+        '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT, $userId TEXT, $status INTEGER, $waiterId TEXT)');
   }
 
   void deleteDB() async{
@@ -62,9 +64,10 @@ class DatabaseHelper{
         "quantity INTEGER,"
         "beerSize INTEGER,"
         "price TEXT,"
-        "foodComments TEXT"
-        "user_email TEXT"
-        ")");
+        "foodComments TEXT,"
+        "user_email TEXT,"
+        "status INTEGER,"
+        "waiter_id TEXT)");
   }
 
   getPreOrdersMapList() async{

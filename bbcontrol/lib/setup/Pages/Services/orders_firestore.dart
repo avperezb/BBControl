@@ -4,28 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class OrdersFirestoreClass {
 
   final String id;
-  bool done = false;
-  OrdersFirestoreClass({this.id});
+  num status = 0;
+
+  OrdersFirestoreClass({this.id, this.status});
 
   final CollectionReference _ordersCollectionReference = Firestore.instance
       .collection('Orders');
 
   Future addOrder(OrderProduct orderProduct) async {
-    String message = '';
     try {
       await _ordersCollectionReference.document().setData(
           orderProduct.toJson());
     } catch (e) {
-      message = e.message;
-    }
-    if(message.length==0){
-      done = true;
-    }
-    else{
-      done = false;
+      e.message;
     }
   }
-
+  num getOperationStatus() {
+    return status;
   bool getOperationStatus(){
     return done;
   }
@@ -38,6 +33,12 @@ class OrdersFirestoreClass {
       'email': email,
       'birthDate': birthDate,
       'phoneNumber': phoneNumber
+    });
+  }
+
+  Future setInitialStatus() async{
+    return await _ordersCollectionReference.document(id).setData({
+      'status': status
     });
   }
 }

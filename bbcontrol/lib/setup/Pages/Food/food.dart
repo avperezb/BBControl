@@ -18,9 +18,9 @@ class FoodList extends StatefulWidget {
   var mealPrices = '';
   List<String> mealNames = [];
   var jsonOrder = '';
-  String userEmail;
-  FoodList({userEmail}){
-    this.userEmail = userEmail;
+  String userId;
+  FoodList({userId}){
+    this.userId = userId;
     getInfo();
   }
 
@@ -190,7 +190,7 @@ class _FoodListState extends State<FoodList> {
                             print(sumQuantity);
                             if(sumQuantity > 0){
                               Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => PreOrderPage(widget.mealPrices, widget.userEmail)),);
+                                  context) => PreOrderPage(widget.mealPrices, widget.userId)),);
                             }
                             else{
                               showOverlayNotification((context) {
