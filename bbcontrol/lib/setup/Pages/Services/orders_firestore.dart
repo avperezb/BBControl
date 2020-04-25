@@ -27,7 +27,6 @@ class OrdersFirestoreClass {
   }
 
   bool getOperationStatus(){
-
     return done;
   }
 
