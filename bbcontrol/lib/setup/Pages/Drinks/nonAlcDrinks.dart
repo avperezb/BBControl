@@ -18,6 +18,7 @@ class NonAlcoholicDrinks extends StatefulWidget {
   var jsonOrder = '';
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
+  String userEmail;
 
   Future<List<Map<String, dynamic>>> getInfo() async{
 
@@ -46,7 +47,8 @@ class NonAlcoholicDrinks extends StatefulWidget {
 
   }
 
-  NonAlcoholicDrinks(){
+  NonAlcoholicDrinks(String userEmail){
+    this.userEmail = userEmail;
     getInfo();
   }
 
@@ -175,7 +177,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                           print(sumQuantity);
                           if(sumQuantity > 0){
                             Navigator.push(context, MaterialPageRoute(builder: (
-                                context) => PreOrderPage(widget.drinkPrices)),);
+                                context) => PreOrderPage(widget.drinkPrices, widget.userEmail)),);
                           }
                           else{
                             showOverlayNotification((context) {

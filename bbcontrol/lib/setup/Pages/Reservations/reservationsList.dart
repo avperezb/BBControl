@@ -7,15 +7,18 @@ import 'package:intl/intl.dart';
 
 import '../Extra/ColorLoader.dart';
 import '../Extra/DotType.dart';
-import 'reservationsAux.dart';
 
 class ReservationsList extends StatelessWidget {
+  String userId;
   ReservationDatabase db = new ReservationDatabase();
+  ReservationsList(String userId){
+    this.userId = userId;
+  }
 
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: Firestore.instance.collection(
-          "/Reservations")
+          "/Reservations").where("user_Id", isEqualTo: userId)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
@@ -68,7 +71,7 @@ class ReservationsList extends StatelessWidget {
                             ),
                           ),
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation()),);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation(userId)),);
                           },
                         ),
                       )
@@ -98,7 +101,7 @@ class ReservationsList extends StatelessWidget {
                     ),
                     color: const Color(0xFFD7384A),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation()),);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation(userId)),);
                     },
                     child: Text('Add a reservation',
                       style: TextStyle(
@@ -170,7 +173,7 @@ class ReservationTile extends StatelessWidget {
               children: <Widget>[
                 getReservationStatus(),
                 Container(
-                  width: 50,
+                  width: 55,
                   child: Row(
                     children: <Widget>[
                       Container(
@@ -238,7 +241,7 @@ class ReservationTile extends StatelessWidget {
         ),
       );
     else
-      Text('Due reservation',
+     return Text('Due reservation',
         style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,

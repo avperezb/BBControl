@@ -20,15 +20,39 @@ class MyApp extends StatelessWidget {
       child: StreamProvider<Customer>.value(
         value: AuthService().user ,
         child: MaterialApp(
-            home: Wrapper(),
-            routes : <String, WidgetBuilder>{
-              '/Food' : (BuildContext context)=> FoodList(),
-              '/Drinks' : (BuildContext context)=> DrinksTabs(),
-              '/Order' : (BuildContext context)=>OrderPage(),
-              '/ViewProfile': (BuildContext context)=> ProfilePage(),
-            }
+          home: Wrapper(),
+          onGenerateRoute: RouteGenerator.generateRoute,
         ),
       ),
     );
+  }
+}
+
+
+class RouteGenerator {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    // Getting arguments passed in while calling Navigator.pushNamed
+    final args = settings.arguments;
+
+    switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(builder: (_) => Home());
+      case '/Food':
+        return MaterialPageRoute(
+          builder: (_) => FoodList(
+            userEmail: args,
+          ),
+        );
+      case '/ViewProfile' :
+        return MaterialPageRoute(
+          builder: (_) => ProfilePage(),
+        );
+      case '/Drinks' :
+        return MaterialPageRoute(
+          builder: (_) => DrinksTabs(
+            userEmail: args,
+          ),
+        );
+    }
   }
 }

@@ -1,29 +1,20 @@
-import 'package:bbcontrol/models/finalOrderProduct.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
-import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
-import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
-import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
-import 'package:bbcontrol/setup/Pages/Food/food.dart';
-import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:sqflite/sqflite.dart';
 
 class OrderPage extends StatefulWidget {
-
+  String userId;
+  OrderPage({this.userId});
   @override
   _OrderPageState createState() => _OrderPageState();
 }
 
 class _OrderPageState extends State<OrderPage> {
-
-
-  List<FinalOrderProduct> finalListTemp = new List<FinalOrderProduct>();
 
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
@@ -102,7 +93,7 @@ class _OrderPageState extends State<OrderPage> {
                                     size: 45),
                                 color: const Color(0xFFD7384A),
                                 onPressed: () {
-                                  Navigator.pushNamedAndRemoveUntil(context, '/Drinks', ModalRoute.withName('/'));
+                                  Navigator.of(context).pushNamedAndRemoveUntil('/Drinks', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
                               ),
                               IconButton(
@@ -110,7 +101,7 @@ class _OrderPageState extends State<OrderPage> {
                                     size: 45),
                                 color: const Color(0xFFD7384A),
                                 onPressed: () {
-                                  Navigator.pushNamedAndRemoveUntil(context, '/Food', ModalRoute.withName('/'));
+                                  Navigator.of(context).pushNamedAndRemoveUntil('/Food', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
                               ),
                             ],
@@ -171,7 +162,7 @@ class _OrderPageState extends State<OrderPage> {
                         for(OrderProduct orderProduct in snapshot.data)
                           ListTile(
                             title: Container(
-                              margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment
                                     .spaceBetween,
@@ -206,6 +197,7 @@ class _OrderPageState extends State<OrderPage> {
                                     ],
                                   ),
                                   Container(
+                                    margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                     child: Row(
                                       children: <Widget>[
                                         Text(formatCurrency.format(
@@ -215,7 +207,7 @@ class _OrderPageState extends State<OrderPage> {
                                           icon: Icon( Icons.delete_outline,
                                               color: Colors.red),
                                           onPressed: () async{
-                                            await databaseHelper.deletePreOrder(orderProduct.productName);
+                                            await databaseHelper.deletePreOrder(orderProduct.id);
                                             setState(() {
                                               auxReload = !auxReload;
                                             });

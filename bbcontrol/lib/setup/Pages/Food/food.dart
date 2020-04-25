@@ -13,10 +13,16 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class FoodList extends StatefulWidget {
+
   List<OrderProduct> productsOrder = new List<OrderProduct>();
   var mealPrices = '';
   List<String> mealNames = [];
   var jsonOrder = '';
+  String userEmail;
+  FoodList({userEmail}){
+    this.userEmail = userEmail;
+    getInfo();
+  }
 
   Future<List<Map<String, dynamic>>> getInfo() async{
 
@@ -43,10 +49,6 @@ class FoodList extends StatefulWidget {
     print(mealPrices);
     return messages;
 
-  }
-
-  FoodList(){
-    getInfo();
   }
 
   @override
@@ -188,7 +190,7 @@ class _FoodListState extends State<FoodList> {
                             print(sumQuantity);
                             if(sumQuantity > 0){
                               Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => PreOrderPage(widget.mealPrices)),);
+                                  context) => PreOrderPage(widget.mealPrices, widget.userEmail)),);
                             }
                             else{
                               showOverlayNotification((context) {

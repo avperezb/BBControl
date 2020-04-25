@@ -5,15 +5,20 @@ class Reservation {
   DateTime _endTime;
   int _numPeople;
   List<String> _preferences;
+  String _userId;
 
-  Reservation(this._date, this._endTime, this._startTime, this._numPeople, this._preferences);
+  Reservation(this._date, this._endTime, this._startTime, this._numPeople, this._preferences, this._userId);
 
   DateTime get date => _date;
   DateTime get startTime => _startTime;
   DateTime get endTime => _endTime;
   int get numPeople => _numPeople;
   List<String> get preferences => _preferences;
+  String get userId => _userId;
 
+  set userId(String userId){
+    this._userId = userId;
+  }
   set date(DateTime date){
     this._date = date;
   }
@@ -35,7 +40,8 @@ class Reservation {
         _startTime = data['start'],
         _endTime = data['end'],
         _numPeople = data['num_people'],
-        _preferences = data['preferences'];
+        _preferences = data['preferences'],
+        _userId = data['user_Id'];
 
   Map<String, dynamic> toJson(){
     return{
@@ -44,6 +50,7 @@ class Reservation {
       'end' : _endTime,
       'num_people' : _numPeople,
       'preferences' : _preferences,
+      'user_Id' : _userId
     };
   }
 }

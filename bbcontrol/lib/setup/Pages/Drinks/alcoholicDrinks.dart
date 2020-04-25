@@ -14,6 +14,10 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
+  String userEmail;
+  AlcoholicDrinks(String userEmail){
+    this.userEmail = userEmail;
+  }
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -36,7 +40,7 @@ class AlcoholicDrinks extends StatelessWidget {
             margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: ListView(
               children: snapshot.data.documents.map<SingleBeer>((DocumentSnapshot beer ){
-                return SingleBeer(beer);
+                return SingleBeer(beer, userEmail);
               }).toList(),
             ),
           );
@@ -52,13 +56,15 @@ class SingleBeer extends StatelessWidget {
   String description;
   String image;
   String drinkId;
+  String userEmail;
 
-  SingleBeer(DocumentSnapshot beer){
+  SingleBeer(DocumentSnapshot beer, String userEmail){
     this.drinkName = beer['name'];
     this.volume = beer['volume'];
     this.description = beer['description'];
     this.image = beer['image'];
     this.drinkId = beer.documentID;
+    this.userEmail = userEmail;
   }
 
   Widget build(BuildContext context) {
@@ -79,7 +85,7 @@ class SingleBeer extends StatelessWidget {
       child: Container(
         child: ListTile(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName)),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userEmail)),);
           },
           leading: CachedNetworkImage(
             imageUrl: image,
@@ -115,8 +121,9 @@ class OrderBeer extends StatefulWidget {
   int pintPrice = 11000;
   int jarPrice = 34000;
   List<OrderProduct> productsList;
+  String userEmail;
 
-  OrderBeer(String beer){
+  OrderBeer(String beer, String userEmail){
     this.beer = beer;
     this.productsList = new List<OrderProduct>();
   }
@@ -383,7 +390,8 @@ class _OrderBeerState extends State<OrderBeer> {
                         if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
                           print(jsonDecode(order));
                           Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => PreOrderBeer(order)),);
+                              context) => PreOrderBeer(order, widget.userEmail)),
+                          );
                         }
                         else{
                           noProductsToast();
