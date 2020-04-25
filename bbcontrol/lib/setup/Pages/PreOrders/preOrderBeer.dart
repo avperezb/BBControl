@@ -1,20 +1,21 @@
 import 'dart:convert';
 
-import 'package:bbcontrol/models/finalOrderProduct.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
-import 'package:bbcontrol/setup/Pages/Order/order.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 class PreOrderBeer extends StatefulWidget {
   String order;
-  PreOrderBeer(String order){
+  String userEmail;
+
+  PreOrderBeer(String order, String userEmail){
     this.order = order;
+    this.userEmail = userEmail;
   }
   @override
   _PreOrderBeerState createState() => _PreOrderBeerState();
@@ -22,8 +23,7 @@ class PreOrderBeer extends StatefulWidget {
 
 class _PreOrderBeerState extends State<PreOrderBeer> {
 
-
-  List<FinalOrderProduct> finalListTemp = new List<FinalOrderProduct>();
+  var uuid = new Uuid();
 
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
@@ -132,7 +132,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                           jsonDecode(widget.order).forEach((name,
                               content) => content.forEach((size, specs) async {
                             if(specs['quantity'] > 0){
-                              OrderProduct op = new OrderProduct(name, specs['quantity'], size, specs['price'], "");
+                              OrderProduct op = new OrderProduct.withId(uuid.v1(),name, specs['quantity'], size, specs['price'], "",widget.userEmail);
                               await databaseHelper.insertPreOrder(op);
                             }
                           }));
@@ -171,7 +171,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
         content) => content.forEach((size, specs){
       if(specs['quantity'] > 0){
         print(name + " "+ specs['quantity'].toString() + " " + size + " "+  specs['price'].toString() );
-        OrderProduct op = new OrderProduct.withId(name.hashCode, name, specs['quantity'], size, specs['price'], "");
+        OrderProduct op = new OrderProduct.withId(uuid.v1(), name, specs['quantity'], size, specs['price'], "", widget.userEmail);
         auxList.add(op);
       }
     }));

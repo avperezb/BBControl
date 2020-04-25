@@ -1,5 +1,4 @@
 import 'package:bbcontrol/models/reservation.dart';
-import 'package:bbcontrol/setup/Pages/Reservations/table.dart';
 import 'package:bbcontrol/setup/Pages/Services/reservations_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,10 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import '../Services/connectivity.dart';
-import 'reservationsList.dart';
 
 class MakeReservation extends StatefulWidget {
-
+  String userEmail;
+  MakeReservation(String userEmail){
+    this.userEmail = userEmail;
+  }
   @override
   _MakeReservationState createState() => _MakeReservationState();
 }
@@ -47,7 +48,7 @@ class _MakeReservationState extends State<MakeReservation> {
             Form(
               key: _formKey,
               child: SizedBox(
-                height: MediaQuery.of(context).size.height*.78,
+                height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 80,
                 child: ListView(
                   children: <Widget>[
                     Container(
@@ -65,11 +66,10 @@ class _MakeReservationState extends State<MakeReservation> {
                             if (input == null) {
                               return 'Please enter a date';
                             }
-                            else{
-                              if(input.isBefore(new DateTime.now())){
-                                return  'The minimum date is ${formatDate.format(DateTime.now().add(Duration(days: 1)))}';
-                              }
+                            else if (input.isBefore(new DateTime.now())){
+                              return  'The minimum date is ${formatDate.format(DateTime.now().add(Duration(days: 1)))}';
                             }
+                            else return null;
                           },
                           format: formatDate,
                           decoration:const InputDecoration(
@@ -98,6 +98,7 @@ class _MakeReservationState extends State<MakeReservation> {
                           else if(input.hour < 15){
                             return 'The minimum starting hour is 03:00 PM';
                           }
+                          else return null;
                         },
                         format: DateFormat("hh:mm a"),
                         decoration:const InputDecoration(
@@ -129,6 +130,7 @@ class _MakeReservationState extends State<MakeReservation> {
                               .difference(input) > Duration(hours:  3)){
                             return 'A reservation can\'t last more than 3 hours';
                           }
+                          else return null;
                         },
                         format: DateFormat("hh:mm a"),
                         decoration:const InputDecoration(
@@ -156,12 +158,13 @@ class _MakeReservationState extends State<MakeReservation> {
                           WhitelistingTextInputFormatter.digitsOnly
                         ],
                         validator: (input) {
-                          if (input == null) {
+                          if (input.isEmpty) {
                             return 'Please add a number';
                           }
-                          if( num.parse(input) < 2 || num.parse(input) > 10){
+                          else if( num.parse(input) < 2 || num.parse(input) > 10){
                             return 'The number must be between 2 and 10 people';
                           }
+                          else return null;
                         },
                         decoration:const InputDecoration(
                             icon: const Icon(Icons.group,
@@ -181,6 +184,7 @@ class _MakeReservationState extends State<MakeReservation> {
                         ),),
                     ),
                     Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
@@ -265,7 +269,7 @@ class _MakeReservationState extends State<MakeReservation> {
               ),
             ),
             Container(
-              margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
+              margin: EdgeInsets.fromLTRB(15, 0, 15, 5),
               child: RaisedButton(
                 padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
                 shape: RoundedRectangleBorder(
@@ -310,7 +314,7 @@ class _MakeReservationState extends State<MakeReservation> {
                       if(_nearbar) preferences.add(('near bar'));
                       if(_neartv) preferences.add('near tv');
                       Reservation reservation = new Reservation(
-                          _date, _endTime, _startTime, _numPeople, preferences);
+                          _date, _endTime, _startTime, _numPeople, preferences, widget.userEmail);
                       await _reservationsFirestoreClass.addReservation(reservation);
                       Navigator.pop(context);
                     }

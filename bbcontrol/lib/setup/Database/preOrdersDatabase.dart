@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:sqflite/sqflite.dart';
@@ -18,6 +17,7 @@ class DatabaseHelper{
   String colBeerSize = 'beerSize';
   String colPrice = 'price';
   String coolFoodComments = 'foodComments';
+  String userId = 'user_id';
 
   factory DatabaseHelper(){
 
@@ -30,7 +30,7 @@ class DatabaseHelper{
   Future<Database> get database async{
 
     if(_database== null) {
-     _database = await initializeDatabase();
+      _database = await initializeDatabase();
     }
     return _database;
   }
@@ -46,9 +46,9 @@ class DatabaseHelper{
 
   void _createDb(Database db, int newVersion) async{
     await db.execute('CREATE TABLE $preOrderTable($colId TEXT PRIMARY KEY, $colProductName TEXT,'
-    '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT)');
+        '$colQuantity INTEGER, $colBeerSize TEXT, $colPrice INTEGER, $coolFoodComments TEXT, $userId TEXT)');
   }
-  
+
   void deleteDB() async{
     Database db = await this.database;
     await db.execute('DELETE FROM $preOrderTable');
@@ -63,13 +63,14 @@ class DatabaseHelper{
         "beerSize INTEGER,"
         "price TEXT,"
         "foodComments TEXT"
+        "user_email TEXT"
         ")");
   }
 
   getPreOrdersMapList() async{
     Database db = await this.database;
-    
-   // var result = await db.rawQuery('SELECT * FROM $preOrderTable');
+
+    // var result = await db.rawQuery('SELECT * FROM $preOrderTable');
     var result = await db.query(preOrderTable );
     return result;
   }
@@ -85,9 +86,9 @@ class DatabaseHelper{
     var result = await db.update(preOrderTable, pO.toMap(), where: '$colId = ?', whereArgs: [pO.productName]);
   }
 
-  Future <int> deletePreOrder(String name) async{
+  Future <int> deletePreOrder(String id) async{
     var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $preOrderTable WHERE $colProductName = \'$name\'');
+    int result = await db.rawDelete('DELETE FROM $preOrderTable WHERE $colId = \'$id\'');
     return result;
   }
 

@@ -11,10 +11,8 @@ import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Order/order.dart';
-import 'package:bbcontrol/setup/Pages/Reservations/reservationsAux.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -91,7 +89,7 @@ class HomeState extends State<Home> {
                               color: const Color(0xFF69B3E7),
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => ReservationsList()),);
+                                    builder: (context) => ReservationsList(userId)),);
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -127,10 +125,8 @@ class HomeState extends State<Home> {
                                           0.0, 90.0, 0.0, 90.0),
                                       color: const Color(0xFFD7384A),
                                       onPressed: () {
-                                        Navigator.push(
-                                          context, MaterialPageRoute(
-                                            builder: (context) =>
-                                                DrinksTabs()),);
+                                        Navigator.of(context).pushNamed('/Drinks', arguments: userId);
+                                        showToast(context);
                                       },
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment
@@ -231,10 +227,7 @@ class HomeState extends State<Home> {
                                                 0.0, 90.0, 0.0, 90.0),
                                             color: const Color(0xFF996480),
                                             onPressed: () {
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          FoodList()));
+                                             Navigator.of(context).pushNamed('/Food', arguments: userId);
                                               showToast(context);
                                               if (!cStatus) {
                                                 showOverlayNotification((
