@@ -1,6 +1,7 @@
 import 'package:age/age.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:passwordfield/passwordfield.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -16,20 +18,20 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpState extends State<SignUpPage>{
 
-  final AuthService _auth = AuthService();
-
   String _email, _password;
   String error = '';
   DateTime _birthDate;
-  String _fullName;
+  String _firstName;
+  String _lastName;
   num _phoneNumber;
+  final AuthService _auth = AuthService();
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  bool isConnected = true;
-
+  bool isConnected = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final format = DateFormat("yMd");
 
   Widget build(BuildContext context) {
+    isConnected = checkConnection.getConnectionStatus(context);
     return new Scaffold(
       backgroundColor: Colors.white,
       appBar: new AppBar(
@@ -38,7 +40,7 @@ class _SignUpState extends State<SignUpPage>{
               color: Colors.white
           ),
         ),
-        backgroundColor: Color(0xFFD7384A),
+        backgroundColor: const Color(0xFFAD4497),
       ),
       body: Form(
         key: _formKey,
@@ -64,29 +66,51 @@ class _SignUpState extends State<SignUpPage>{
               textAlign: TextAlign.center,
             ),
             Container(
-                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                 child: TextFormField(
                   validator: (input){
                     if(input.isEmpty){
-                      return 'Please type your full name';
+                      return 'Please type your first name';
                     }
                     if(input.isNotEmpty && !RegExp(r'^[a-z A-Z,.\-]+$').hasMatch(input)){
-                      return 'This field cannot contain numbers';
+                      return 'This field cannot contain numbers or special characters';
                     }
                   },
-                  onSaved: (input) => _fullName = input,
+                  onSaved: (input) => _firstName = input,
                   decoration: InputDecoration(
-                    icon: const Icon(Icons.person,
+                    suffixIcon: const Icon(Icons.person,
                         color: const Color(0xFFD8AE2D)
                     ),
-                    hintText: 'Enter your first and last name',
-                    labelText: 'Name',
+                    hintText: 'Enter your first name',
+                    labelText: 'First name',
                   ),
-                  maxLength: 40,
+                  maxLength: 20,
                 )
             ),
             Container(
-                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type your last name';
+                    }
+                    if(input.isNotEmpty && !RegExp(r'^[a-z A-Z,.\-]+$').hasMatch(input)){
+                      return 'This field cannot contain numbers or special characters';
+                    }
+                  },
+                  onSaved: (input) => _lastName = input,
+                  decoration: InputDecoration(
+                    suffixIcon: const Icon(Icons.person_outline,
+                        color: const Color(0xFFD8AE2D)
+                    ),
+                    hintText: 'Enter your last name',
+                    labelText: 'Last name',
+                  ),
+                  maxLength: 20,
+                )
+            ),
+            Container(
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                 child: Column(
                     children: <Widget>[
                       DateTimeField(
@@ -109,7 +133,7 @@ class _SignUpState extends State<SignUpPage>{
                           },
                           format: format,
                           decoration:const InputDecoration(
-                              icon: const Icon(Icons.calendar_today,
+                              suffixIcon: const Icon(Icons.calendar_today,
                                   color: const Color(0xFFD8AE2D)
                               ),
                               labelText: 'Date of birth'
@@ -126,8 +150,9 @@ class _SignUpState extends State<SignUpPage>{
                     ])
             ),
             Container(
-                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                 child: TextFormField(
+                  keyboardType: TextInputType.emailAddress,
                   validator: (input){
                     if(input.isEmpty){
                       return 'Please type an email';
@@ -138,7 +163,7 @@ class _SignUpState extends State<SignUpPage>{
                   },
                   onSaved: (input) => _email = input,
                   decoration: InputDecoration(
-                    icon: const Icon(Icons.email,
+                    suffixIcon: const Icon(Icons.alternate_email,
                         color: const Color(0xFFD8AE2D)
                     ),
                     hintText: 'Enter an email address',
@@ -148,7 +173,7 @@ class _SignUpState extends State<SignUpPage>{
                 )
             ),
             Container(
-                padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                 child: TextFormField(
                   keyboardType: TextInputType.phone,
                   validator: (input){
@@ -166,7 +191,7 @@ class _SignUpState extends State<SignUpPage>{
                   maxLength: 10,
                   onSaved: (input) => _phoneNumber = num.parse(input),
                   decoration: InputDecoration(
-                    icon: const Icon(Icons.phone,
+                    suffixIcon: const Icon(Icons.phone,
                         color: const Color(0xFFD8AE2D)
                     ),
                     hintText: 'Enter a phone number',
@@ -175,22 +200,36 @@ class _SignUpState extends State<SignUpPage>{
                 )
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
               child: TextFormField(
-                validator: (input){
-                  if(input.length<6){
-                    return 'Your password needs to be atleast 6 characters';
+                validator: (input) {
+                  if(input.isNotEmpty){
+                    String patttern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
+                    RegExp regExp = new RegExp(patttern);
+                    if (!regExp.hasMatch(input)) {
+                      return 'Non special characters, at least 1 letter and number 6+ chars.';
+                    }
+                    if(input.length<6){
+                      return 'Your password needs to be atleast 6 characters';
+                    }
+                  }
+                  else{
+                    return 'Please enter your password';
                   }
                 },
-                onSaved: (input)=> _password = input,
+                onChanged: (input) {
+                  setState(() => _password = input);
+                },
                 decoration: InputDecoration(
-                  icon: const Icon(Icons.remove_red_eye,
-                      color: const Color(0xFFD8AE2D)
+                  suffixIcon: const Icon(Icons.remove_red_eye,
+                      color:const Color(0xFFD8AE2D)
                   ),
                   hintText: 'Enter your password',
                   labelText: 'Password',
+                  contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                 ),
                 obscureText: true,
+                maxLength: 15,
               ),
             ),
             Container(
@@ -200,8 +239,8 @@ class _SignUpState extends State<SignUpPage>{
                 shape: RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(10.0),
                 ),
-                color: const Color(0xFFD7384A),
-                onPressed:  () async {
+                color: const Color(0xFFAD4497),
+                onPressed: () async {
                   loaderFunction();
                   checkConnectivity(context);
                   if(!isConnected){
@@ -213,12 +252,11 @@ class _SignUpState extends State<SignUpPage>{
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
                       dynamic result = await _auth.signUp(
-                          _email, _password, _fullName, _phoneNumber,
+                          _email, _password, _firstName, _lastName, _phoneNumber,
                           _birthDate);
-                      if (result != null){
                         print(_email + _password);
-                        Navigator.pop(context);
-                      }
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => Home(customer: result)));
                     }
                   }
                 },

@@ -6,7 +6,7 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CustomersFirestoreClass _firestoreService = CustomersFirestoreClass();
-  Customer _currentCustomer;
+  Employee _currentCustomer;
 
   Future<String> getCurrentUserId() async{
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
@@ -16,12 +16,12 @@ class AuthService {
 
 
     //Create object based on FirebaseUser
-  Customer _userFromFirebaseUser(FirebaseUser user){
-    return user != null ? Customer(id: user.uid, fullName: user.displayName) : null;
+  Employee _userFromFirebaseUser(FirebaseUser user){
+    return user != null ? Employee(id: user.uid, firstName: user.displayName) : null;
   }
 
   //Auth change user stream
-  Stream<Customer> get user{
+  Stream<Employee> get user{
     return _auth.onAuthStateChanged
         .map(_userFromFirebaseUser);
   }
@@ -32,7 +32,7 @@ class AuthService {
       try{
         FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _email, password: _password)).user;
         print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
-        Customer customer = await _firestoreService.getCustomer(user.uid);
+        Employee customer = await _firestoreService.getCustomer(user.uid);
         print(customer);
         return customer;
       }catch(e) {
@@ -42,23 +42,24 @@ class AuthService {
   }
 
   //Register email-password
-  Future signUp(String _email, String _password, String _fullName, num _phoneNumber, DateTime _birthDate) async{
+  Future signUp(String _email, String _password, String _firstName, String _lastName, num _phoneNumber, DateTime _birthDate) async{
       try{
+        print('holaaa');
         FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();
-      await _firestoreService.createCustomer(Customer(
+      await _firestoreService.createCustomer(Employee(
         id:  user.uid,
         email: _email,
-        fullName: _fullName,
+        firstName: _firstName,
+        lastName: _lastName,
         birthDate: _birthDate,
         phoneNumber: _phoneNumber
       ));
-      print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
-       Customer customer = await _firestoreService.getCustomer(user.uid);
 
-       return customer;
+       return user;
         //Display for the user that we sent an email.
       }catch(e) {
+        print(e.message());
         return null;
     }
   }
