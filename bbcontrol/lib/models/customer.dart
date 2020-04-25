@@ -1,24 +1,27 @@
 //Class for BBC customers collection documents
 
-class Customer {
+class Employee {
 
   final String id;
-  final String fullName;
+  final String firstName;
+  final String lastName;
   final String email;
   final DateTime birthDate;
   final int phoneNumber;
 
-  Customer({
+  Employee({
     this.id,
-    this.fullName,
+    this.firstName,
+    this.lastName,
     this.email,
     this.birthDate,
     this.phoneNumber
   });
 
-  Customer.fromData(Map<String, dynamic> data):
+  Employee.fromData(Map<String, dynamic> data):
     id = data['id'],
-    fullName = data['fullName'],
+    firstName = data['firstName'],
+    lastName = data['lastName'],
     email = data['email'],
     birthDate = data['birthDate'],
     phoneNumber = data['phoneNumber'];
@@ -26,7 +29,8 @@ class Customer {
   Map<String, dynamic> toJson(){
     return{
       'id' : id,
-      'fullName': fullName,
+      'firstName': firstName,
+      'lastName': lastName,
       'email' : email,
       'birthDate' : birthDate,
       'phoneNumber' : phoneNumber

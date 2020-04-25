@@ -4,6 +4,8 @@ import 'package:bbcontrol/models/customer.dart';
 import 'package:bbcontrol/models/navigation_model.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
+import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
+import 'package:bbcontrol/setup/Pages/DrawBar/expenses_Control.dart';
 import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
@@ -25,7 +27,7 @@ class Home extends StatefulWidget {
     Key key,
     @required this.customer
   }): super(key: key);
-  final Customer customer;
+  final Employee customer;
 
   @override
   HomeState createState() => HomeState();
@@ -39,16 +41,15 @@ class HomeState extends State<Home> {
   List<OrderProduct> orderList;
   int count = 0;
   final iconSize = 60.0;
-  final database = Firestore.instance;
   bool isConnected = true;
 
   Widget build(BuildContext context) {
 
-    print('holaaa'+widget.customer.id.toString());
     return new StreamBuilder(
-        stream: database.collection('Customers').document('${widget.customer.id}').snapshots(),
+        stream: Firestore.instance.collection('Customers').document('${widget.customer.id}').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
+
             return ColorLoader5(
               dotOneColor: Colors.redAccent,
               dotTwoColor: Colors.blueAccent,
@@ -58,11 +59,19 @@ class HomeState extends State<Home> {
               duration: Duration(seconds: 1),
             );
           }
-          return Scaffold(
+          else {
+            String userId = snapshot.data['id'];
+            String userFirstName = snapshot.data['firstName'];
+            String userLastName = snapshot.data['lastName'];
+            DateTime dateBirth = snapshot.data['birthDate'].toDate();
+            String userEmail = snapshot.data['email'];
+            num phoneNumber = snapshot.data['phoneNumber'];
+
+            return Scaffold(
               appBar: AppBar(
                 title: Text('Menu'),
                 centerTitle: true,
-                backgroundColor: const Color(0xFF8c7c9c),
+                backgroundColor: const Color(0xFFAD4497),
               ),
               body: Builder(
                 builder: (context) =>
@@ -298,7 +307,7 @@ class HomeState extends State<Home> {
                             child: FlatButton(
                               padding: EdgeInsets.fromLTRB(
                                   0.0, 10.0, 0.0, 10.0),
-                              color: const Color(0xFFB6B036),
+                              color: const Color(0xFF6DAC3B),
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) => OrderPage()));
@@ -322,8 +331,9 @@ class HomeState extends State<Home> {
                       ],
                     ),
               ),
-              endDrawer: new MenuDrawer(),
-          );
+              endDrawer: new MenuDrawer(userId, dateBirth, userFirstName, userLastName, userEmail, phoneNumber),
+            );
+          }
         }
     );
   }
@@ -341,6 +351,26 @@ class HomeState extends State<Home> {
 }
 
 class MenuDrawer extends StatefulWidget {
+
+  String userIdFromHome;
+  String userFirstName;
+  String userLastName;
+  String userEmail;
+  DateTime userDateBirth;
+  num userPhoneNumber;
+
+  Function (String, String, String) callback;
+
+  MenuDrawer(String userId, DateTime bd, String userFName, String userLName, String email, num phone){
+
+    this.userIdFromHome = userId;
+    this.userFirstName = userFName;
+    this.userLastName = userLName;
+    this.userEmail = email;
+    this.userDateBirth = bd;
+    this.userPhoneNumber = phone;
+  }
+
   @override
   _MenuDrawerState createState() => _MenuDrawerState();
 }
@@ -352,136 +382,174 @@ class _MenuDrawerState extends State<MenuDrawer> {
   NavigationModel option2 = new NavigationModel("My orders", Icons.view_list);
   NavigationModel option3 = new NavigationModel("Settings", Icons.settings);
   NavigationModel option4 = new NavigationModel("Log out", Icons.exit_to_app);
+  NavigationModel option5 = new NavigationModel("Call waiter", Icons.restaurant_menu);
   final AuthService _auth = AuthService();
   bool isSwitched = false;
   bool isButtonExpensesDisabled = true;
-
-
   @override
   Widget build(BuildContext context) {
-    List<NavigationModel> options = [option1, option2, option3, option4];
+
     return Container(
       child: new Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            SizedBox(
-              height: 150.0,
-              child: DrawerHeader(
-                padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
-                child: Text('33',
-                    style: TextStyle(fontSize: 20)),
-                decoration: BoxDecoration(
-                    color: const Color(0xFF8c7c9c)
+        child: Container(
+          color: Color(0xFFEAD0E5),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              SizedBox(
+                height: 150.0,
+                child: DrawerHeader(
+                  decoration: new BoxDecoration(
+                      color: Color(0xFFB75BA4)),
+                  padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
+                  child: Column(
+                    children:<Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
+                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
+                        child: Text('${widget.userFirstName}',
+                            style: TextStyle(fontSize: 20),
+                        ),
+                        decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: Colors.black87, width: 1.0)),
+                            color: Colors.transparent
+                        ),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      Container(
+                          margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
+                          child: Text('${widget.userEmail}',
+                            style: TextStyle(fontSize: 17),
+                          ),
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  ),
                 ),
               ),
-            ),
-            Card( ////                         <-- Card widget
-              child: ListTile(
-                leading: Icon(option1.icon),
-                title: Text(option1.title, style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600)),
-                onTap: action1,
+              Card(////                         <-- Card widget
+                color: Color(0xFFF5E8F2),
+                child: ListTile(
+                  leading: Icon(option1.icon),
+                  title: Text(option1.title, style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600)),
+                  onTap: action1,
+                ),
               ),
-            ),
-            Card( //                           <-- Card widget
-              child: ListTile(
-                leading: Icon(option2.icon),
-                title: Text(option2.title, style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600)),
-                onTap: action2,
+              Card( ////             <-- Card widget
+                color: Color(0xFFF5E8F2),
+                child: ListTile(
+                  leading: Icon(option2.icon),
+                  title: Text(option2.title, style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600)),
+                  onTap: action2,
+                ),
               ),
-            ),
-            Card( //                           <-- Card widget
-              child: ExpansionTile(
-                initiallyExpanded: false,
-                leading: Icon(option3.icon),
-                title: Text(option3.title, style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600)),
-                trailing: Icon(Icons.expand_more),
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
-                    child: Row(
-                      children: <Widget>[
-                        FlatButton(
-                          textColor: Colors.blueGrey,
-                          child: Text(
-                            'Expenses Control',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w400),
+              Card( ////             <-- Card widget
+                color: Color(0xFFF5E8F2),
+                child: ListTile(
+                  leading: Icon(option5.icon),
+                  title: Text(option5.title, style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600)),
+                  onTap: action2,
+                ),
+              ),
+              Card( //
+                color: Color(0xFFF5E8F2),//                          <-- Card widget
+                child: ExpansionTile(
+                  initiallyExpanded: false,
+                  leading: Icon(option3.icon),
+                  title: Text(option3.title, style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600)),
+                  trailing: Icon(Icons.expand_more),
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                      child: Row(
+                        children: <Widget>[
+                          FlatButton(
+                            textColor: Colors.blueGrey,
+                            child: Text(
+                              'Expenses Control',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w400),
+                            ),
+                            color: Colors.transparent,
+                            onPressed: () {
+                              if (!isSwitched) {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ExpensesControlPage()));
+                              }
+                            },
                           ),
-                          color: Colors.transparent,
-                          onPressed: () {
-                            if (!isSwitched) {
-                              //Open configuration for this
-                            }
-                          },
-                        ),
-                        Switch(
-                          value: isSwitched,
-                          onChanged: (value) {
-                            if (!isSwitched) {
-                              setState(() {
-                                isSwitched = value;
-                              });
-                            }
-                            else {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    _buildAboutDialog(context),
-                              );
-                              // Perform some action
+                          Switch(
+                            value: isSwitched,
+                            onChanged: (value) {
+                              if (!isSwitched) {
+                                setState(() {
+                                  isSwitched = value;
+                                });
+                              }
+                              else {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      _buildAboutDialog(context),
+                                );
+                                // Perform some action
 
-                            }
-                          },
-                          activeTrackColor: Colors.lightGreenAccent,
-                          activeColor: Colors.green,
-                        ),
-                      ],
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
-                    child: Row(
-                      children: <Widget>[
-                        FlatButton(
-                          textColor: Colors.blueGrey,
-                          child: Text(
-                            'Drunk Mode',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w400),
+                              }
+                            },
+                            activeTrackColor: Color(0xFFC591BA),
+                            activeColor: Color(0xFF8B2275),
                           ),
-                          color: Colors.transparent,
-                          onPressed: () {
-                            print('holaaa');
-                          },
-                        ),
-                        Container(),
-                      ],
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
                     ),
-                  ),
-                ],
+                    Container(
+                      padding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                      child: Row(
+                        children: <Widget>[
+                          FlatButton(
+                            textColor: Colors.blueGrey,
+                            child: Text(
+                              'Drunk Mode',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w400),
+                            ),
+                            color: Colors.transparent,
+                            onPressed: () {
+                              print('holaaa');
+                            },
+                          ),
+                          Container(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Card(
-              child: ListTile(
-                leading: Icon(option4.icon),
-                title: Text(option4.title, style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600)),
-                onTap: action4,
+              Card(
+                color: Color(0xFFF5E8F2),
+                child: ListTile(
+                  leading: Icon(option4.icon),
+                  title: Text(option4.title, style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600)),
+                  onTap: action4,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   void action1() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => ProfilePage(userId: widget.userIdFromHome)));
   }
 
   void action2() {
@@ -499,7 +567,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
   Widget _buildAboutDialog(BuildContext context) {
     return new AlertDialog(
-      title: const Text('About Pop up'),
+      title: const Text('Are you sure?'),
       content: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,7 +576,14 @@ class _MenuDrawerState extends State<MenuDrawer> {
         ],
       ),
       actions: <Widget>[
-        new FlatButton(
+        FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Okay, got it!'),
+        ),
+        FlatButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -522,7 +597,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
   Widget _buildAboutText() {
     return new RichText(
       text: new TextSpan(
-        text: 'Android Popup Menu displays the menu below the anchor text if space is available otherwise above the anchor text. It disappears if you click outside the popup menu.\n\n',
+        text: 'You\'re about to set the limit of your spent back to none. Think about it!',
         style: const TextStyle(color: Colors.black87),
         children: <TextSpan>[
         ],
@@ -530,5 +605,3 @@ class _MenuDrawerState extends State<MenuDrawer> {
     );
   }
 }
-
-
