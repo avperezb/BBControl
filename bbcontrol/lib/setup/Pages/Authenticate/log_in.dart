@@ -6,7 +6,6 @@ import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
-import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -44,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontSize: 16, backgroundColor: Colors.transparent),
                 ),
                 FlatButton(
-                    textColor: const Color(0xFFD7384A),
+                    textColor: const Color(0xFFAD4497),
                     child: Text(
                       'Sign up',
                       style: TextStyle(fontSize: 16),
@@ -75,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               Container(
                   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 5.0),
                   child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
                     validator: (input) {
                       if (input.isEmpty) {
                         return 'Please type an email';
@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderSide: const BorderSide(color: Colors.grey, width: 0.0),
                       ),
                       prefixIcon: const Icon(Icons.email,
-                          color: const Color(0xFFD7384A)
+                          color: const Color(0xFFAD4497)
                       ),
                       hintText: 'Enter an email address',
                       labelText: 'Email',
@@ -104,8 +104,18 @@ class _LoginPageState extends State<LoginPage> {
                 padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                 child: TextFormField(
                   validator: (input) {
-                    if (input.length < 6) {
-                      return 'Your password needs to be atleast 6 characters';
+                    if(input.isNotEmpty){
+                      String patttern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
+                      RegExp regExp = new RegExp(patttern);
+                      if (!regExp.hasMatch(input)) {
+                        return 'Non special characters, at least 1 letter and number 6+ chars.';
+                      }
+                      if(input.length<6){
+                        return 'Your password needs to be atleast 6 characters';
+                      }
+                    }
+                    else{
+                      return 'Please enter your password';
                     }
                   },
                   onChanged: (input) {
@@ -116,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderSide: const BorderSide(color: Colors.grey, width: 0.0),
                     ),
                     prefixIcon: const Icon(Icons.remove_red_eye,
-                        color: const Color(0xFFD7384A)
+                        color:const Color(0xFFAD4497)
                     ),
                     hintText: 'Enter your password',
                     labelText: 'Password',
@@ -132,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(10.0),
                     ),
-                    color: const Color(0xFFD7384A),
+                    color: const Color(0xFFAD4497),
                     onPressed: () async {
                       loaderFunction();
                       checkConnectivity(context);
@@ -144,18 +154,12 @@ class _LoginPageState extends State<LoginPage> {
                       else {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
-                          Customer result = await _auth.signIn(
+                          Employee result = await _auth.signIn(
                               _email, _password);
                           if (result == null) {
-                            setState(() =>
-                            error =
-                            'Could not sign you in. Check your data and try again.');
+                            return 'Could not sign you in. Check your data and try again.';
                           }
                           else {
-                            print(result.fullName);
-                            print(result.id);
-                            print(result.phoneNumber);
-                            print(result.birthDate);
                             Navigator.push(context, MaterialPageRoute(builder: (
                                 context) => Home(customer: result)));
                           }
@@ -173,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                 textDirection: TextDirection.rtl,
                 children: <Widget>[
                   FlatButton(
-                      textColor: const Color(0xFFD7384A),
+                      textColor: const Color(0xFFAD4497),
                       child: Text(
                         'Forgot password?',
                         style: TextStyle(fontSize: 16),

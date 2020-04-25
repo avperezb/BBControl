@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 class Reservations extends StatefulWidget {
   const Reservations({Key key, @required this.customer}) : super(key: key);
-  final Customer customer;
+  final Employee customer;
   _ReservationsState createState() => _ReservationsState();
 }
 

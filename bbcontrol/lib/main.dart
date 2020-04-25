@@ -1,3 +1,4 @@
+import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
 import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
 import 'package:bbcontrol/setup/Pages/Food/food.dart';
 import 'package:bbcontrol/setup/Pages/Home/home.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(
-      child: StreamProvider<Customer>.value(
+      child: StreamProvider<Employee>.value(
         value: AuthService().user ,
         child: MaterialApp(
             home: Wrapper(),
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
               '/Food' : (BuildContext context)=> FoodList(),
               '/Drinks' : (BuildContext context)=> DrinksTabs(),
               '/Order' : (BuildContext context)=>OrderPage(),
+              '/ViewProfile': (BuildContext context)=> ProfilePage(),
             }
         ),
       ),
