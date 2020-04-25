@@ -1,4 +1,5 @@
 import 'package:bbcontrol/models/customer.dart';
+import 'package:bbcontrol/models/employees.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 //Class for customers CRUD operations
