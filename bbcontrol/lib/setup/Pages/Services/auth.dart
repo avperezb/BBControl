@@ -6,7 +6,7 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CustomersFirestoreClass _firestoreService = CustomersFirestoreClass();
-  Employee _currentCustomer;
+  Customer _currentCustomer;
 
   Future<String> getCurrentUserId() async{
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
@@ -16,12 +16,12 @@ class AuthService {
 
 
     //Create object based on FirebaseUser
-  Employee _userFromFirebaseUser(FirebaseUser user){
-    return user != null ? Employee(id: user.uid, firstName: user.displayName) : null;
+  Customer _userFromFirebaseUser(FirebaseUser user){
+    return user != null ? Customer(id: user.uid, firstName: user.displayName) : null;
   }
 
   //Auth change user stream
-  Stream<Employee> get user{
+  Stream<Customer> get user{
     return _auth.onAuthStateChanged
         .map(_userFromFirebaseUser);
   }
@@ -32,7 +32,7 @@ class AuthService {
       try{
         FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _email, password: _password)).user;
         print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
-        Employee customer = await _firestoreService.getCustomer(user.uid);
+        Customer customer = await _firestoreService.getCustomer(user.uid);
         print(customer);
         return customer;
       }catch(e) {
@@ -47,7 +47,7 @@ class AuthService {
         print('holaaa');
         FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();
-      await _firestoreService.createCustomer(Employee(
+      await _firestoreService.createCustomer(Customer(
         id:  user.uid,
         email: _email,
         firstName: _firstName,

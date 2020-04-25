@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(
-      child: StreamProvider<Employee>.value(
+      child: StreamProvider<Customer>.value(
         value: AuthService().user ,
         child: MaterialApp(
             home: Wrapper(),
