@@ -1,3 +1,5 @@
+import 'package:bbcontrol/models/order.dart';
+import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,10 +13,18 @@ class OrdersFirestoreClass {
   final CollectionReference _ordersCollectionReference = Firestore.instance
       .collection('Orders');
 
-  Future addOrder(OrderProduct orderProduct) async {
+  Future createOrder(Order order) async{
+    try{
+      await _ordersCollectionReference.document(order.id).setData(order.toJson());
+    }catch(e){
+      return e.message;
+    }
+  }
+
+  Future addItemToOrder(OrderItem item, String idOrder) async {
     try {
-      await _ordersCollectionReference.document().setData(
-          orderProduct.toJson());
+      await _ordersCollectionReference.document(idOrder).collection('products').document().setData(
+          item.toJson());
     } catch (e) {
       e.message;
     }
@@ -22,6 +32,8 @@ class OrdersFirestoreClass {
   num getOperationStatus() {
     return status;
   }
+
+
 
   Future updateOrder(String fullName, String email, String,
       DateTime birthDate, num phoneNumber) async {
@@ -34,9 +46,4 @@ class OrdersFirestoreClass {
     });
   }
 
-  Future setInitialStatus() async{
-    return await _ordersCollectionReference.document(id).setData({
-      'status': status
-    });
-  }
 }

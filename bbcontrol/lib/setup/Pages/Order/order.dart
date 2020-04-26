@@ -1,4 +1,7 @@
+import 'package:bbcontrol/models/order.dart';
+import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
+import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
@@ -6,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:uuid/uuid.dart';
 
 class OrderPage extends StatefulWidget {
   String userId;
@@ -18,10 +22,10 @@ class _OrderPageState extends State<OrderPage> {
 
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  DatabaseItem databaseHelper = DatabaseItem();
   OrdersFirestoreClass _ordersFirestoreClass = OrdersFirestoreClass();
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  List<OrderProduct> orderList;
+  List<OrderItem> orderList;
   int count = 0;
   bool cStatus = true;
   int total;
@@ -37,9 +41,8 @@ class _OrderPageState extends State<OrderPage> {
         ),
         body: FutureBuilder(
           future: databaseHelper.getAllOrders(),
-          initialData: List<OrderProduct>(),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<OrderProduct>> snapshot) {
+          initialData: List<OrderItem>(),
+          builder: (BuildContext context, AsyncSnapshot<List<OrderItem>> snapshot) {
             if (!snapshot.hasData || snapshot.data.isEmpty) {
               return Center(
                 child: Container(
@@ -159,7 +162,7 @@ class _OrderPageState extends State<OrderPage> {
                         .height * .7,
                     child: ListView(
                       children: <Widget>[
-                        for(OrderProduct orderProduct in snapshot.data)
+                        for(OrderItem orderProduct in snapshot.data)
                           ListTile(
                             title: Container(
                               margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
@@ -246,9 +249,13 @@ class _OrderPageState extends State<OrderPage> {
                           Container(
                             child: RaisedButton(
                               onPressed: () async {
-                                for(OrderProduct orderProduct in snapshot.data){
-                                  await _ordersFirestoreClass.setInitialStatus();
-                                  await _ordersFirestoreClass.addOrder(orderProduct);
+                                var uuid = new Uuid();
+                                Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now());
+                                print('NUEVA ORDEN CREADA:');print(newOrder);
+                                await _ordersFirestoreClass.createOrder(newOrder);
+                                for(OrderItem item in snapshot.data){
+                                  print('ITEM:');print(item);
+                                  await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
                                 }
                                 databaseHelper.deleteDB();
                                 showToast(context);
@@ -397,7 +404,7 @@ class _OrderPageState extends State<OrderPage> {
 
   int getTotal(snapshot) {
     int total = 0;
-    for (OrderProduct orderProduct in snapshot.data) {
+    for (OrderItem orderProduct in snapshot.data) {
       total += orderProduct.price * orderProduct.quantity;
     }
     return total;

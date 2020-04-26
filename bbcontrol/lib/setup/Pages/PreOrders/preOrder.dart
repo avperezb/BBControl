@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
@@ -28,7 +29,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  List<OrderProduct> orderList;
+  List<OrderItem> orderList;
   int count = 0;
   bool cStatus = true;
 

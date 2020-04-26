@@ -1,11 +1,12 @@
 import 'package:bbcontrol/Setup/Pages/Food/food.dart';
 import 'package:bbcontrol/models/customer.dart';
 import 'package:bbcontrol/models/navigation_model.dart';
-import 'package:bbcontrol/models/orderProduct.dart';
+import 'package:bbcontrol/models/orderItem.dart';
+import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
 import 'package:bbcontrol/setup/Pages/DrawBar/expenses_Control.dart';
-import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
+import 'package:bbcontrol/setup/Pages/DrawBar/my_orders.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reservationsList.dart';
@@ -34,9 +35,9 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
 
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  DatabaseItem databaseHelper = DatabaseItem();
   bool cStatus = true;
-  List<OrderProduct> orderList;
+  List<OrderItem> orderList;
   int count = 0;
   final iconSize = 60.0;
   bool isConnected = true;
@@ -546,7 +547,8 @@ class _MenuDrawerState extends State<MenuDrawer> {
   }
 
   void action2() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => MyOrdersPage(userId: widget.userIdFromHome)));
   }
 
   void action3() {

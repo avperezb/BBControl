@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
@@ -7,14 +8,13 @@ import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class FoodList extends StatefulWidget {
 
-  List<OrderProduct> productsOrder = new List<OrderProduct>();
+  List<OrderItem> productsOrder = new List<OrderItem>();
   var mealPrices = '';
   List<String> mealNames = [];
   var jsonOrder = '';
