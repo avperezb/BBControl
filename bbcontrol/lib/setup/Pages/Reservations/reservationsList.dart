@@ -113,7 +113,7 @@ class ReservationsList extends StatelessWidget {
             ),
             body: Container(
               height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
-              margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+              margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
               child: ListView(
                 children:
                 snapshot.data.documents.map<ReservationTile>((DocumentSnapshot reservation){
