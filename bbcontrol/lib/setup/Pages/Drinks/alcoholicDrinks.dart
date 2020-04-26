@@ -1,9 +1,7 @@
 import 'dart:convert';
-
-import 'package:bbcontrol/models/orderProduct.dart';
+import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
-import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrderBeer.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -120,12 +118,13 @@ class OrderBeer extends StatefulWidget {
   int towerPrice = 60000;
   int pintPrice = 11000;
   int jarPrice = 34000;
-  List<OrderProduct> productsList;
-  String userEmail;
+  List<OrderItem> productsList;
+  String userId;
 
-  OrderBeer(String beer, String userEmail){
+  OrderBeer(String beer, String userId){
     this.beer = beer;
-    this.productsList = new List<OrderProduct>();
+    this.productsList = new List<OrderItem>();
+    this.userId = userId;
   }
 
   @override
@@ -390,7 +389,7 @@ class _OrderBeerState extends State<OrderBeer> {
                         if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
                           print(jsonDecode(order));
                           Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => PreOrderBeer(order, widget.userEmail)),
+                              context) => PreOrderBeer(order, widget.userId)),
                           );
                         }
                         else{

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bbcontrol/models/orderProduct.dart';
-import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
+import 'package:bbcontrol/models/orderItem.dart';
+import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
 
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  DatabaseItem databaseHelper = DatabaseItem();
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
 
@@ -128,15 +128,15 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                 color: Colors.deepPurpleAccent,);
                             }, duration: Duration(milliseconds: 4000));
                           }
-                          DatabaseHelper databaseHelper = new DatabaseHelper();
+                          DatabaseItem databaseHelper = new DatabaseItem();
                           jsonDecode(widget.order).forEach((name,
                               content) => content.forEach((size, specs) async {
                             if(specs['quantity'] > 0){
-                              OrderProduct op = new OrderProduct.withId(uuid.v1(),name, specs['quantity'], size, specs['price'], "",widget.userId, 0, "");
-                              await databaseHelper.insertPreOrder(op);
+                              OrderItem oItem = new OrderItem.withId(uuid.v1(), name, specs['quantity'], size, specs['price']);
+                              await databaseHelper.insertItem(oItem);
                             }
                           }));
-                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
+                          Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
                         },
                       ),
                     )
@@ -166,17 +166,16 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
   }
 
   getProductList() {
-    List<OrderProduct> auxList = new List<OrderProduct>();
+    List<OrderItem> auxList = new List<OrderItem>();
     jsonDecode(widget.order).forEach((name,
         content) => content.forEach((size, specs){
       if(specs['quantity'] > 0){
         print(name + " "+ specs['quantity'].toString() + " " + size + " "+  specs['price'].toString() );
-        OrderProduct op = new OrderProduct.withId(uuid.v1(), name, specs['quantity'], size, specs['price'], "", widget.userId, 0, "");
-        auxList.add(op);
+        OrderItem item = new OrderItem(name, specs['quantity'], size, specs['price']);
+        auxList.add(item);
       }
     }));
-
-    return auxList.map<Widget>((orderProduct) {
+    return auxList.map<Widget>((orderItem) {
       return ListTile(
         title: Container(
           margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
@@ -194,7 +193,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                         shape: BoxShape.circle,),
                       child: Center(
                         child: Text(
-                          orderProduct.quantity.toString(),
+                          orderItem.quantity.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 13,
@@ -208,24 +207,24 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                           0, 0, 15, 0),
                       width: 120,
                       child: Container(
-                          child: Text(orderProduct.productName,
-                          style: TextStyle(
-                          ),)
+                          child: Text(orderItem.productName,
+                            style: TextStyle(
+                            ),)
                       )
                   ),
                 ],
               ),
               Container(
                   child: Text(formatCurrency.format(
-                      orderProduct.price * orderProduct.quantity))
+                      orderItem.price * orderItem.quantity))
               ),
             ],
 
           ),
         ),
         subtitle: Container(
-          margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
-            child: Text(orderProduct.beerSize,
+            margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
+            child: Text(orderItem.beerSize,
               style: TextStyle(
                 fontSize: 16,
               ),
