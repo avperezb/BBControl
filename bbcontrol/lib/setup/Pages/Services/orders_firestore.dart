@@ -1,6 +1,5 @@
 import 'package:bbcontrol/models/order.dart';
 import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/models/orderProduct.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrdersFirestoreClass {
@@ -32,8 +31,6 @@ class OrdersFirestoreClass {
   num getOperationStatus() {
     return status;
   }
-
-
 
   Future updateOrder(String fullName, String email, String,
       DateTime birthDate, num phoneNumber) async {

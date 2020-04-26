@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/models/orderProduct.dart';
-import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
@@ -22,6 +19,7 @@ class FoodList extends StatefulWidget {
   FoodList({userId}){
     this.userId = userId;
     getInfo();
+    print(userId);
   }
 
   Future<List<Map<String, dynamic>>> getInfo() async{
@@ -186,7 +184,8 @@ class _FoodListState extends State<FoodList> {
                             jsonDecode(widget.mealPrices).forEach((name, content){
                               sumQuantity += content['quantity'];
                             });
-
+                            print('hhhhhhh');
+                            print(widget.userId);
                             print(sumQuantity);
                             if(sumQuantity > 0){
                               Navigator.push(context, MaterialPageRoute(builder: (

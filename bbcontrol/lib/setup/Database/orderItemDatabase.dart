@@ -75,7 +75,6 @@ class DatabaseItem{
   }
 
   Future<int> insertItem(OrderItem pO) async{
-    print('insertar item');
     Database db = await this.database;
     var result = await db.insert(orderItemsTable
         , pO.toMap());
@@ -90,6 +89,8 @@ class DatabaseItem{
 
   Future <int> deletePreOrder(String id) async{
     var db = await this.database;
+    print('id item');
+    print(id);
     int result = await db.rawDelete('DELETE FROM $orderItemsTable'
         ' WHERE $colId = \'$id\'');
     return result;

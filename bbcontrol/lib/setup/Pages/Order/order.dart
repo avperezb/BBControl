@@ -1,8 +1,7 @@
 import 'package:bbcontrol/models/order.dart';
 import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/models/orderProduct.dart';
+import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
-import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -250,8 +249,8 @@ class _OrderPageState extends State<OrderPage> {
                             child: RaisedButton(
                               onPressed: () async {
                                 var uuid = new Uuid();
+                                print(widget.userId);
                                 Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now());
-                                print('NUEVA ORDEN CREADA:');print(newOrder);
                                 await _ordersFirestoreClass.createOrder(newOrder);
                                 for(OrderItem item in snapshot.data){
                                   print('ITEM:');print(item);

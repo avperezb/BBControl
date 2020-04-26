@@ -1,32 +1,31 @@
 
 class Order{
 
-  final String id;
-  final String idWaiter;
-  final String idUser;
-  final DateTime created;
+  String _id;
+  String _idWaiter;
+  String _idUser;
+  DateTime _created;
 
-  Order.withId(this.id,this.idWaiter,this.idUser,this.created);
+  Order.withId(this._id,this._idWaiter,this._idUser,this._created);
+  Order(this._idWaiter,this._idUser,this._created);
 
-  Order({
-    this.id,
-    this.idWaiter,
-    this.idUser,
-    this.created
-  });
+  String get id => _id;
+  String get idWaiter => _idWaiter;
+  String get idUser => _idUser;
+  DateTime get created => _created;
 
   Order.fromData(Map<String, dynamic> data):
-        id = data['id'],
-        idWaiter = data['idWaiter'],
-        idUser = data['idUser'],
-        created = data['created'];
+        _id = data['id'],
+        _idWaiter = data['idWaiter'],
+        _idUser = data['idUser'],
+        _created = data['created'];
 
   Map<String, dynamic> toJson(){
     return{
-      'id' : id,
-      'idWaiter': idWaiter,
-      'idUser': idUser,
-      'created' : created
+      'id' : _id,
+      'idWaiter': _idWaiter,
+      'idUser': _idUser,
+      'created' : _created
     };
   }
 }

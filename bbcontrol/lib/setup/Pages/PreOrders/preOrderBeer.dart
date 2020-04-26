@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
-import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +27,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
 
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  DatabaseItem databaseHelper = DatabaseItem();
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
 
@@ -134,11 +132,11 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                           jsonDecode(widget.order).forEach((name,
                               content) => content.forEach((size, specs) async {
                             if(specs['quantity'] > 0){
-                              OrderItem oItem = new OrderItem(name, specs['quantity'], size, specs['price']);
+                              OrderItem oItem = new OrderItem.withId(uuid.v1(), name, specs['quantity'], size, specs['price']);
                               await databaseHelper.insertItem(oItem);
                             }
                           }));
-                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
+                          Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
                         },
                       ),
                     )
@@ -210,8 +208,8 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                       width: 120,
                       child: Container(
                           child: Text(orderItem.productName,
-                          style: TextStyle(
-                          ),)
+                            style: TextStyle(
+                            ),)
                       )
                   ),
                 ],
@@ -225,7 +223,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
           ),
         ),
         subtitle: Container(
-          margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
+            margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
             child: Text(orderItem.beerSize,
               style: TextStyle(
                 fontSize: 16,
