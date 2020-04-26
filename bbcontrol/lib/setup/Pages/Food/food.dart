@@ -228,10 +228,7 @@ class _FoodListState extends State<FoodList> {
                     Container(
                       margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
                       child: SizedBox(
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.77,
+                        height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
                         child: ListView(
                           children: snapshot.data.documents.map<SingleMeal>((DocumentSnapshot meal ){
                             return SingleMeal(meal['name'], meal['description'], meal['price'], meal['category'], callback);

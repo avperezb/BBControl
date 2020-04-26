@@ -42,13 +42,74 @@ class _MakeReservationState extends State<MakeReservation> {
           centerTitle: true,
           backgroundColor: const Color(0xFFB75ba4),
         ),
+        bottomSheet:  Container(
+          height: 40,
+          width: MediaQuery.of(context).size.width,
+          margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
+          child: RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(10.0),
+            ),
+            color: const Color(0xFFB75ba4),
+            onPressed: () async{
+              if (_formKey.currentState.validate()) {
+                showToast(context);
+                if(!cStatus) {
+                  showOverlayNotification((context) {
+                    return Card(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: SafeArea(
+                        child: ListTile(
+                          title: Text('Connection Error',
+                              style: TextStyle(fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)
+                          ),
+                          subtitle: Text(
+                            'Check your connection and try again.',
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.white),
+                          ),
+                          trailing: IconButton(
+                              icon: Icon(
+                                Icons.close, color: Colors.white,),
+                              onPressed: () {
+                                OverlaySupportEntry.of(context)
+                                    .dismiss();
+                              }),
+                        ),
+                      ),
+                      color: Colors.blueGrey,);
+                  }, duration: Duration(milliseconds: 4000));
+                }
+                else {
+                  _formKey.currentState.save();
+                  List<String> preferences = new List<String>();
+                  if(_neararcade)  preferences.add('near arcade');
+                  if(_nearbar) preferences.add(('near bar'));
+                  if(_neartv) preferences.add('near tv');
+                  Reservation reservation = new Reservation(
+                      _date, _endTime, _startTime, _numPeople, preferences, widget.userEmail);
+                  await _reservationsFirestoreClass.addReservation(reservation);
+                  Navigator.pop(context);
+                }
+              }
+            },
+            child: Text('Confirm reservation',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16
+              ),
+            ),
+          ),
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Form(
               key: _formKey,
               child: SizedBox(
-                height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 80,
+                height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
                 child: ListView(
                   children: <Widget>[
                     Container(
@@ -266,66 +327,6 @@ class _MakeReservationState extends State<MakeReservation> {
                       ),
                     ),
                   ],
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(15, 0, 15, 5),
-              child: RaisedButton(
-                padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(10.0),
-                ),
-                color: const Color(0xFFB75ba4),
-                onPressed: () async{
-                  if (_formKey.currentState.validate()) {
-                    showToast(context);
-                    if(!cStatus) {
-                      showOverlayNotification((context) {
-                        return Card(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: SafeArea(
-                            child: ListTile(
-                              title: Text('Connection Error',
-                                  style: TextStyle(fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white)
-                              ),
-                              subtitle: Text(
-                                'Check your connection and try again.',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              ),
-                              trailing: IconButton(
-                                  icon: Icon(
-                                    Icons.close, color: Colors.white,),
-                                  onPressed: () {
-                                    OverlaySupportEntry.of(context)
-                                        .dismiss();
-                                  }),
-                            ),
-                          ),
-                          color: Colors.blueGrey,);
-                      }, duration: Duration(milliseconds: 4000));
-                    }
-                    else {
-                      _formKey.currentState.save();
-                      List<String> preferences = new List<String>();
-                      if(_neararcade)  preferences.add('near arcade');
-                      if(_nearbar) preferences.add(('near bar'));
-                      if(_neartv) preferences.add('near tv');
-                      Reservation reservation = new Reservation(
-                          _date, _endTime, _startTime, _numPeople, preferences, widget.userEmail);
-                      await _reservationsFirestoreClass.addReservation(reservation);
-                      Navigator.pop(context);
-                    }
-                  }
-                },
-                child: Text('Confirm reservation',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16
-                  ),
                 ),
               ),
             ),
