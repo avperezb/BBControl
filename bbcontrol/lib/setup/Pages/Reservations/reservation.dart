@@ -40,7 +40,7 @@ class _MakeReservationState extends State<MakeReservation> {
         appBar: AppBar(
           title: Text('Make a reservation',),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFB75ba4),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -155,6 +155,7 @@ class _MakeReservationState extends State<MakeReservation> {
                       child: TextFormField(
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
+                          LengthLimitingTextInputFormatter(2),
                           WhitelistingTextInputFormatter.digitsOnly
                         ],
                         validator: (input) {
@@ -241,7 +242,7 @@ class _MakeReservationState extends State<MakeReservation> {
                             width: 80,
                             height: 80,
                             child: RaisedButton(
-                                color: _nearbar ? Color(0xFF996480) : Colors.grey[300],
+                                color: _nearbar ? Color(0xFFD7384A) : Colors.grey[300],
                                 onPressed: (){
                                   setState(() {
                                     _nearbar = !_nearbar;
@@ -251,10 +252,10 @@ class _MakeReservationState extends State<MakeReservation> {
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Icon(Icons.local_bar,
-                                        color: _nearbar ? Color(0xFFd6c1cc) : Colors.grey[700]),
+                                        color: _nearbar ? Color(0xFFf3c3c8) : Colors.grey[700]),
                                     Text('Near bar',
                                       style: TextStyle(
-                                        color: _nearbar ? Color(0xFFd6c1cc) : Colors.grey[700],
+                                        color: _nearbar ? Color(0xFFf3c3c8) : Colors.grey[700],
                                       ),
                                       textAlign: TextAlign.center,)
                                   ],
@@ -275,7 +276,7 @@ class _MakeReservationState extends State<MakeReservation> {
                 shape: RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(10.0),
                 ),
-                color: const Color(0xFFD7384A),
+                color: const Color(0xFFB75ba4),
                 onPressed: () async{
                   if (_formKey.currentState.validate()) {
                     showToast(context);

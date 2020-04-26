@@ -90,7 +90,7 @@ class _FoodListState extends State<FoodList> {
                 appBar: AppBar(
                   title: Text('Food'),
                   centerTitle: true,
-                  backgroundColor: const Color(0xFFD7384A),
+                  backgroundColor: const Color(0xFFB75BA4),
                 ),
                 body :
                 ColorLoader5(
@@ -108,7 +108,7 @@ class _FoodListState extends State<FoodList> {
                 appBar: AppBar(
                   title: Text('Food'),
                   centerTitle: true,
-                  backgroundColor: const Color(0xFFD7384A),
+                  backgroundColor: const Color(0xFFB75BA4),
                 ),
                 bottomSheet: Card(
                     elevation: 6.0,
@@ -118,7 +118,7 @@ class _FoodListState extends State<FoodList> {
                           shape: RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(10.0),
                           ),
-                          color: const Color(0xFFD7384A),
+                          color: const Color(0xFFB75BA4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment
                                 .spaceAround,

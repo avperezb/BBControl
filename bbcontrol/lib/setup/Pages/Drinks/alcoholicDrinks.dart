@@ -12,9 +12,9 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
-  String userEmail;
-  AlcoholicDrinks(String userEmail){
-    this.userEmail = userEmail;
+  String userId;
+  AlcoholicDrinks(String userId){
+    this.userId = userId;
   }
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class AlcoholicDrinks extends StatelessWidget {
             margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: ListView(
               children: snapshot.data.documents.map<SingleBeer>((DocumentSnapshot beer ){
-                return SingleBeer(beer, userEmail);
+                return SingleBeer(beer, userId);
               }).toList(),
             ),
           );
@@ -54,15 +54,15 @@ class SingleBeer extends StatelessWidget {
   String description;
   String image;
   String drinkId;
-  String userEmail;
+  String userId;
 
-  SingleBeer(DocumentSnapshot beer, String userEmail){
+  SingleBeer(DocumentSnapshot beer, String userId){
     this.drinkName = beer['name'];
     this.volume = beer['volume'];
     this.description = beer['description'];
     this.image = beer['image'];
     this.drinkId = beer.documentID;
-    this.userEmail = userEmail;
+    this.userId = userId;
   }
 
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ class SingleBeer extends StatelessWidget {
       child: Container(
         child: ListTile(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userEmail)),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userId)),);
           },
           leading: CachedNetworkImage(
             imageUrl: image,
@@ -118,6 +118,7 @@ class OrderBeer extends StatefulWidget {
   int towerPrice = 60000;
   int pintPrice = 11000;
   int jarPrice = 34000;
+
   List<OrderItem> productsList;
   String userId;
 
@@ -172,7 +173,7 @@ class _OrderBeerState extends State<OrderBeer> {
         appBar: AppBar(
           title: Text(widget.beer),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFB75ba4),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -380,7 +381,7 @@ class _OrderBeerState extends State<OrderBeer> {
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(10.0),
                       ),
-                      color: const Color(0xFFD7384A),
+                      color: const Color(0xFFB75ba4),
                       onPressed:(){
                         getConnState(context);
                         if(!cStatus) {

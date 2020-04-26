@@ -105,7 +105,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                         shape: RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10.0),
                         ),
-                        color: const Color(0xFFD7384A),
+                        color: const Color(0xFFB75BA4),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment
                               .spaceAround,
