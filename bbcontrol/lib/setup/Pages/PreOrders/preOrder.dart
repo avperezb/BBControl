@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bbcontrol/models/orderProduct.dart';
-import 'package:bbcontrol/setup/Database/preOrdersDatabase.dart';
+import 'package:bbcontrol/models/orderItem.dart';
+import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ class PreOrderPage extends StatefulWidget {
   String order;
   String userId;
   var uuid = new Uuid();
+
   PreOrderPage(String order, String userId){
     this.order = order;
     this.userId = userId;
@@ -28,7 +29,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
   CheckConnectivityState checkConnection = CheckConnectivityState();
-  List<OrderProduct> orderList;
+  List<OrderItem> orderList;
   int count = 0;
   bool cStatus = true;
 
@@ -93,17 +94,17 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                 color: Colors.deepPurpleAccent,);
                             }, duration: Duration(milliseconds: 4000));
                           }
-                          DatabaseHelper databaseHelper = new DatabaseHelper();
+                          DatabaseItem databaseHelper = new DatabaseItem();
                           jsonDecode(widget.order).forEach((name,
                               content) async {
                             if (content['quantity'] > 0) {
-                              OrderProduct op = OrderProduct.withId(
+                              OrderItem op = OrderItem.withId(
                                   uuid.v1(),name, content['quantity'], "",
-                                  content['price'], "", widget.userId, 0, "");
-                              await databaseHelper.insertPreOrder(op);
+                                  content['price']);
+                              await databaseHelper.insertItem(op);
                             }
                           });
-                          Navigator.pushNamedAndRemoveUntil(context, '/Order', ModalRoute.withName('/'));
+                          Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
                         },
                         padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
                         shape: RoundedRectangleBorder(
@@ -170,15 +171,15 @@ class _PreOrderPageState extends State<PreOrderPage> {
   }
 
   getProductList() {
-    List<OrderProduct> auxList = new List<OrderProduct>();
+    List<OrderItem> auxList = new List<OrderItem>();
     jsonDecode(widget.order).forEach((name, content) {
       if (content['quantity'] > 0) {
-        OrderProduct op = new OrderProduct.withId(
-            uuid.v1(),name, content['quantity'], "", content['price'], "", widget.userId, 0, "");
+        OrderItem op = new OrderItem.withId(
+            uuid.v1(),name, content['quantity'], "", content['price']);
         auxList.add(op);
       }
     });
-    return auxList.map<Widget>((orderProduct) {
+    return auxList.map<Widget>((orderItem) {
       return ListTile(
         title: Container(
           margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
@@ -196,7 +197,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                         shape: BoxShape.circle,),
                       child: Center(
                         child: Text(
-                          orderProduct.quantity.toString(),
+                          orderItem.quantity.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 13,
@@ -210,14 +211,14 @@ class _PreOrderPageState extends State<PreOrderPage> {
                           0, 0, 15, 0),
                       width: 120,
                       child: Container(
-                          child: Text(orderProduct.productName)
+                          child: Text(orderItem.productName)
                       )
                   ),
                 ],
               ),
               Container(
                   child: Text(formatCurrency.format(
-                      orderProduct.price * orderProduct.quantity))
+                      orderItem.price * orderItem.quantity))
               ),
             ],
 
