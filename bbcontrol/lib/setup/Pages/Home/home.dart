@@ -157,8 +157,7 @@ class HomeState extends State<Home> {
                                     child: FlatButton(
                                       padding: EdgeInsets.fromLTRB(
                                           0.0, 25.0, 0.0, 25.0),
-                                      color: const Color(0xFFFF6B00),
-                                      onPressed: () {},
+                                      color: const Color(0xFF8f72ff),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment
                                             .center,
@@ -172,6 +171,9 @@ class HomeState extends State<Home> {
                                             ),)
                                         ],
                                       ),
+                                      onPressed: () {
+                                        Navigator.of(context).pushNamed('/Cab');
+                                      },
                                     ),
                                   ),
                                 ],
@@ -192,7 +194,7 @@ class HomeState extends State<Home> {
                                     child: FlatButton(
                                       padding: EdgeInsets.fromLTRB(
                                           0.0, 25.0, 0.0, 25.0),
-                                      color: const Color(0xFFD8AE2D),
+                                      color: const Color(0xFFFF6B00),
                                       onPressed: () {},
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment
@@ -225,7 +227,7 @@ class HomeState extends State<Home> {
                                           FlatButton(
                                             padding: EdgeInsets.fromLTRB(
                                                 0.0, 90.0, 0.0, 90.0),
-                                            color: const Color(0xFF996480),
+                                            color: const Color(0xFFD8AE2D),
                                             onPressed: () {
                                              Navigator.of(context).pushNamed('/Food', arguments: userId);
                                               showToast(context);
