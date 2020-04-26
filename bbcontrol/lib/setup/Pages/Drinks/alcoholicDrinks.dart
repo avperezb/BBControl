@@ -14,9 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
-  String userEmail;
-  AlcoholicDrinks(String userEmail){
-    this.userEmail = userEmail;
+  String userId;
+  AlcoholicDrinks(String userId){
+    this.userId = userId;
   }
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class AlcoholicDrinks extends StatelessWidget {
             margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: ListView(
               children: snapshot.data.documents.map<SingleBeer>((DocumentSnapshot beer ){
-                return SingleBeer(beer, userEmail);
+                return SingleBeer(beer, userId);
               }).toList(),
             ),
           );
@@ -56,15 +56,15 @@ class SingleBeer extends StatelessWidget {
   String description;
   String image;
   String drinkId;
-  String userEmail;
+  String userId;
 
-  SingleBeer(DocumentSnapshot beer, String userEmail){
+  SingleBeer(DocumentSnapshot beer, String userId){
     this.drinkName = beer['name'];
     this.volume = beer['volume'];
     this.description = beer['description'];
     this.image = beer['image'];
     this.drinkId = beer.documentID;
-    this.userEmail = userEmail;
+    this.userId = userId;
   }
 
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class SingleBeer extends StatelessWidget {
       child: Container(
         child: ListTile(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userEmail)),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userId)),);
           },
           leading: CachedNetworkImage(
             imageUrl: image,
@@ -121,10 +121,11 @@ class OrderBeer extends StatefulWidget {
   int pintPrice = 11000;
   int jarPrice = 34000;
   List<OrderProduct> productsList;
-  String userEmail;
+  String userId;
 
-  OrderBeer(String beer, String userEmail){
+  OrderBeer(String beer, String userId){
     this.beer = beer;
+    this.userId = userId;
     this.productsList = new List<OrderProduct>();
   }
 
@@ -390,7 +391,7 @@ class _OrderBeerState extends State<OrderBeer> {
                         if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
                           print(jsonDecode(order));
                           Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => PreOrderBeer(order, widget.userEmail)),
+                              context) => PreOrderBeer(order, widget.userId)),
                           );
                         }
                         else{
