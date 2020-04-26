@@ -173,7 +173,7 @@ class _OrderBeerState extends State<OrderBeer> {
         appBar: AppBar(
           title: Text(widget.beer),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFB75ba4),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -381,7 +381,7 @@ class _OrderBeerState extends State<OrderBeer> {
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(10.0),
                       ),
-                      color: const Color(0xFFD7384A),
+                      color: const Color(0xFFB75ba4),
                       onPressed:(){
                         getConnState(context);
                         if(!cStatus) {

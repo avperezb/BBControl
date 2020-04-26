@@ -50,7 +50,7 @@ class _TransportState extends State<Transport> {
         appBar: AppBar(
           title: Text('Request cab'),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFB75ba4),
         ),
         body: Container(
           width: MediaQuery
@@ -61,7 +61,8 @@ class _TransportState extends State<Transport> {
               gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFFD7384A), Colors.white])),
+                  colors: [Color(0xFFB75ba4), Colors.white])
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[

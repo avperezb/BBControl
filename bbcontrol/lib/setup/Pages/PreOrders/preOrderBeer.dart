@@ -37,7 +37,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
         appBar: AppBar(
           title: Text('Order status'),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFB75ba4),
         ),
         body: Column(
           children: <Widget>[
@@ -65,7 +65,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                         shape: RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10.0),
                         ),
-                        color: const Color(0xFFD7384A),
+                        color: const Color(0xFFB75ba4),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment
                               .spaceAround,
