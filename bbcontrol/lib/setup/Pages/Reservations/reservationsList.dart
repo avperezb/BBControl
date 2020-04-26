@@ -5,9 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../Extra/ColorLoader.dart';
-import '../Extra/DotType.dart';
-
 class ReservationsList extends StatelessWidget {
   String userId;
   ReservationDatabase db = new ReservationDatabase();
@@ -90,12 +87,13 @@ class ReservationsList extends StatelessWidget {
             ),
             bottomSheet: Card(
               elevation: 6.0,
-              child: Container(height: MediaQuery.of(context).size.height * 0.1,
+              child: Container(
+                height: 60,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                   child: RaisedButton(
-                    padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(10.0),
                     ),
@@ -114,10 +112,7 @@ class ReservationsList extends StatelessWidget {
               ),
             ),
             body: Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.77,
+              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
               margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: ListView(
                 children:
