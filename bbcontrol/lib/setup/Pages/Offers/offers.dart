@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +10,8 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:uuid/uuid.dart';
 
 class Offers extends StatelessWidget {
-
+String userId;
+Offers({this.userId});
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -35,7 +38,7 @@ class Offers extends StatelessWidget {
               body: Container(
                 child: ListView(
                   children:   snapshot.data.documents.map<SingleOffer>((DocumentSnapshot offer){
-                    return new SingleOffer(snapshot: offer);
+                    return new SingleOffer(snapshot: offer, userId: userId);
                   }).toList(),
                 ),
               ),
@@ -48,9 +51,10 @@ class Offers extends StatelessWidget {
 
 class SingleOffer extends StatelessWidget {
   DocumentSnapshot snapshot;
+  String userId;
   var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
   var uuid = new Uuid();
-  SingleOffer({this.snapshot});
+  SingleOffer({this.snapshot, this.userId});
   double contWidth = 200;
   @override
   Widget build(BuildContext context) {
@@ -112,12 +116,52 @@ class SingleOffer extends StatelessWidget {
               OrderItem oi = OrderItem.withId(uuid.v1(), snapshot['name'], 1, "", snapshot['price']);
               DatabaseItem databaseHelper = new DatabaseItem();
               databaseHelper.insertItem(oi);
-              addedProductToast();
+              checkInternetConnection(context);
+              Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: userId);
             },
           )
         ],
       ),
     );
+  }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        addedProductToast();
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Products will be added when connection is back.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
   }
 
   addedProductToast(){

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_appavailability/flutter_appavailability.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:store_redirect/store_redirect.dart';
 
 class Transport extends StatefulWidget {
@@ -27,7 +28,7 @@ class _TransportState extends State<Transport> {
     if (Platform.isAndroid) {
       _installedApps = await AppAvailability.getInstalledApps();
 
-     // print(await AppAvailability.checkAvailability("com.cabify.rider"));
+      // print(await AppAvailability.checkAvailability("com.cabify.rider"));
       // Returns: Map<String, String>{app_name: Chrome, package_name: com.android.chrome, versionCode: null, version_name: 55.0.2883.91}
 
       //print(await AppAvailability.isAppEnabled("com.cabify.rider"));
@@ -119,8 +120,15 @@ class _TransportState extends State<Transport> {
                   ),),
               ],
             ),
-            onTap: (){
-              AppAvailability.launchApp(getCabifyApp()['package_name']);
+            onTap: () async{
+              try {
+                final result = await InternetAddress.lookup('google.com');
+                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                  AppAvailability.launchApp(getCabifyApp()['package_name']);
+                }
+              } on SocketException catch (_) {
+                return connectionErrorToast();
+              }
             },
           ),
         ],
@@ -154,14 +162,61 @@ class _TransportState extends State<Transport> {
                 )
               ],
             ),
-            onTap: (){
-              StoreRedirect.redirect(
-                  androidAppId: 'com.cabify.rider'
-              );
+            onTap: () async{
+              try {
+                final result = await InternetAddress.lookup('google.com');
+                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                  StoreRedirect.redirect(
+                      androidAppId: 'com.cabify.rider'
+                  );
+                }
+              } on SocketException catch (_) {
+                return connectionErrorToast();
+              }
             },
           )
         ],
       );
     }
+  }
+
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Check your connection and try again.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
   }
 }

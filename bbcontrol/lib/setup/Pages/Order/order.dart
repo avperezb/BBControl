@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:bbcontrol/models/order.dart';
-import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
@@ -285,43 +286,7 @@ class _OrderPageState extends State<OrderPage> {
                                   await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
                                 }
                                 databaseHelper.deleteDB();
-                                showToast(context);
-                                if (!cStatus) {
-                                  Navigator.of(context)
-                                      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                                  return connectionErrorToast();
-                                }
-                                else{
-                                  Navigator.of(context)
-                                      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                                  return showOverlayNotification((context) {
-                                    return Card(
-                                      margin: const EdgeInsets.fromLTRB(
-                                          0, 0, 0, 0),
-                                      child: SafeArea(
-                                        child: ListTile(
-                                          title: Text('Your order has been placed',
-                                              style: TextStyle(fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white)
-                                          ),
-                                          subtitle: Text(
-                                            'Sit back and relax while we fulfill your order.',
-                                            style: TextStyle(fontSize: 16,
-                                                color: Colors.white),
-                                          ),
-                                          trailing: IconButton(
-                                              icon: Icon(Icons.close,
-                                                color: Colors.white,),
-                                              onPressed: () {
-                                                OverlaySupportEntry.of(context)
-                                                    .dismiss();
-                                              }),
-                                        ),
-                                      ),
-                                      color: Colors.blue,);
-                                  }, duration: Duration(milliseconds: 4000));
-                                }
+                                checkInternetConnection(context);
                               },
                             ),
                           )
@@ -335,6 +300,49 @@ class _OrderPageState extends State<OrderPage> {
           },
         )
     );
+  }
+  successfulOrderToast(){
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(
+            0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Your order has been placed',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Sit back and relax while we fulfill your order.',
+              style: TextStyle(fontSize: 16,
+                  color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(Icons.close,
+                  color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blue,);
+    }, duration: Duration(milliseconds: 4000));
+  }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        databaseHelper.deleteDB();
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+        return successfulOrderToast();
+      }
+    } on SocketException catch (_) {
+      databaseHelper.deleteDB();
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      return connectionErrorToast();
+    }
   }
 
   connectionErrorToast(){
