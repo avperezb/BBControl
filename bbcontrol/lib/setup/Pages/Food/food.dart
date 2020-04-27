@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
@@ -149,35 +150,7 @@ class _FoodListState extends State<FoodList> {
                             ],
                           ),
                           onPressed: () {
-                            showToast(context);
-                            if(!cStatus) {
-                              showOverlayNotification((context) {
-                                return Card(
-                                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                  child: SafeArea(
-                                    child: ListTile(
-                                      title: Text('Connection Error',
-                                          style: TextStyle(fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white)
-                                      ),
-                                      subtitle: Text(
-                                        'Products will be added when connection is back.',
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                      ),
-                                      trailing: IconButton(
-                                          icon: Icon(
-                                            Icons.close, color: Colors.white,),
-                                          onPressed: () {
-                                            OverlaySupportEntry.of(context)
-                                                .dismiss();
-                                          }),
-                                    ),
-                                  ),
-                                  color: Colors.blueGrey,);
-                              }, duration: Duration(milliseconds: 4000));
-                            }
+                            checkInternetConnection(context);
                             int sumQuantity = 0;
                             jsonDecode(widget.mealPrices).forEach((name, content){
                               sumQuantity += content['quantity'];
@@ -237,6 +210,46 @@ class _FoodListState extends State<FoodList> {
           }
         });
   }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Products will be added when connection is back.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
+  }
+
   void showToast(BuildContext context) async {
     await checkConnection.initConnectivity();
     setState(() {
@@ -350,7 +363,7 @@ class QuantityControl extends StatefulWidget  {
 }
 
 class _QuantityControlState extends State<QuantityControl> {
-  @override
+
   int quantity = 0;
   int max = 4;
   bool minDisabled = true;
@@ -359,7 +372,7 @@ class _QuantityControlState extends State<QuantityControl> {
   var colorIncrease = Color(0xFFD7384A);
   final enabledColor = Color(0xFFD7384A);
   final disabledColor = Color(0xFF7F7F7F);
-
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

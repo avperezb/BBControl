@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:passwordfield/passwordfield.dart';
 
 class SignUpPage extends StatefulWidget {
   @override

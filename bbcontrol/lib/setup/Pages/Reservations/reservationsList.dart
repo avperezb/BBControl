@@ -1,13 +1,14 @@
-import 'package:bbcontrol/Setup/Database/database_creator.dart';
+import 'dart:io';
+
 import 'package:bbcontrol/setup/Pages/Reservations/reservation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class ReservationsList extends StatelessWidget {
   String userId;
-  ReservationDatabase db = new ReservationDatabase();
   ReservationsList(String userId){
     this.userId = userId;
   }
@@ -68,7 +69,7 @@ class ReservationsList extends StatelessWidget {
                             ),
                           ),
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation(userId)),);
+                            checkInternetConnection(context);
                           },
                         ),
                       )
@@ -81,9 +82,9 @@ class ReservationsList extends StatelessWidget {
         else {
           return Scaffold(
             appBar: AppBar(
-              title: Text('My reservations'),
-              centerTitle: true,
-              backgroundColor: const Color(0xFFB75ba4)
+                title: Text('My reservations'),
+                centerTitle: true,
+                backgroundColor: const Color(0xFFB75ba4)
             ),
             bottomSheet: Card(
               elevation: 6.0,
@@ -99,7 +100,7 @@ class ReservationsList extends StatelessWidget {
                     ),
                     color: const Color(0xFFB75ba4),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation(userId)),);
+                      checkInternetConnection(context);
                     },
                     child: Text('Add a reservation',
                       style: TextStyle(
@@ -125,6 +126,46 @@ class ReservationsList extends StatelessWidget {
         }
       },
     );
+  }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => MakeReservation(userId)),);
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    return showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Check your connection and try again.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blueGrey,)
+      ;
+    }, duration: Duration(milliseconds: 4000));
   }
 }
 
@@ -236,7 +277,7 @@ class ReservationTile extends StatelessWidget {
         ),
       );
     else
-     return Text('Due reservation',
+      return Text('Due reservation',
         style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,

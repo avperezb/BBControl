@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
@@ -38,7 +39,8 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: Firestore.instance.collection('/Customers').document(widget.userId).snapshots(),
+        stream: Firestore.instance.collection('/Customers').document(
+            widget.userId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             expensesControl = snapshot.data['limitAmount'];
@@ -125,18 +127,26 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                   }, duration: Duration(milliseconds: 4000));
                                 }
                                 DatabaseItem databaseHelper = new DatabaseItem();
-                                if (expensesControl > 0){
+                                if (expensesControl > 0) {
                                   if (getTotal() <= expensesControl) {
                                     jsonDecode(widget.order).forEach((name,
-                                        content) => content.forEach((size, specs) async {
-                                      if(specs['quantity'] > 0){
-                                        OrderItem oItem = new OrderItem.withId(uuid.v1(), name, specs['quantity'], size, specs['price']);
-                                        await databaseHelper.insertItem(oItem);
-                                        Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
-                                      }
-                                    }));
-                                  }else{
-
+                                        content) =>
+                                        content.forEach((size, specs) async {
+                                          if (specs['quantity'] > 0) {
+                                            OrderItem oItem = new OrderItem
+                                                .withId(uuid.v1(), name,
+                                                specs['quantity'], size,
+                                                specs['price']);
+                                            await databaseHelper.insertItem(
+                                                oItem);
+                                            Navigator.of(context)
+                                                .pushNamedAndRemoveUntil(
+                                                '/Order',
+                                                ModalRoute.withName('/'),
+                                                arguments: widget.userId);
+                                          }
+                                        }));
+                                  } else {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) =>
@@ -154,7 +164,8 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                           content['price']);
                                       await databaseHelper.insertItem(op);
 
-                                      Navigator.of(context).pushNamedAndRemoveUntil(
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
                                           '/Order', ModalRoute.withName('/'),
                                           arguments: widget.userId);
                                     }
@@ -170,7 +181,10 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                 body: Column(
                   children: <Widget>[
                     SizedBox(
-                      height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 100,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height - AppBar().preferredSize.height - 100,
                       child: ListView(
                           children:
                           getProductList()
@@ -180,8 +194,8 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                 )
             );
           }
-          else{
-            return Scaffold(
+          else {
+            Scaffold(
                 appBar: AppBar(
                   title: Text('Order status'),
                   centerTitle: true,
@@ -196,83 +210,119 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                       children: <Widget>[
                         Container(
                           child: RaisedButton(
-                            padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(10.0),
-                            ),
-                            color: const Color(0xFFB75ba4),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment
-                                  .spaceAround,
-                              children: <Widget>[
-                                Text('Add to order',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16
-                                  ),
-                                ),
-                                Container(
-                                  width: 120,
-                                  padding: EdgeInsets.fromLTRB(
-                                      20, 10, 20, 10),
-                                  margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15))
-                                  ),
-                                  child: Text(
-                                    formatCurrency.format(getTotal()),
-                                    textAlign: TextAlign.center,
+                              padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10.0),
+                              ),
+                              color: const Color(0xFFB75ba4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceAround,
+                                children: <Widget>[
+                                  Text('Add to order',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15
+                                        color: Colors.white,
+                                        fontSize: 16
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            onPressed: () async {
-                              showToast(context);
-                              if (!cStatus) {
-                                showOverlayNotification((context) {
-                                  return Card(
-                                    margin: const EdgeInsets.fromLTRB(
-                                        0, 0, 0, 0),
-                                    child: SafeArea(
-                                      child: ListTile(
-                                        title: Text('Oops, network error',
-                                            style: TextStyle(fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white)
-                                        ),
-                                        subtitle: Text(
-                                          'Your order will be added when connection is back!.',
-                                          style: TextStyle(fontSize: 16,
-                                              color: Colors.white),
-                                        ),
-                                        trailing: IconButton(
-                                            icon: Icon(Icons.close,
-                                              color: Colors.white,),
-                                            onPressed: () {
-                                              OverlaySupportEntry.of(context)
-                                                  .dismiss();
-                                            }),
+                                  Container(
+                                    width: 120,
+                                    padding: EdgeInsets.fromLTRB(
+                                        20, 10, 20, 10),
+                                    margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15))
+                                    ),
+                                    child: Text(
+                                      formatCurrency.format(getTotal()),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15
                                       ),
                                     ),
-                                    color: Colors.deepPurpleAccent,);
-                                }, duration: Duration(milliseconds: 4000));
-                              }
-                              DatabaseItem databaseHelper = new DatabaseItem();
-                              jsonDecode(widget.order).forEach((name,
-                                  content) => content.forEach((size, specs) async {
-                                if(specs['quantity'] > 0){
-                                  OrderItem oItem = new OrderItem.withId(uuid.v1(), name, specs['quantity'], size, specs['price']);
-                                  await databaseHelper.insertItem(oItem);
+                                  ),
+                                ],
+                              ),
+                              onPressed: () async {
+                                showToast(context);
+                                if (!cStatus) {
+                                  showOverlayNotification((context) {
+                                    return Card(
+                                      margin: const EdgeInsets.fromLTRB(
+                                          0, 0, 0, 0),
+                                      child: SafeArea(
+                                        child: ListTile(
+                                          title: Text('Oops, network error',
+                                              style: TextStyle(fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white)
+                                          ),
+                                          subtitle: Text(
+                                            'Your order will be added when connection is back!.',
+                                            style: TextStyle(fontSize: 16,
+                                                color: Colors.white),
+                                          ),
+                                          trailing: IconButton(
+                                              icon: Icon(Icons.close,
+                                                color: Colors.white,),
+                                              onPressed: () {
+                                                OverlaySupportEntry.of(context)
+                                                    .dismiss();
+                                              }),
+                                        ),
+                                      ),
+                                      color: Colors.deepPurpleAccent,);
+                                  }, duration: Duration(milliseconds: 4000));
                                 }
-                              }));
-                              Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
-                            },
+                                DatabaseItem databaseHelper = new DatabaseItem();
+                                if (expensesControl > 0) {
+                                  if (getTotal() <= expensesControl) {
+                                    jsonDecode(widget.order).forEach((name,
+                                        content) =>
+                                        content.forEach((size, specs) async {
+                                          if (specs['quantity'] > 0) {
+                                            OrderItem oItem = new OrderItem
+                                                .withId(uuid.v1(), name,
+                                                specs['quantity'], size,
+                                                specs['price']);
+                                            await databaseHelper.insertItem(
+                                                oItem);
+                                            Navigator.of(context)
+                                                .pushNamedAndRemoveUntil(
+                                                '/Order',
+                                                ModalRoute.withName('/'),
+                                                arguments: widget.userId);
+                                          }
+                                        }));
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _buildAboutDialog(context),
+                                    );
+                                  }
+                                }
+                                else {
+                                  jsonDecode(widget.order).forEach((name,
+                                      content) async {
+                                    if (content['quantity'] > 0) {
+                                      OrderItem op = OrderItem.withId(
+                                          uuid.v1(), name, content['quantity'],
+                                          "",
+                                          content['price']);
+                                      await databaseHelper.insertItem(op);
+
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                          '/Order', ModalRoute.withName('/'),
+                                          arguments: widget.userId);
+                                    }
+                                  });
+                                }
+                              }
                           ),
                         )
                       ],
@@ -282,7 +332,10 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                 body: Column(
                   children: <Widget>[
                     SizedBox(
-                      height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 100,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height - AppBar().preferredSize.height - 100,
                       child: ListView(
                           children:
                           getProductList()
@@ -320,7 +373,6 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
     );
   }
 
-
   Widget _buildAboutText() {
     return new RichText(
       text: new TextSpan(
@@ -332,6 +384,46 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
     );
   }
 
+  checkInternetConnection(context) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast() {
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Check your connection and try again.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
+  }
+
   void showToast(BuildContext context) async {
     await checkConnection.initConnectivity();
     setState(() {
@@ -339,24 +431,27 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
     });
   }
 
-  getTotal(){
+  getTotal() {
     int total = 0;
     jsonDecode(widget.order).forEach((name,
-        content) => content.forEach((size, specs){
-      total += specs['quantity']*specs['price'];
-    }));
+        content) =>
+        content.forEach((size, specs) {
+          total += specs['quantity'] * specs['price'];
+        }));
     return total;
   }
 
   getProductList() {
     List<OrderItem> auxList = new List<OrderItem>();
     jsonDecode(widget.order).forEach((name,
-        content) => content.forEach((size, specs){
-      if(specs['quantity'] > 0){
-        OrderItem item = new OrderItem(name, specs['quantity'], size, specs['price']);
-        auxList.add(item);
-      }
-    }));
+        content) =>
+        content.forEach((size, specs) {
+          if (specs['quantity'] > 0) {
+            OrderItem item = new OrderItem(
+                name, specs['quantity'], size, specs['price']);
+            auxList.add(item);
+          }
+        }));
     return auxList.map<Widget>((orderItem) {
       return ListTile(
         title: Container(
@@ -415,5 +510,4 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
       );
     }).toList();
   }
-
 }

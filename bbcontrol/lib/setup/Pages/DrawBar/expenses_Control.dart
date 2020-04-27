@@ -83,7 +83,7 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text('Current limit amount: ${currentAmount}', textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 17),)
+                        style: TextStyle(fontWeight: FontWeight.normal, color: Colors.white, fontSize: 17),)
                       ],
                     ),
                     Row(

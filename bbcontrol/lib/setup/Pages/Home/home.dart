@@ -51,14 +51,7 @@ class HomeState extends State<Home> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
 
-            return ColorLoader5(
-              dotOneColor: Colors.redAccent,
-              dotTwoColor: Colors.blueAccent,
-              dotThreeColor: Colors.green,
-              dotType: DotType.circle,
-              dotIcon: Icon(Icons.adjust),
-              duration: Duration(seconds: 1),
-            );
+            return loaderFunction();
           }
           else {
             String userId = snapshot.data['id'];
@@ -118,7 +111,6 @@ class HomeState extends State<Home> {
                                       color: const Color(0xFFD7384A),
                                       onPressed: () {
                                         Navigator.of(context).pushNamed('/Drinks', arguments: userId);
-                                        showToast(context);
                                       },
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
@@ -177,7 +169,9 @@ class HomeState extends State<Home> {
                                     height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
                                     child: FlatButton(
                                       color: const Color(0xFFFF6B00),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.of(context).pushNamed('/Offers', arguments: userId);
+                                      },
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -201,48 +195,7 @@ class HomeState extends State<Home> {
                                           FlatButton(
                                             color: const Color(0xFFD8AE2D),
                                             onPressed: () {
-                                             Navigator.of(context).pushNamed('/Food', arguments: userId);
-                                              showToast(context);
-                                              if (!cStatus) {
-                                                showOverlayNotification((
-                                                    context) {
-                                                  return Card(
-                                                    margin: const EdgeInsets
-                                                        .fromLTRB(0, 0, 0, 0),
-                                                    child: SafeArea(
-                                                      child: ListTile(
-                                                        title: Text(
-                                                            'Connection Error',
-                                                            style: TextStyle(
-                                                                fontSize: 18,
-                                                                fontWeight: FontWeight
-                                                                    .bold,
-                                                                color: Colors
-                                                                    .white)
-                                                        ),
-                                                        subtitle: Text(
-                                                          'Orders will be added when connection is back.',
-                                                          style: TextStyle(
-                                                              fontSize: 16,
-                                                              color: Colors
-                                                                  .white),
-                                                        ),
-                                                        trailing: IconButton(
-                                                            icon: Icon(
-                                                              Icons.close,
-                                                              color: Colors
-                                                                  .white,),
-                                                            onPressed: () {
-                                                              OverlaySupportEntry
-                                                                  .of(context)
-                                                                  .dismiss();
-                                                            }),
-                                                      ),
-                                                    ),
-                                                    color: Colors.blueGrey,);
-                                                }, duration: Duration(
-                                                    milliseconds: 4000));
-                                              }
+                                              Navigator.of(context).pushNamed('/Food', arguments: userId);
                                             },
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.center,
@@ -273,8 +226,8 @@ class HomeState extends State<Home> {
                             child: FlatButton(
                               color: const Color(0xFF6DAC3B),
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => OrderPage()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                                loaderFunction();
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -300,6 +253,17 @@ class HomeState extends State<Home> {
             );
           }
         }
+    );
+  }
+
+  Widget loaderFunction(){
+    return ColorLoader5(
+      dotOneColor: Colors.redAccent,
+      dotTwoColor: Colors.blueAccent,
+      dotThreeColor: Colors.green,
+      dotType: DotType.circle,
+      dotIcon: Icon(Icons.adjust),
+      duration: Duration(seconds: 2),
     );
   }
 
@@ -373,7 +337,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                         margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
                         padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
                         child: Text('${widget.userFirstName}',
-                            style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 20),
                         ),
                         decoration: BoxDecoration(
                             border: Border(bottom: BorderSide(color: Colors.black87, width: 1.0)),
@@ -382,11 +346,11 @@ class _MenuDrawerState extends State<MenuDrawer> {
                         alignment: Alignment.centerLeft,
                       ),
                       Container(
-                          margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
-                          child: Text('${widget.userEmail}',
-                            style: TextStyle(fontSize: 17),
-                          ),
+                        margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
+                        child: Text('${widget.userEmail}',
+                          style: TextStyle(fontSize: 17),
+                        ),
                         alignment: Alignment.centerLeft,
                       ),
                     ],
@@ -484,7 +448,33 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             ),
                             color: Colors.transparent,
                             onPressed: () {
-                              print('holaaa');
+                              showOverlayNotification((context) {
+                                return Card(
+                                  margin: const EdgeInsets.fromLTRB(
+                                      0, 0, 0, 0),
+                                  child: SafeArea(
+                                    child: ListTile(
+                                      title: Text('Wait a little more!',
+                                          style: TextStyle(fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white)
+                                      ),
+                                      subtitle: Text(
+                                        'We\'re working on this for you.',
+                                        style: TextStyle(fontSize: 16,
+                                            color: Colors.white),
+                                      ),
+                                      trailing: IconButton(
+                                          icon: Icon(Icons.close,
+                                            color: Colors.white,),
+                                          onPressed: () {
+                                            OverlaySupportEntry.of(context)
+                                                .dismiss();
+                                          }),
+                                    ),
+                                  ),
+                                  color: Colors.blue,);
+                              }, duration: Duration(milliseconds: 4000));
                             },
                           ),
                           Container(),
@@ -519,6 +509,33 @@ class _MenuDrawerState extends State<MenuDrawer> {
     print(widget.userIdFromHome);
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => MyOrdersPage(userId: widget.userIdFromHome)));
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(
+            0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Hang on a minute!',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Your waiter is on the way to assist you.',
+              style: TextStyle(fontSize: 16,
+                  color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(Icons.close,
+                  color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blue,);
+    }, duration: Duration(milliseconds: 4000));
   }
 
   void action3() {
