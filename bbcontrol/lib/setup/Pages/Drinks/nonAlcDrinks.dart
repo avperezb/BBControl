@@ -41,7 +41,6 @@ class NonAlcoholicDrinks extends StatefulWidget {
     } );
     jsonOrder = jsonOrder.substring(0, jsonOrder.length - 1);
     jsonOrder = '{$jsonOrder}';
-    print(drinkPrices);
     return messages;
 
   }
@@ -144,8 +143,6 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                           jsonDecode(widget.drinkPrices).forEach((name, content){
                             sumQuantity += content['quantity'];
                           });
-
-                          print(sumQuantity);
                           if(sumQuantity > 0){
                             Navigator.push(context, MaterialPageRoute(builder: (
                                 context) => PreOrderPage(widget.drinkPrices, widget.userEmail)),);

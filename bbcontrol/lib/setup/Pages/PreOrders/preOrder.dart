@@ -6,6 +6,7 @@ import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -35,6 +36,28 @@ class _PreOrderPageState extends State<PreOrderPage> {
   List<OrderItem> orderList;
   int count = 0;
   bool cStatus = true;
+  num expensesControl = 0;
+
+  Future getLimitAmount(String userId) async{
+   return StreamBuilder(
+        stream: Firestore.instance.collection('Customers').document(widget.userId).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            print('ee');
+          }
+          else {
+            expensesControl = snapshot.data['limitAmount'];
+            print(expensesControl);
+            print('expenses control');
+          }
+        });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLimitAmount(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +118,24 @@ class _PreOrderPageState extends State<PreOrderPage> {
                       jsonDecode(widget.order).forEach((name,
                           content) async {
                         if (content['quantity'] > 0) {
-                          OrderItem op = OrderItem.withId(
-                              uuid.v1(),name, content['quantity'], "",
-                              content['price']);
-                          await databaseHelper.insertItem(op);
+                          if (expensesControl != 0) {
+                            if (getTotal() < expensesControl) {
+                              print(expensesControl);
+                              print('AAAAAAAAAAAA');
+                              print(getTotal());
+                              OrderItem op = OrderItem.withId(
+                                  uuid.v1(), name, content['quantity'], "",
+                                  content['price']);
+                              await databaseHelper.insertItem(op);
+                            }
+                          }
+                          else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  _buildAboutDialog(context),
+                            );
+                          }
                         }
                       });
                       Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
@@ -123,7 +160,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
         )
     );
   }
-  Widget loaderFunction(){
+  Widget loaderFunction() {
     return ColorLoader5(
       dotOneColor: Colors.redAccent,
       dotTwoColor: Colors.blueAccent,
@@ -132,6 +169,45 @@ class _PreOrderPageState extends State<PreOrderPage> {
       dotIcon: Icon(Icons.adjust),
       duration: Duration(seconds: 2),
     );
+  }
+  Widget _buildAboutDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Cannot add your order!'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildAboutText(),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Okay, got it'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAboutText() {
+    return new RichText(
+      text: new TextSpan(
+        text: 'You set a limit for the expenses control. If you have changed your mind go to settings and change it!',
+        style: const TextStyle(color: Colors.black87),
+        children: <TextSpan>[
+        ],
+      ),
+    );
+  }
+
+  void showToast(BuildContext context) async {
+    await checkConnection.initConnectivity();
+    setState(() {
+      cStatus = checkConnection.getConnectionStatus(context);
+    });
   }
 
   checkInternetConnection(context) async{
@@ -173,13 +249,6 @@ class _PreOrderPageState extends State<PreOrderPage> {
         color: Colors.deepPurpleAccent,);
     }, duration: Duration(milliseconds: 4000));
   }
-
-void showToast(BuildContext context) async {
-  await checkConnection.initConnectivity();
-  setState(() {
-    cStatus = checkConnection.getConnectionStatus(context);
-  });
-}
 
 getTotal(){
   int total = 0;
