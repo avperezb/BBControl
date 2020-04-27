@@ -11,8 +11,9 @@ class CustomersFirestoreClass {
   final String email;
   final String birthDate;
   final int phoneNumber;
+  final num limitAmount;
 
-  CustomersFirestoreClass({this.id, this.firstName, this.lastName, this.email, this.birthDate, this.phoneNumber});
+  CustomersFirestoreClass({this.id, this.firstName, this.lastName, this.email, this.birthDate, this.phoneNumber, this.limitAmount});
 
   final CollectionReference _customersCollectionReference = Firestore.instance.collection('Customers');
 
@@ -34,8 +35,6 @@ class CustomersFirestoreClass {
   }
 
   Future updateCustomerData(String id, String firstName, String lastName, String email, DateTime birthDate, num phoneNumber) async{
-    print('ajáaaaaaaaaaaaaa');
-    print(id);
     try {
       await _customersCollectionReference.document(id).setData({
         'id': id,
@@ -44,6 +43,18 @@ class CustomersFirestoreClass {
         'email': email,
         'birthDate': birthDate,
         'phoneNumber': phoneNumber
+      });
+    }catch(e){
+      return e.message;
+    }
+  }
+
+  Future setLimitAmount(String idUser, num amount) async {
+    print('poniendo el límite');
+    try {
+      await _customersCollectionReference.document(id).setData({
+        'id': id,
+        'limitAmount': limitAmount,
       });
     }catch(e){
       return e.message;

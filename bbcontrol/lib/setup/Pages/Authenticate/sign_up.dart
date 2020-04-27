@@ -253,7 +253,7 @@ class _SignUpState extends State<SignUpPage>{
                       _formKey.currentState.save();
                       dynamic result = await _auth.signUp(
                           _email, _password, _firstName, _lastName, _phoneNumber,
-                          _birthDate, 0);
+                          _birthDate, num.parse('0'));
                         print(_email + _password);
                         Navigator.push(context, MaterialPageRoute(builder: (
                             context) => Home(customer: result)));
