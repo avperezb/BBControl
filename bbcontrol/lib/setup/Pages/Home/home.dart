@@ -32,6 +32,10 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
 
+  initState(){
+    super.initState();
+  }
+
   CheckConnectivityState checkConnection = CheckConnectivityState();
   DatabaseItem databaseHelper = DatabaseItem();
   bool cStatus = true;

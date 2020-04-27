@@ -80,6 +80,13 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
                       ],
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Current limit amount: ${currentAmount}', textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 17),)
+                      ],
+                    ),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         Expanded(
@@ -118,6 +125,7 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
                             if (compactCtrl.text != '0.0'){
                               setLimit(widget.userId,
                                   num.parse(compactCtrl.text));
+                              updateAmount(num.parse(compactCtrl.text));
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) =>

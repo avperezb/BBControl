@@ -255,6 +255,7 @@ class _SignUpState extends State<SignUpPage>{
                           _email, _password, _firstName, _lastName, _phoneNumber,
                           _birthDate, num.parse('0'));
                         print(_email + _password);
+                        loaderFunction();
                         Navigator.push(context, MaterialPageRoute(builder: (
                             context) => Home(customer: result)));
                     }
@@ -307,7 +308,7 @@ class _SignUpState extends State<SignUpPage>{
       dotThreeColor: Colors.green,
       dotType: DotType.circle,
       dotIcon: Icon(Icons.adjust),
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 4),
     );
   }
 }

@@ -50,11 +50,13 @@ class AuthService {
 
     //Register email-password
     Future signUp(String _email, String _password, String _firstName, String _lastName, num _phoneNumber, DateTime _birthDate, num _limitAmount) async{
-      try{
+    print('intento crear');
+    try{
         print('holaaa');
         FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
         user.sendEmailVerification();
-        await _firestoreService.createCustomer(Customer(
+
+        return await _firestoreService.createCustomer(Customer(
             id:  user.uid,
             email: _email,
             firstName: _firstName,
@@ -64,7 +66,6 @@ class AuthService {
             limitAmount: _limitAmount
         ));
 
-        return user;
         //Display for the user that we sent an email.
       }catch(e) {
         print(e.message());
