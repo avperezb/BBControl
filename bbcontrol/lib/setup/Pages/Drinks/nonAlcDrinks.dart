@@ -257,23 +257,13 @@ class SingleDrink extends StatefulWidget {
 
 class _SingleDrinkState extends State<SingleDrink> {
   int quantity;
+  var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
 
   callback(int quantity){
     setState(() {
       this.quantity = quantity;
     });
     widget.callback(widget.drinkName, quantity);
-  }
-
-  String formatPrice(int price){
-    String result = '0';
-    String str = price.toString();
-    if(price > 0) {
-      String end = str.substring(str.length - 3, str.length);
-      String start = (str.length >= 4) ? str.substring(0, str.length - 3) + '.' : "";
-      result = start + end;
-    }
-    return '\$' + result;
   }
 
   Widget build(BuildContext context) {
@@ -309,7 +299,7 @@ class _SingleDrinkState extends State<SingleDrink> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(widget.drinkName),
-                Text(formatPrice(widget.price),
+                Text(formatCurrency.format(widget.price),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.blue,
@@ -341,7 +331,7 @@ class QuantityControl extends StatefulWidget  {
 }
 
 class _QuantityControlState extends State<QuantityControl> {
-  @override
+
   int quantity = 0;
   int max = 10;
   bool minDisabled = true;
@@ -350,7 +340,7 @@ class _QuantityControlState extends State<QuantityControl> {
   var colorIncrease = Color(0xFFD7384A);
   final enabledColor = Color(0xFFD7384A);
   final disabledColor = Color(0xFF7F7F7F);
-
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

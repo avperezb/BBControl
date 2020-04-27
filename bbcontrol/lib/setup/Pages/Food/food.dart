@@ -19,7 +19,6 @@ class FoodList extends StatefulWidget {
   FoodList({userId}){
     this.userId = userId;
     getInfo();
-    print(userId);
   }
 
   Future<List<Map<String, dynamic>>> getInfo() async{
@@ -355,7 +354,7 @@ class QuantityControl extends StatefulWidget  {
 }
 
 class _QuantityControlState extends State<QuantityControl> {
-  @override
+
   int quantity = 0;
   int max = 4;
   bool minDisabled = true;
@@ -364,7 +363,7 @@ class _QuantityControlState extends State<QuantityControl> {
   var colorIncrease = Color(0xFFD7384A);
   final enabledColor = Color(0xFFD7384A);
   final disabledColor = Color(0xFF7F7F7F);
-
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

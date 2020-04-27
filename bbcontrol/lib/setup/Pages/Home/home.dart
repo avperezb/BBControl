@@ -174,7 +174,9 @@ class HomeState extends State<Home> {
                                     height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
                                     child: FlatButton(
                                       color: const Color(0xFFFF6B00),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.of(context).pushNamed('/Offers');
+                                      },
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.center,

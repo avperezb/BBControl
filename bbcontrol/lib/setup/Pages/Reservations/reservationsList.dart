@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 
 class ReservationsList extends StatelessWidget {
   String userId;
-  ReservationDatabase db = new ReservationDatabase();
   ReservationsList(String userId){
     this.userId = userId;
   }
