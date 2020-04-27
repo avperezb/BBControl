@@ -34,155 +34,305 @@ class _PreOrderPageState extends State<PreOrderPage> {
   bool cStatus = true;
   num expensesControl = 0;
 
-  Future getLimitAmount(String userId) async{
-   return StreamBuilder(
-        stream: Firestore.instance.collection('Customers').document(widget.userId).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            print('ee');
-          }
-          else {
-            expensesControl = snapshot.data['limitAmount'];
-            print(expensesControl);
-            print('expenses control');
-          }
-        });
-  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getLimitAmount(widget.userId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Order status'),
-          centerTitle: true,
-          backgroundColor: const Color(0xFFB75ba4),
-        ),
-        bottomSheet: Card(
-          elevation: 6.0,
-          child: Container(
-            height: 60,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Container(
-                  child: RaisedButton(
-                    padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(10.0),
-                    ),
-                    color: const Color(0xFFB75ba4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceAround,
+    return StreamBuilder(
+        stream: Firestore.instance.collection('/Customers').document(widget.userId).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            expensesControl = snapshot.data['limitAmount'];
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('Order status'),
+                  centerTitle: true,
+                  backgroundColor: const Color(0xFFB75ba4),
+                ),
+                bottomSheet: Card(
+                  elevation: 6.0,
+                  child: Container(
+                    height: 60,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Text('Add to order',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16
-                          ),
-                        ),
                         Container(
-                          width: 120,
-                          padding: EdgeInsets.fromLTRB(
-                              20, 10, 20, 10),
-                          margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(15))
-                          ),
-                          child: Text(
-                            formatCurrency.format(getTotal()),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15
+                          child: RaisedButton(
+                            padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(10.0),
                             ),
+                            color: const Color(0xFFB75ba4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .spaceAround,
+                              children: <Widget>[
+                                Text('Add to order',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16
+                                  ),
+                                ),
+                                Container(
+                                  width: 120,
+                                  padding: EdgeInsets.fromLTRB(
+                                      20, 10, 20, 10),
+                                  margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))
+                                  ),
+                                  child: Text(
+                                    formatCurrency.format(getTotal()),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () async {
+                              showToast(context);
+                              if (!cStatus) {
+                                showOverlayNotification((context) {
+                                  return Card(
+                                    margin: const EdgeInsets.fromLTRB(
+                                        0, 0, 0, 0),
+                                    child: SafeArea(
+                                      child: ListTile(
+                                        title: Text('Oops, network error',
+                                            style: TextStyle(fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)
+                                        ),
+                                        subtitle: Text(
+                                          'Your order will be added when connection is back!.',
+                                          style: TextStyle(fontSize: 16,
+                                              color: Colors.white),
+                                        ),
+                                        trailing: IconButton(
+                                            icon: Icon(Icons.close,
+                                              color: Colors.white,),
+                                            onPressed: () {
+                                              OverlaySupportEntry.of(context)
+                                                  .dismiss();
+                                            }),
+                                      ),
+                                    ),
+                                    color: Colors.deepPurpleAccent,);
+                                }, duration: Duration(milliseconds: 4000));
+                              }
+                              DatabaseItem databaseHelper = new DatabaseItem();
+                              if(expensesControl>0){
+                                if(getTotal()<=expensesControl){
+                                  jsonDecode(widget.order).forEach((name,
+                                      content) async {
+                                    if (content['quantity'] > 0) {
+                                      OrderItem op = OrderItem.withId(
+                                          uuid.v1(), name, content['quantity'], "",
+                                          content['price']);
+                                      await databaseHelper.insertItem(op);
+
+                                      Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
+                                    }
+                                  });
+                                }
+                                else{
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        _buildAboutDialog(context),
+                                  );
+                                }
+                              }
+                              else {
+                                jsonDecode(widget.order).forEach((name,
+                                    content) async {
+                                  if (content['quantity'] > 0) {
+                                    OrderItem op = OrderItem.withId(
+                                        uuid.v1(), name, content['quantity'], "",
+                                        content['price']);
+                                    await databaseHelper.insertItem(op);
+
+                                    Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
+                                  }
+                                });
+                              }
+                            },
                           ),
-                        ),
+                        )
                       ],
                     ),
-                    onPressed: () async {
-                      showToast(context);
-                      if (!cStatus) {
-                        showOverlayNotification((context) {
-                          return Card(
-                            margin: const EdgeInsets.fromLTRB(
-                                0, 0, 0, 0),
-                            child: SafeArea(
-                              child: ListTile(
-                                title: Text('Oops, network error',
-                                    style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)
-                                ),
-                                subtitle: Text(
-                                  'Your order will be added when connection is back!.',
-                                  style: TextStyle(fontSize: 16,
-                                      color: Colors.white),
-                                ),
-                                trailing: IconButton(
-                                    icon: Icon(Icons.close,
-                                      color: Colors.white,),
-                                    onPressed: () {
-                                      OverlaySupportEntry.of(context)
-                                          .dismiss();
-                                    }),
-                              ),
-                            ),
-                            color: Colors.deepPurpleAccent,);
-                        }, duration: Duration(milliseconds: 4000));
-                      }
-                      DatabaseItem databaseHelper = new DatabaseItem();
-                      jsonDecode(widget.order).forEach((name,
-                          content) async {
-                        if (content['quantity'] > 0) {
-                          if (expensesControl != 0) {
-                            if (getTotal() < expensesControl) {
-                              print(expensesControl);
-                              print('AAAAAAAAAAAA');
-                              print(getTotal());
-                              OrderItem op = OrderItem.withId(
-                                  uuid.v1(), name, content['quantity'], "",
-                                  content['price']);
-                              await databaseHelper.insertItem(op);
-                            }
-                          }
-                          else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  _buildAboutDialog(context),
-                            );
-                          }
-                        }
-                      });
-                      Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
-                    },
                   ),
+                ),
+                body: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 100,
+                      child: ListView(
+                          children:
+                          getProductList()
+                      ),
+                    ),
+                  ],
                 )
-              ],
-            ),
-          ),
-        ),
-        body: Column(
-          children: <Widget>[
-            SizedBox(
-              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 100,
-              child: ListView(
-                  children:
-                  getProductList()
-              ),
-            ),
-          ],
-        )
-    );
+            );
+          } else {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('Order status'),
+                  centerTitle: true,
+                  backgroundColor: const Color(0xFFB75ba4),
+                ),
+                bottomSheet: Card(
+                  elevation: 6.0,
+                  child: Container(
+                    height: 60,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Container(
+                          child: RaisedButton(
+                            padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(10.0),
+                            ),
+                            color: const Color(0xFFB75ba4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .spaceAround,
+                              children: <Widget>[
+                                Text('Add to order',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16
+                                  ),
+                                ),
+                                Container(
+                                  width: 120,
+                                  padding: EdgeInsets.fromLTRB(
+                                      20, 10, 20, 10),
+                                  margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))
+                                  ),
+                                  child: Text(
+                                    formatCurrency.format(getTotal()),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () async {
+                              showToast(context);
+                              if (!cStatus) {
+                                showOverlayNotification((context) {
+                                  return Card(
+                                    margin: const EdgeInsets.fromLTRB(
+                                        0, 0, 0, 0),
+                                    child: SafeArea(
+                                      child: ListTile(
+                                        title: Text('Oops, network error',
+                                            style: TextStyle(fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)
+                                        ),
+                                        subtitle: Text(
+                                          'Your order will be added when connection is back!.',
+                                          style: TextStyle(fontSize: 16,
+                                              color: Colors.white),
+                                        ),
+                                        trailing: IconButton(
+                                            icon: Icon(Icons.close,
+                                              color: Colors.white,),
+                                            onPressed: () {
+                                              OverlaySupportEntry.of(context)
+                                                  .dismiss();
+                                            }),
+                                      ),
+                                    ),
+                                    color: Colors.deepPurpleAccent,);
+                                }, duration: Duration(milliseconds: 4000));
+                              }
+                              DatabaseItem databaseHelper = new DatabaseItem();
+                              if (expensesControl > 0) {
+                                if (getTotal() <= expensesControl) {
+                                  jsonDecode(widget.order).forEach((name,
+                                      content) async {
+                                    if (content['quantity'] > 0) {
+                                      OrderItem op = OrderItem.withId(
+                                          uuid.v1(), name, content['quantity'],
+                                          "",
+                                          content['price']);
+                                      await databaseHelper.insertItem(op);
+
+                                      Navigator.of(context).pushNamedAndRemoveUntil(
+                                          '/Order', ModalRoute.withName('/'),
+                                          arguments: widget.userId);
+                                    }
+                                  });
+                                }
+                                else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        _buildAboutDialog(context),
+                                  );
+                                }
+                              }
+                              else {
+                                jsonDecode(widget.order).forEach((name,
+                                    content) async {
+                                  if (content['quantity'] > 0) {
+                                    OrderItem op = OrderItem.withId(
+                                        uuid.v1(), name, content['quantity'],
+                                        "",
+                                        content['price']);
+                                    await databaseHelper.insertItem(op);
+
+                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                        '/Order', ModalRoute.withName('/'),
+                                        arguments: widget.userId);
+                                  }
+                                });
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                body: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height - AppBar().preferredSize.height - 100,
+                      child: ListView(
+                          children:
+                          getProductList()
+                      ),
+                    ),
+                  ],
+                )
+            );
+          }
+        });
   }
 
   Widget _buildAboutDialog(BuildContext context) {
@@ -198,14 +348,18 @@ class _PreOrderPageState extends State<PreOrderPage> {
       actions: <Widget>[
         FlatButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
           },
-          textColor: Theme.of(context).primaryColor,
+          textColor: Theme
+              .of(context)
+              .primaryColor,
           child: const Text('Okay, got it'),
         ),
       ],
     );
   }
+
 
   Widget _buildAboutText() {
     return new RichText(
@@ -217,6 +371,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
       ),
     );
   }
+
 
   void showToast(BuildContext context) async {
     await checkConnection.initConnectivity();

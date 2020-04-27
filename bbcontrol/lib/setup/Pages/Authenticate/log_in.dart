@@ -162,6 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                               return 'Could not sign you in. Check your data and try again.';
                             }
                             else {
+
                               Navigator.push(context, MaterialPageRoute(builder: (
                                   context) => Home(customer: result)));
                             }
