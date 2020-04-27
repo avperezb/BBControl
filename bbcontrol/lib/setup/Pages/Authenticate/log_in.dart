@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bbcontrol/models/customer.dart';
+import 'package:bbcontrol/models/employees.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/reset_Password.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
@@ -8,6 +9,7 @@ import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:bbcontrol/setup/Pages/Waiter/OrdersList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -187,14 +189,25 @@ class _LoginPageState extends State<LoginPage> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         if (_formKey.currentState.validate()) {
           _formKey.currentState.save();
-          Customer result = await _auth.signIn(
+          var result = await _auth.signIn(
               _email, _password);
+          print(_email);
           if (result == null) {
             return 'Could not sign you in. Check your data and try again.';
           }
           else {
-            Navigator.push(context, MaterialPageRoute(builder: (
-                context) => Home(customer: result)));
+            if(_email.contains('@bbc.com')){
+              print('acaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+              Navigator.push(context, MaterialPageRoute(builder: (
+                  context) => OrdersListWaiter(employee: result)));
+            }
+            else if(_email.contains('@adminbbc.com')){
+
+            }
+            else{
+              print('llllllllllllllllllllllllllllllllllllllllllllllllll');
+              Navigator.push(context, MaterialPageRoute(builder: (
+                  context) => Home(customer: result)));}
           }
         }
       }
