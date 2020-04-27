@@ -19,7 +19,6 @@ class FoodList extends StatefulWidget {
   FoodList({userId}){
     this.userId = userId;
     getInfo();
-    print(userId);
   }
 
   Future<List<Map<String, dynamic>>> getInfo() async{
@@ -44,7 +43,6 @@ class FoodList extends StatefulWidget {
     } );
     jsonOrder = jsonOrder.substring(0, jsonOrder.length - 1);
     jsonOrder = '{$jsonOrder}';
-    print(mealPrices);
     return messages;
 
   }
@@ -184,9 +182,6 @@ class _FoodListState extends State<FoodList> {
                             jsonDecode(widget.mealPrices).forEach((name, content){
                               sumQuantity += content['quantity'];
                             });
-                            print('hhhhhhh');
-                            print(widget.userId);
-                            print(sumQuantity);
                             if(sumQuantity > 0){
                               Navigator.push(context, MaterialPageRoute(builder: (
                                   context) => PreOrderPage(widget.mealPrices, widget.userId)),);

@@ -1,6 +1,5 @@
 import 'package:bbcontrol/models/order.dart';
 import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
@@ -50,7 +49,6 @@ class _OrderPageState extends State<OrderPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFFffcc94),
                       shape: BoxShape.circle,
-
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,6 +113,7 @@ class _OrderPageState extends State<OrderPage> {
               );
             }
             else {
+              total = getTotal(snapshot);
               return Column(
                 children: <Widget>[
                   Row(
@@ -278,10 +277,9 @@ class _OrderPageState extends State<OrderPage> {
                               onPressed: () async {
                                 var uuid = new Uuid();
                                 print(widget.userId);
-                                Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now());
+                                Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now(), '0', total, 0);
                                 await _ordersFirestoreClass.createOrder(newOrder);
                                 for(OrderItem item in snapshot.data){
-                                  print('ITEM:');print(item);
                                   await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
                                 }
                                 databaseHelper.deleteDB();

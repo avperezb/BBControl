@@ -210,7 +210,7 @@ packages:
     source: hosted
     version: "1.2.2"
   flutter_money_formatter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_money_formatter
       url: "https://pub.dartlang.org"
