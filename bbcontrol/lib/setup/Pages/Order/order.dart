@@ -277,15 +277,8 @@ class _OrderPageState extends State<OrderPage> {
                                 ],
                               ),
                               onPressed: () async {
-                                var uuid = new Uuid();
                                 print(widget.userId);
-                                Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now(), '0', total, 0);
-                                await _ordersFirestoreClass.createOrder(newOrder);
-                                for(OrderItem item in snapshot.data){
-                                  await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
-                                }
-                                databaseHelper.deleteDB();
-                                checkInternetConnection(context);
+                                checkInternetConnection(context, snapshot);
                               },
                             ),
                           )
@@ -329,17 +322,21 @@ class _OrderPageState extends State<OrderPage> {
         color: Colors.blue,);
     }, duration: Duration(milliseconds: 4000));
   }
-  checkInternetConnection(context) async{
+  checkInternetConnection(context, snapshot) async{
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var uuid = new Uuid();
         databaseHelper.deleteDB();
+        Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now(), '0', total, 0);
+        await _ordersFirestoreClass.createOrder(newOrder);
+        for(OrderItem item in snapshot.data){
+          await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
+        }
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
         return successfulOrderToast();
       }
     } on SocketException catch (_) {
-      databaseHelper.deleteDB();
-      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       return connectionErrorToast();
     }
   }
@@ -357,7 +354,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Colors.white)
             ),
             subtitle: Text(
-              'Your order will be added when connection is back!.',
+              'Check your connection and try again.',
               style: TextStyle(fontSize: 16,
                   color: Colors.white),
             ),

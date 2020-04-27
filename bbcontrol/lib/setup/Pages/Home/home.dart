@@ -478,8 +478,33 @@ class _MenuDrawerState extends State<MenuDrawer> {
   }
 
   void action2() {
-    Navigator.push(context, MaterialPageRoute(
-        builder: (context) => MyOrdersPage(userId: widget.userIdFromHome)));
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(
+            0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Hang on a minute!',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Your waiter is on the way to assist you.',
+              style: TextStyle(fontSize: 16,
+                  color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(Icons.close,
+                  color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blue,);
+    }, duration: Duration(milliseconds: 4000));
   }
 
   void action3() {

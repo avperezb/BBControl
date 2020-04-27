@@ -127,19 +127,27 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                   uuid.v1(), name, content['quantity'], "",
                                   content['price']);
                               await databaseHelper.insertItem(op);
+                              Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
+                              loaderFunction();
+                            }
+                            else{
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    _buildAboutDialog(context),
+                              );
                             }
                           }
                           else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  _buildAboutDialog(context),
-                            );
+                            OrderItem op = OrderItem.withId(
+                                uuid.v1(), name, content['quantity'], "",
+                                content['price']);
+                            await databaseHelper.insertItem(op);
+                            Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
+                            loaderFunction();
                           }
                         }
                       });
-                      Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
-                      loaderFunction();
                     },
                   ),
                 )
