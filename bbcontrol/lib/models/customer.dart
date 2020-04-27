@@ -8,6 +8,7 @@ class Customer {
   final String email;
   final DateTime birthDate;
   final int phoneNumber;
+  final int limitAmount;
 
   Customer({
     this.id,
@@ -15,16 +16,18 @@ class Customer {
     this.lastName,
     this.email,
     this.birthDate,
-    this.phoneNumber
+    this.phoneNumber,
+    this.limitAmount
   });
 
   Customer.fromData(Map<String, dynamic> data):
-    id = data['id'],
-    firstName = data['firstName'],
-    lastName = data['lastName'],
-    email = data['email'],
-    birthDate = data['birthDate'],
-    phoneNumber = data['phoneNumber'];
+        id = data['id'],
+        firstName = data['firstName'],
+        lastName = data['lastName'],
+        email = data['email'],
+        birthDate = data['birthDate'],
+        phoneNumber = data['phoneNumber'],
+        limitAmount = data['limitAmount'];
 
   Map<String, dynamic> toJson(){
     return{
@@ -33,7 +36,8 @@ class Customer {
       'lastName': lastName,
       'email' : email,
       'birthDate' : birthDate,
-      'phoneNumber' : phoneNumber
+      'phoneNumber' : phoneNumber,
+      'limitAmount' : limitAmount
     };
   }
 }

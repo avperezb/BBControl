@@ -34,13 +34,10 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
             loaderFunction();
-            setState(() {
-              checkBoxState = false;
-            });
           }
           return Scaffold(
             appBar: AppBar(
-              title: Text('Detail of order'),
+              title: Text('Expenses control'),
               centerTitle: true,
               backgroundColor: const Color(0xFFAD4497),
             ),
@@ -55,7 +52,7 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
                     children: <Widget>[
                       Container(
                         padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                        child: Text('Set limit to: ',
+                        child: Text('Set limit to your orders: ',
                           style: TextStyle(
                               fontSize: 18
                           ),
