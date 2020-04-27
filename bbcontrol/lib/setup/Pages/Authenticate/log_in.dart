@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:bbcontrol/models/customer.dart';
+import 'package:bbcontrol/models/employees.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/reset_Password.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
@@ -6,6 +9,7 @@ import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:bbcontrol/setup/Pages/Waiter/OrdersList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -147,26 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xFFAD4497),
                       onPressed: () async {
                         loaderFunction();
-                        checkConnectivity(context);
-                        if(!isConnected){
-                          return showOverlayNotification((context) {
-                            return connectionNotification(context);
-                          }, duration: Duration(milliseconds: 4000));
-                        }
-                        else {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-                            Customer result = await _auth.signIn(
-                                _email, _password);
-                            if (result == null) {
-                              return 'Could not sign you in. Check your data and try again.';
-                            }
-                            else {
-                              Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => Home(customer: result)));
-                            }
-                          }
-                        }
+                        checkInternetConnection(context);
                       },
                       child: Text('Log in',
                         style: TextStyle(
@@ -197,6 +182,67 @@ class _LoginPageState extends State<LoginPage> {
           ),
         )
     );
+  }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        if (_formKey.currentState.validate()) {
+          _formKey.currentState.save();
+          var result = await _auth.signIn(
+              _email, _password);
+          print(_email);
+          if (result == null) {
+            return 'Could not sign you in. Check your data and try again.';
+          }
+          else {
+            if(_email.contains('@bbc.com')){
+              print('acaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+              Navigator.push(context, MaterialPageRoute(builder: (
+                  context) => OrdersListWaiter(employee: result)));
+            }
+            else if(_email.contains('@adminbbc.com')){
+
+            }
+            else{
+              print('llllllllllllllllllllllllllllllllllllllllllllllllll');
+              Navigator.push(context, MaterialPageRoute(builder: (
+                  context) => Home(customer: result)));}
+          }
+        }
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    return showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Please try to log in again later.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.blueGrey,);
+    }, duration: Duration(milliseconds: 4000));
   }
 
   void checkConnectivity(BuildContext context) async {

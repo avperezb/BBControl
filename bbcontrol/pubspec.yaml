@@ -78,9 +78,21 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family:  ReservationIcons
+    - family: Lobster
       fonts:
-      - asset: assets/fonts/ReservationIcons.ttf
+        - asset: assets/fonts/LobsterTwo-BoldItalic.ttf
+          style: italic
+          weight: 700
+    - family: Sacramento
+      fonts:
+        - asset: assets/fonts/Sacramento.ttf
+          style: normal
+    - family: Ultra
+      fonts:
+        - asset: assets/fonts/Ultra-Regular.ttf
+    - family: Abril
+      fonts:
+        - asset: assets/fonts/AbrilFatface-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

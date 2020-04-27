@@ -26,9 +26,9 @@ class EmployeesFirestoreClass {
     }
   }
 
-  Future getCustomer(String id) async{
+  Future getEmployee(String id) async{
     try{
-      var employeeInfo = await _employeesCollectionReference.document(id).get();
+      var employeeInfo = await _employeesCollectionReference.document('0fCB43hKS0MvOEOnL2ZfiSVQKny2').get();
       return Employee.fromData(employeeInfo.data);
     }catch(e){
       return e.message;

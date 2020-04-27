@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/PreOrders/preOrder.dart';
@@ -137,35 +138,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                           ],
                         ),
                         onPressed: () {
-                          showToast(context);
-                          if(!cStatus) {
-                            showOverlayNotification((context) {
-                              return Card(
-                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                child: SafeArea(
-                                  child: ListTile(
-                                    title: Text('Connection Error',
-                                        style: TextStyle(fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)
-                                    ),
-                                    subtitle: Text(
-                                      'Products will be added when connection is back.',
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    ),
-                                    trailing: IconButton(
-                                        icon: Icon(
-                                          Icons.close, color: Colors.white,),
-                                        onPressed: () {
-                                          OverlaySupportEntry.of(context)
-                                              .dismiss();
-                                        }),
-                                  ),
-                                ),
-                                color: Colors.blueGrey,);
-                            }, duration: Duration(milliseconds: 4000));
-                          }
+                          checkInternetConnection(context);
                           int sumQuantity = 0;
                           jsonDecode(widget.drinkPrices).forEach((name, content){
                             sumQuantity += content['quantity'];
@@ -226,6 +199,45 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
       },
     );
   }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Products will be added when connection is back.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
+  }
 
   void showToast(BuildContext context) async {
     await checkConnection.initConnectivity();
@@ -254,23 +266,13 @@ class SingleDrink extends StatefulWidget {
 
 class _SingleDrinkState extends State<SingleDrink> {
   int quantity;
+  var formatCurrency = NumberFormat.currency(symbol: '\$',decimalDigits: 0, locale: 'en_US');
 
   callback(int quantity){
     setState(() {
       this.quantity = quantity;
     });
     widget.callback(widget.drinkName, quantity);
-  }
-
-  String formatPrice(int price){
-    String result = '0';
-    String str = price.toString();
-    if(price > 0) {
-      String end = str.substring(str.length - 3, str.length);
-      String start = (str.length >= 4) ? str.substring(0, str.length - 3) + '.' : "";
-      result = start + end;
-    }
-    return '\$' + result;
   }
 
   Widget build(BuildContext context) {
@@ -306,7 +308,7 @@ class _SingleDrinkState extends State<SingleDrink> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(widget.drinkName),
-                Text(formatPrice(widget.price),
+                Text(formatCurrency.format(widget.price),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.blue,
@@ -338,7 +340,7 @@ class QuantityControl extends StatefulWidget  {
 }
 
 class _QuantityControlState extends State<QuantityControl> {
-  @override
+
   int quantity = 0;
   int max = 10;
   bool minDisabled = true;
@@ -347,7 +349,7 @@ class _QuantityControlState extends State<QuantityControl> {
   var colorIncrease = Color(0xFFD7384A);
   final enabledColor = Color(0xFFD7384A);
   final disabledColor = Color(0xFF7F7F7F);
-
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

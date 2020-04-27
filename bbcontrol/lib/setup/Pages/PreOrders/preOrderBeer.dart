@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
@@ -123,6 +124,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                           await databaseHelper.insertItem(oItem);
                         }
                       }));
+                      checkInternetConnection(context);
                       Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
                     },
                   ),
@@ -143,6 +145,45 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
           ],
         )
     );
+  }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Connection Error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Check your connection and try again.',
+              style: TextStyle(
+                  fontSize: 16, color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                  Icons.close, color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
   }
 
   void showToast(BuildContext context) async {
