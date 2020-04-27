@@ -151,6 +151,27 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xFFAD4497),
                       onPressed: () async {
                         loaderFunction();
+                        checkConnectivity(context);
+                        if(!isConnected){
+                          return showOverlayNotification((context) {
+                            return connectionNotification(context);
+                          }, duration: Duration(milliseconds: 4000));
+                        }
+                        else {
+                          if (_formKey.currentState.validate()) {
+                            _formKey.currentState.save();
+                            Customer result = await _auth.signIn(
+                                _email, _password);
+                            if (result == null) {
+                              return 'Could not sign you in. Check your data and try again.';
+                            }
+                            else {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (
+                                  context) => Home(customer: result)));
+                            }
+                          }
+                        }
                         checkInternetConnection(context);
                       },
                       child: Text('Log in',

@@ -32,6 +32,10 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
 
+  initState(){
+    super.initState();
+  }
+
   CheckConnectivityState checkConnection = CheckConnectivityState();
   DatabaseItem databaseHelper = DatabaseItem();
   bool cStatus = true;
@@ -403,9 +407,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             ),
                             color: Colors.transparent,
                             onPressed: () {
-                              if (!isSwitched) {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => ExpensesControlPage()));
-                              }
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ExpensesControlPage(userId: widget.userIdFromHome)));
                             },
                           ),
                           Switch(
@@ -488,7 +490,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                   leading: Icon(option4.icon),
                   title: Text(option4.title, style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w600)),
-                  onTap: action4,
+                  onTap: action5,
                 ),
               ),
             ],
@@ -504,6 +506,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
   }
 
   void action2() {
+    print(widget.userIdFromHome);
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => MyOrdersPage(userId: widget.userIdFromHome)));
     showOverlayNotification((context) {
       return Card(
         margin: const EdgeInsets.fromLTRB(
@@ -534,10 +539,16 @@ class _MenuDrawerState extends State<MenuDrawer> {
   }
 
   void action3() {
-
+    print(widget.userIdFromHome);
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => ExpensesControlPage(userId: widget.userIdFromHome)));
   }
 
   void action4() {
+
+  }
+
+  void action5() {
     Navigator.pop(context);
     _auth.signOut();
   }
@@ -558,10 +569,13 @@ class _MenuDrawerState extends State<MenuDrawer> {
             Navigator.of(context).pop();
           },
           textColor: Theme.of(context).primaryColor,
-          child: const Text('Okay, got it!'),
+          child: const Text('Cancel'),
         ),
         FlatButton(
           onPressed: () {
+            setState(() {
+              isSwitched = !isSwitched;
+            });
             Navigator.of(context).pop();
           },
           textColor: Theme.of(context).primaryColor,
