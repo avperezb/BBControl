@@ -105,7 +105,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                         shape: RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10.0),
                         ),
-                        color: const Color(0xFFAD4497),
+                        color: const Color(0xFFB75BA4),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment
                               .spaceAround,
@@ -214,7 +214,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
                   Container(
                     margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.66,
+                      height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 85*2,
                       child: ListView(
                         children: snapshot.data.documents.map<SingleDrink>((DocumentSnapshot drink ){
                           return SingleDrink(drink['name'], drink['price'], drink['image'], callback);

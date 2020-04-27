@@ -79,16 +79,14 @@ class _ProfilePageState extends State<ProfilePage>{
               ),
               bottomSheet: Card(
                 elevation: 6.0,
-                child: Container(height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.1,
+                child: Container(
+                  height: 60,
                   child: Container(
                     width: MediaQuery
                         .of(context)
                         .size
                         .width,
-                    margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
                     child: RaisedButton(
                       padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
                       shape: RoundedRectangleBorder(
@@ -133,28 +131,75 @@ class _ProfilePageState extends State<ProfilePage>{
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                   padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                   child:
-                  ListView(
-                    children: <Widget>[
-                      Container(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 5, 22),
-                              child: Text('First name: ',
-                                style: TextStyle(
-                                    fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
+                  Container(
+                    height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
+                    child: ListView(
+                      children: <Widget>[
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 0, 5, 22),
+                                child: Text('First name: ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
+                                  ),
                                 ),
                               ),
-                            ),
-                            Flexible(
+                              Flexible(
+                                  child: TextFormField(
+                                    readOnly: readOnly,
+                                    enabled: datePicker,
+                                    initialValue: snapshot
+                                        .data['firstName'],
+                                    validator: (input) {
+                                      if (input.isEmpty) {
+                                        return 'Please type your first name';
+                                      }
+                                      if (input.isNotEmpty &&
+                                          !RegExp(r'^[a-z A-Z,.\-]+$')
+                                              .hasMatch(input)) {
+                                        return 'This field cannot contain numbers or special characters';
+                                      }
+                                    },
+                                    onSaved: (input) => _firstName = input,
+                                    decoration: InputDecoration(
+                                      border: const UnderlineInputBorder(
+                                        borderSide: const BorderSide(
+                                            color: Colors.grey, width: 0.0),
+                                      ),
+                                      hintText: 'Enter your first name',
+                                      contentPadding: new EdgeInsets
+                                          .symmetric(
+                                          vertical: 5.0, horizontal: 10.0),
+                                    ),
+                                    maxLength: 20,
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  )
+                              ),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                          ),
+                        ),
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 0, 5, 22),
+                                child: Text('Last name: ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
+                                  ),
+                                ),
+                              ),
+                              Flexible(
                                 child: TextFormField(
-                                  readOnly: readOnly,
-                                  enabled: datePicker,
-                                  initialValue: snapshot
-                                      .data['firstName'],
+                                  initialValue: snapshot.data['lastName'],
                                   validator: (input) {
                                     if (input.isEmpty) {
-                                      return 'Please type your first name';
+                                      return 'Please type your last name';
                                     }
                                     if (input.isNotEmpty &&
                                         !RegExp(r'^[a-z A-Z,.\-]+$')
@@ -162,246 +207,202 @@ class _ProfilePageState extends State<ProfilePage>{
                                       return 'This field cannot contain numbers or special characters';
                                     }
                                   },
-                                  onSaved: (input) => _firstName = input,
+                                  onSaved: (input) => _lastName = input,
                                   decoration: InputDecoration(
-                                    border: const UnderlineInputBorder(
-                                      borderSide: const BorderSide(
+                                    border: UnderlineInputBorder(
+                                      borderSide: BorderSide(
                                           color: Colors.grey, width: 0.0),
+
                                     ),
-                                    hintText: 'Enter your first name',
+                                    hintText: 'Enter your last name',
                                     contentPadding: new EdgeInsets
                                         .symmetric(
                                         vertical: 5.0, horizontal: 10.0),
                                   ),
                                   maxLength: 20,
+                                  readOnly: readOnly,
+                                  enabled: datePicker,
                                   style: TextStyle(fontSize: 18, color: Colors.black),
-                                )
-                            ),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                        ),
-                      ),
-                      Container(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 5, 22),
-                              child: Text('Last name: ',
-                                style: TextStyle(
-                                    fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
                                 ),
                               ),
-                            ),
-                            Flexible(
-                              child: TextFormField(
-                                initialValue: snapshot.data['lastName'],
-                                validator: (input) {
-                                  if (input.isEmpty) {
-                                    return 'Please type your last name';
-                                  }
-                                  if (input.isNotEmpty &&
-                                      !RegExp(r'^[a-z A-Z,.\-]+$')
-                                          .hasMatch(input)) {
-                                    return 'This field cannot contain numbers or special characters';
-                                  }
-                                },
-                                onSaved: (input) => _lastName = input,
-                                decoration: InputDecoration(
-                                  border: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.grey, width: 0.0),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                          ),
+                        ),
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 0, 5, 22),
+                                child: Text('Email: ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: TextFormField(
+                                  readOnly: readOnly,
+                                  enabled: datePicker,
+                                  initialValue: snapshot.data['email'],
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (input) {
+                                    if (input.isEmpty) {
+                                      return 'Please type an email';
+                                    }
+                                    if (input.isNotEmpty && !RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                        .hasMatch(input)) {
+                                      return 'Please type a valid email';
+                                    }
+                                  },
+                                  onSaved: (input) {
+                                    setState(() => _email = input);
+                                  },
+                                  decoration: InputDecoration(
+                                    border: const UnderlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 5.0),
+                                    ),
+                                    hintText: 'Enter your email',
+                                    contentPadding: new EdgeInsets
+                                        .symmetric(
+                                        vertical: 0.0, horizontal: 10.0),
+                                  ),
+                                  maxLength: 30,
+                                  style: TextStyle(fontSize: 18, color: Colors.black),
+                                ),
+                              ),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                          ),
+                        ),
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                child: Text('Birth date: ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: DateTimeField(
+                                  readOnly: true,
+                                  enabled: datePicker,
+                                  format: format,
+                                  initialValue: snapshot.data['birthDate']
+                                      .toDate(),
+                                  validator: (input) {
+                                    if (input == null) {
+                                      return 'Please enter your birth date';
+                                    }
+                                    else {
+                                      if (input.isBefore(
+                                          new DateTime.now())) {
+                                        var age = Age.dateDifference(
+                                            fromDate: input,
+                                            toDate: new DateTime.now(),
+                                            includeToDate: false);
+                                        if (age.years < 18) {
+                                          return 'You must be 18 years old or above';
+                                        }
+                                      }
+                                      else {
+                                        return 'Not a valid date';
+                                      }
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    border: const UnderlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 0.0),
 
+                                    ),
+                                    hintText: 'Enter your birth date',
+                                    contentPadding: new EdgeInsets
+                                        .symmetric(
+                                        vertical: 15.0, horizontal: 10.0),
                                   ),
-                                  hintText: 'Enter your last name',
-                                  contentPadding: new EdgeInsets
-                                      .symmetric(
-                                      vertical: 5.0, horizontal: 10.0),
+                                  onShowPicker: (context, currentValue) {
+                                    return showDatePicker(
+                                        context: context,
+                                        firstDate: DateTime(1900),
+                                        initialDate: currentValue ??
+                                            DateTime.now(),
+                                        lastDate: DateTime(2100));
+                                  },
+                                  onSaved: (input) => _birthDate = input,
+                                  style: TextStyle(fontSize: 18, color: Colors.black),
                                 ),
-                                maxLength: 20,
-                                readOnly: readOnly,
-                                enabled: datePicker,
-                                style: TextStyle(fontSize: 18, color: Colors.black),
                               ),
-                            ),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                            ],
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                          ),
                         ),
-                      ),
-                      Container(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 5, 22),
-                              child: Text('Email: ',
-                                style: TextStyle(
-                                    fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              child: TextFormField(
-                                readOnly: readOnly,
-                                enabled: datePicker,
-                                initialValue: snapshot.data['email'],
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (input) {
-                                  if (input.isEmpty) {
-                                    return 'Please type an email';
-                                  }
-                                  if (input.isNotEmpty && !RegExp(
-                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(input)) {
-                                    return 'Please type a valid email';
-                                  }
-                                },
-                                onSaved: (input) {
-                                  setState(() => _email = input);
-                                },
-                                decoration: InputDecoration(
-                                  border: const UnderlineInputBorder(
-                                    borderSide: const BorderSide(
-                                        color: Colors.grey, width: 5.0),
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 22, 5, 20),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                child: Text('Phone number: ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
                                   ),
-                                  hintText: 'Enter your email',
-                                  contentPadding: new EdgeInsets
-                                      .symmetric(
-                                      vertical: 0.0, horizontal: 10.0),
-                                ),
-                                maxLength: 30,
-                                style: TextStyle(fontSize: 18, color: Colors.black),
-                              ),
-                            ),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                        ),
-                      ),
-                      Container(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                              child: Text('Birth date: ',
-                                style: TextStyle(
-                                    fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
                                 ),
                               ),
-                            ),
-                            Flexible(
-                              child: DateTimeField(
-                                readOnly: true,
-                                enabled: datePicker,
-                                format: format,
-                                initialValue: snapshot.data['birthDate']
-                                    .toDate(),
-                                validator: (input) {
-                                  if (input == null) {
-                                    return 'Please enter your birth date';
-                                  }
-                                  else {
-                                    if (input.isBefore(
-                                        new DateTime.now())) {
-                                      var age = Age.dateDifference(
-                                          fromDate: input,
-                                          toDate: new DateTime.now(),
-                                          includeToDate: false);
-                                      if (age.years < 18) {
-                                        return 'You must be 18 years old or above';
+                              Flexible(
+                                child: TextFormField(
+                                  keyboardType: TextInputType.phone,
+                                  initialValue: snapshot.data['phoneNumber']
+                                      .toString(),
+                                  validator: (input) {
+                                    if (input.isNotEmpty) {
+                                      String patttern = r'(^(?:[+0]9)?[0-9]{10}$)';
+                                      RegExp regExp = new RegExp(patttern);
+                                      if (!regExp.hasMatch(input)) {
+                                        return 'Please enter valid mobile number';
                                       }
                                     }
                                     else {
-                                      return 'Not a valid date';
+                                      return 'Please enter your phone number';
                                     }
-                                  }
-                                },
-                                decoration: InputDecoration(
-                                  border: const UnderlineInputBorder(
-                                    borderSide: const BorderSide(
-                                        color: Colors.grey, width: 0.0),
-
+                                  },
+                                  maxLength: 10,
+                                  onSaved: (input) =>
+                                  _phoneNumber = num.parse(input),
+                                  decoration: InputDecoration(
+                                    border: const UnderlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 0.0),
+                                    ),
+                                    hintText: 'Enter your phone number',
+                                    contentPadding: new EdgeInsets
+                                        .symmetric(
+                                        vertical: 5.0, horizontal: 10.0),
                                   ),
-                                  hintText: 'Enter your birth date',
-                                  contentPadding: new EdgeInsets
-                                      .symmetric(
-                                      vertical: 15.0, horizontal: 10.0),
+                                  readOnly: readOnly,
+                                  enabled: datePicker,
+                                  style: TextStyle(fontSize: 18, color: Colors.black),
                                 ),
-                                onShowPicker: (context, currentValue) {
-                                  return showDatePicker(
-                                      context: context,
-                                      firstDate: DateTime(1900),
-                                      initialDate: currentValue ??
-                                          DateTime.now(),
-                                      lastDate: DateTime(2100));
-                                },
-                                onSaved: (input) => _birthDate = input,
-                                style: TextStyle(fontSize: 18, color: Colors.black),
                               ),
-                            ),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                            ],
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                          ),
                         ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 22, 5, 20),
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
-                              child: Text('Phone number: ',
-                                style: TextStyle(
-                                    fontSize: 20, color: const Color(0xFFAD4497), fontWeight: FontWeight.w800
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              child: TextFormField(
-                                keyboardType: TextInputType.phone,
-                                initialValue: snapshot.data['phoneNumber']
-                                    .toString(),
-                                validator: (input) {
-                                  if (input.isNotEmpty) {
-                                    String patttern = r'(^(?:[+0]9)?[0-9]{10}$)';
-                                    RegExp regExp = new RegExp(patttern);
-                                    if (!regExp.hasMatch(input)) {
-                                      return 'Please enter valid mobile number';
-                                    }
-                                  }
-                                  else {
-                                    return 'Please enter your phone number';
-                                  }
-                                },
-                                maxLength: 10,
-                                onSaved: (input) =>
-                                _phoneNumber = num.parse(input),
-                                decoration: InputDecoration(
-                                  border: const UnderlineInputBorder(
-                                    borderSide: const BorderSide(
-                                        color: Colors.grey, width: 0.0),
-                                  ),
-                                  hintText: 'Enter your phone number',
-                                  contentPadding: new EdgeInsets
-                                      .symmetric(
-                                      vertical: 5.0, horizontal: 10.0),
-                                ),
-                                readOnly: readOnly,
-                                enabled: datePicker,
-                                style: TextStyle(fontSize: 18, color: Colors.black),
-                              ),
-                            ),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -90,7 +90,7 @@ class _FoodListState extends State<FoodList> {
                 appBar: AppBar(
                   title: Text('Food'),
                   centerTitle: true,
-                  backgroundColor: const Color(0xFFD7384A),
+                  backgroundColor: const Color(0xFFB75BA4),
                 ),
                 body :
                 ColorLoader5(
@@ -108,7 +108,7 @@ class _FoodListState extends State<FoodList> {
                 appBar: AppBar(
                   title: Text('Food'),
                   centerTitle: true,
-                  backgroundColor: const Color(0xFFD7384A),
+                  backgroundColor: const Color(0xFFB75BA4),
                 ),
                 bottomSheet: Card(
                     elevation: 6.0,
@@ -118,7 +118,7 @@ class _FoodListState extends State<FoodList> {
                           shape: RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(10.0),
                           ),
-                          color: const Color(0xFFD7384A),
+                          color: const Color(0xFFB75BA4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment
                                 .spaceAround,
@@ -228,10 +228,7 @@ class _FoodListState extends State<FoodList> {
                     Container(
                       margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
                       child: SizedBox(
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.77,
+                        height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
                         child: ListView(
                           children: snapshot.data.documents.map<SingleMeal>((DocumentSnapshot meal ){
                             return SingleMeal(meal['name'], meal['description'], meal['price'], meal['category'], callback);

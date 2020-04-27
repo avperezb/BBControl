@@ -62,135 +62,138 @@ class _LoginPageState extends State<LoginPage> {
         ),
         body: Form(
           key: _formKey,
-          child: ListView(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-                child: Image.asset('assets/images/logo.png',
-                  height: 220,
-                  width: 220,
+          child: Container(
+            height: MediaQuery.of(context).size.height - 60,
+            child: ListView(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                  child: Image.asset('assets/images/logo.png',
+                    height: 220,
+                    width: 220,
+                  ),
                 ),
-              ),
-              Container(
-                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 5.0),
+                Container(
+                    padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 5.0),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (input) {
+                        if (input.isEmpty) {
+                          return 'Please type an email';
+                        }
+                        if(input.isNotEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
+                          return 'Please type a valid email';
+                        }
+                      },
+                      onChanged: (input) {
+                        setState(() => _email = input);
+                      },
+                      decoration: InputDecoration(
+                        border:const OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+                        ),
+                        prefixIcon: const Icon(Icons.email,
+                            color: const Color(0xFFAD4497)
+                        ),
+                        hintText: 'Enter an email address',
+                        labelText: 'Email',
+                        contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+                      ),
+                      maxLength: 30,
+                    )
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                   child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
                     validator: (input) {
-                      if (input.isEmpty) {
-                        return 'Please type an email';
+                      if(input.isNotEmpty){
+                        String patttern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
+                        RegExp regExp = new RegExp(patttern);
+                        if (!regExp.hasMatch(input)) {
+                          return 'Non special characters, at least 1 letter and number 6+ chars.';
+                        }
+                        if(input.length<6){
+                          return 'Your password needs to be atleast 6 characters';
+                        }
                       }
-                      if(input.isNotEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
-                        return 'Please type a valid email';
+                      else{
+                        return 'Please enter your password';
                       }
                     },
                     onChanged: (input) {
-                      setState(() => _email = input);
+                      setState(() => _password = input);
                     },
                     decoration: InputDecoration(
                       border:const OutlineInputBorder(
                         borderSide: const BorderSide(color: Colors.grey, width: 0.0),
                       ),
-                      prefixIcon: const Icon(Icons.email,
-                          color: const Color(0xFFAD4497)
+                      prefixIcon: const Icon(Icons.remove_red_eye,
+                          color:const Color(0xFFAD4497)
                       ),
-                      hintText: 'Enter an email address',
-                      labelText: 'Email',
+                      hintText: 'Enter your password',
+                      labelText: 'Password',
                       contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                     ),
-                    maxLength: 30,
-                  )
-              ),
-              Container(
-                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                child: TextFormField(
-                  validator: (input) {
-                    if(input.isNotEmpty){
-                      String patttern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
-                      RegExp regExp = new RegExp(patttern);
-                      if (!regExp.hasMatch(input)) {
-                        return 'Non special characters, at least 1 letter and number 6+ chars.';
-                      }
-                      if(input.length<6){
-                        return 'Your password needs to be atleast 6 characters';
-                      }
-                    }
-                    else{
-                      return 'Please enter your password';
-                    }
-                  },
-                  onChanged: (input) {
-                    setState(() => _password = input);
-                  },
-                  decoration: InputDecoration(
-                    border:const OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.grey, width: 0.0),
-                    ),
-                    prefixIcon: const Icon(Icons.remove_red_eye,
-                        color:const Color(0xFFAD4497)
-                    ),
-                    hintText: 'Enter your password',
-                    labelText: 'Password',
-                    contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+                    obscureText: true,
                   ),
-                  obscureText: true,
                 ),
-              ),
-              Container(
-                  margin: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
-                  child: RaisedButton(
-                    padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(10.0),
-                    ),
-                    color: const Color(0xFFAD4497),
-                    onPressed: () async {
-                      loaderFunction();
-                      checkConnectivity(context);
-                      if(!isConnected){
-                        showOverlayNotification((context) {
-                          return connectionNotification(context);
-                        }, duration: Duration(milliseconds: 4000));
-                      }
-                      else {
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
-                          Customer result = await _auth.signIn(
-                              _email, _password);
-                          if (result == null) {
-                            return 'Could not sign you in. Check your data and try again.';
-                          }
-                          else {
-                            Navigator.push(context, MaterialPageRoute(builder: (
-                                context) => Home(customer: result)));
+                Container(
+                    margin: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
+                    child: RaisedButton(
+                      padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(10.0),
+                      ),
+                      color: const Color(0xFFAD4497),
+                      onPressed: () async {
+                        loaderFunction();
+                        checkConnectivity(context);
+                        if(!isConnected){
+                          return showOverlayNotification((context) {
+                            return connectionNotification(context);
+                          }, duration: Duration(milliseconds: 4000));
+                        }
+                        else {
+                          if (_formKey.currentState.validate()) {
+                            _formKey.currentState.save();
+                            Customer result = await _auth.signIn(
+                                _email, _password);
+                            if (result == null) {
+                              return 'Could not sign you in. Check your data and try again.';
+                            }
+                            else {
+                              Navigator.push(context, MaterialPageRoute(builder: (
+                                  context) => Home(customer: result)));
+                            }
                           }
                         }
-                      }
-                    },
-                    child: Text('Log in',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16
-                      ),),
-                  )
-              ),
-              Row(
-                textDirection: TextDirection.rtl,
-                children: <Widget>[
-                  FlatButton(
-                      textColor: const Color(0xFFAD4497),
-                      child: Text(
-                        'Forgot password?',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      onPressed: () async {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => ResetPasswordPage()));
-                        loaderFunction();
-                      }
-                  ),
-                ],
-              ),
-            ],
+                      },
+                      child: Text('Log in',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16
+                        ),),
+                    )
+                ),
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: <Widget>[
+                    FlatButton(
+                        textColor: const Color(0xFFAD4497),
+                        child: Text(
+                          'Forgot password?',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        onPressed: () async {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => ResetPasswordPage()));
+                          loaderFunction();
+                        }
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         )
     );

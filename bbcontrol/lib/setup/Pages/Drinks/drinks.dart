@@ -33,10 +33,10 @@ class _DrinksTabsState extends State<DrinksTabs> with SingleTickerProviderStateM
       appBar: AppBar(
         title: Text('Drinks'),
         centerTitle: true,
-        backgroundColor: const Color(0xFFAD4497),
+        backgroundColor: const Color(0xFFB75BA4),
       ),
       bottomNavigationBar: Material(
-        color: const Color(0xFFAD4497),
+        color: const Color(0xFFB75BA4),
         child: TabBar(
           controller: controller,
           tabs: <Tab>[

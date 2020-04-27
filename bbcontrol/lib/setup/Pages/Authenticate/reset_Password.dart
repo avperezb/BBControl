@@ -4,6 +4,7 @@ import 'package:bbcontrol/setup/Pages/Services/auth.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               color: Colors.white
           ),
         ),
-        backgroundColor: Color(0xFFD7384A),
+        backgroundColor: Color(0xFFAD4497),
       ),
       body: Form(
         key: _formKey,
@@ -59,6 +60,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       return 'Please type a valid email';
                     }
                   },
+                    inputFormatters: <TextInputFormatter>[
+                    LengthLimitingTextInputFormatter(35)],
                   onChanged: (input) {
                     setState(() => _email = input);
                   },
@@ -78,11 +81,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(10.0),
                   ),
-                  color: const Color(0xFFD7384A),
+                  color: const Color(0xFFAD4497),
                   onPressed: () async {
                     checkConnectivity(context);
                     if(!isConnected){
-                      showOverlayNotification((context) {
+                      return showOverlayNotification((context) {
                         return connectionNotification(context);
                       }, duration: Duration(milliseconds: 4000));
                     }
@@ -103,7 +106,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         );
                       }
                       else {
-                        showOverlayNotification((context) {
+                        return showOverlayNotification((context) {
                           return Card(
                             margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: SafeArea(
@@ -128,9 +131,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ),
                             color: Colors.cyan);
                         }, duration: Duration(milliseconds: 4000));
-                        ;
                       }
                     }
+                    else return Container();
                   },
                   child: Text('Submit',
                     style: TextStyle(

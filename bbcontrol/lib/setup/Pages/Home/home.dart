@@ -83,19 +83,18 @@ class HomeState extends State<Home> {
                                 .height - AppBar().preferredSize.height -
                                 24.0) / 6,
                             child: FlatButton(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.0, 10.0, 0.0, 10.0),
                               color: const Color(0xFF69B3E7),
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) => ReservationsList(userId)),);
                               },
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  Icon(Icons.group,
+                                  (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.group,
                                       size: iconSize,
-                                      color: Colors.white),
+                                      color: Colors.white) : Container(),
                                   Text('Reservations',
                                     style: TextStyle(
                                       color: Colors.white,
@@ -109,31 +108,22 @@ class HomeState extends State<Home> {
                               Column(
                                 children: <Widget>[
                                   Container(
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width / 2,
-                                    height: (MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height -
-                                        AppBar().preferredSize.height -
-                                        24.0) * 4 / 9,
+                                    width: MediaQuery.of(context).size.width / 2,
+                                    height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 4 / 9,
                                     child: FlatButton(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.0, 90.0, 0.0, 90.0),
                                       color: const Color(0xFFD7384A),
                                       onPressed: () {
                                         Navigator.of(context).pushNamed('/Drinks', arguments: userId);
                                         showToast(context);
                                       },
                                       child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment
                                             .center,
                                         children: <Widget>[
-                                          Icon(Icons.local_bar,
+                                          (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.local_bar,
                                               size: iconSize,
-                                              color: Colors.white),
+                                              color: Colors.white) : Container(),
                                           Text('Drinks',
                                             style: TextStyle(
                                               color: Colors.white,
@@ -154,16 +144,15 @@ class HomeState extends State<Home> {
                                         AppBar().preferredSize.height -
                                         24.0) * 2 / 9,
                                     child: FlatButton(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.0, 25.0, 0.0, 25.0),
                                       color: const Color(0xFF8f72ff),
                                       child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment
                                             .center,
                                         children: <Widget>[
-                                          Icon(Icons.directions_car,
+                                          (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.directions_car,
                                               size: iconSize,
-                                              color: Colors.white),
+                                              color: Colors.white) : Container(),
                                           Text('Request cab',
                                             style: TextStyle(
                                               color: Colors.white,
@@ -180,28 +169,18 @@ class HomeState extends State<Home> {
                               Column(
                                 children: <Widget>[
                                   Container(
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width / 2,
-                                    height: (MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height -
-                                        AppBar().preferredSize.height -
-                                        24.0) * 2 / 9,
+                                    width: MediaQuery.of(context).size.width / 2,
+                                    height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
                                     child: FlatButton(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.0, 25.0, 0.0, 25.0),
                                       color: const Color(0xFFFF6B00),
                                       onPressed: () {},
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Icon(Icons.local_offer,
+                                          (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.local_offer,
                                               size: iconSize,
-                                              color: Colors.white),
+                                              color: Colors.white) : Container(),
                                           Text('Special offers',
                                             style: TextStyle(
                                               color: Colors.white,
@@ -211,21 +190,11 @@ class HomeState extends State<Home> {
                                     ),
                                   ),
                                   Container(
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width / 2,
-                                    height: (MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height -
-                                        AppBar().preferredSize.height -
-                                        24.0) * 4 / 9,
+                                    width: MediaQuery.of(context).size.width / 2,
+                                    height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height -24.0) * 4 / 9,
                                     child: Builder(
                                       builder: (context) =>
                                           FlatButton(
-                                            padding: EdgeInsets.fromLTRB(
-                                                0.0, 90.0, 0.0, 90.0),
                                             color: const Color(0xFFD8AE2D),
                                             onPressed: () {
                                              Navigator.of(context).pushNamed('/Food', arguments: userId);
@@ -269,16 +238,15 @@ class HomeState extends State<Home> {
                                                     color: Colors.blueGrey,);
                                                 }, duration: Duration(
                                                     milliseconds: 4000));
-                                                ;
                                               }
                                             },
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment
-                                                  .center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
                                               children: <Widget>[
-                                                Icon(Icons.room_service,
+                                                (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.room_service,
                                                     size: iconSize,
-                                                    color: Colors.white),
+                                                    color: Colors.white) : Container(),
                                                 Text('Food',
                                                   style: TextStyle(
                                                     color: Colors.white,
@@ -299,19 +267,18 @@ class HomeState extends State<Home> {
                                 .height - AppBar().preferredSize.height -
                                 24.0) / 6,
                             child: FlatButton(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.0, 10.0, 0.0, 10.0),
                               color: const Color(0xFF6DAC3B),
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) => OrderPage()));
                               },
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  Icon(Icons.shopping_cart,
+                                  (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.shopping_cart,
                                       size: iconSize,
-                                      color: Colors.white),
+                                      color: Colors.white) : Container(),
                                   Text('My order',
                                     style: TextStyle(
                                       color: Colors.white,

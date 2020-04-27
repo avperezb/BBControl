@@ -35,7 +35,7 @@ class _OrderPageState extends State<OrderPage> {
         appBar: AppBar(
           title: Text('My order'),
           centerTitle: true,
-          backgroundColor: const Color(0xFFAD4497),
+          backgroundColor: const Color(0xFFB75BA4),
         ),
         body: FutureBuilder(
           future: databaseHelper.getAllOrders(),
@@ -49,7 +49,6 @@ class _OrderPageState extends State<OrderPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFFffcc94),
                       shape: BoxShape.circle,
-
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +91,7 @@ class _OrderPageState extends State<OrderPage> {
                               IconButton(
                                 icon: Icon(Icons.local_bar,
                                     size: 45),
-                                color: const Color(0xFFAD4497),
+                                color: const Color(0xFFB75ba4),
                                 onPressed: () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/Drinks', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
@@ -100,7 +99,7 @@ class _OrderPageState extends State<OrderPage> {
                               IconButton(
                                 icon: Icon(Icons.room_service,
                                     size: 45),
-                                color: const Color(0xFFAD4497),
+                                color: const Color(0xFFB75ba4),
                                 onPressed: () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/Food', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
@@ -121,44 +120,38 @@ class _OrderPageState extends State<OrderPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Container(
-                          width: 160,
-                          child: Row(
-                            children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.delete_outline,
-                                    color: Colors.red),
-                                onPressed: (){
-                                  databaseHelper.deleteDB();
-                                  deletedOrderToast();
-                                  Navigator.of(context)
-                                      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                                },
-                              ),
-                              FlatButton(
-                                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                color: Colors.transparent,
-                                child: Text('EMPTY ORDER',
-                                  style: TextStyle(
-                                      color: Colors.red
+                        padding: EdgeInsets.fromLTRB(0, 15, 20, 0),
+                        child: InkWell(
+                          child: Container(
+                              width: 160,
+                              margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Icon(Icons.delete_outline,
+                                      color: Colors.red),
+                                  Text('EMPTY ORDER',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                onPressed: (){
-                                  databaseHelper.deleteDB();
-                                  deletedOrderToast();
-                                  Navigator.of(context)
-                                      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                                },
-                              ),
-                            ],
-                          )
+                                ],
+                              )
+                          ),
+                          onTap: (){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  _buildAboutDialog(context, false, ""),
+                            );
+                          },
+                        ),
                       )
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * .7,
+                    height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 76*2,
                     child: ListView(
                       children: <Widget>[
                         for(OrderItem orderProduct in snapshot.data)
@@ -208,11 +201,12 @@ class _OrderPageState extends State<OrderPage> {
                                         IconButton(
                                           icon: Icon( Icons.delete_outline,
                                               color: Colors.red),
-                                          onPressed: () async{
-                                            await databaseHelper.deletePreOrder(orderProduct.id);
-                                            setState(() {
-                                              auxReload = !auxReload;
-                                            });
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  _buildAboutDialog(context, true, orderProduct.id),
+                                            );
                                           },
                                         )
                                       ],
@@ -238,15 +232,48 @@ class _OrderPageState extends State<OrderPage> {
                     elevation: 6.0,
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.1,
+                      height: 70,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
                             child: RaisedButton(
+                              padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10.0),
+                              ),
+                              color: const Color(0xFFB75ba4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceAround,
+                                children: <Widget>[
+                                  Text('Confirm order',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 120,
+                                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                    margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15))
+                                    ),
+                                    child: Text(
+                                      formatCurrency.format(getTotal(snapshot)),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               onPressed: () async {
                                 var uuid = new Uuid();
                                 print(widget.userId);
@@ -260,33 +287,7 @@ class _OrderPageState extends State<OrderPage> {
                                 if (!cStatus) {
                                   Navigator.of(context)
                                       .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                                  return showOverlayNotification((context) {
-                                    return Card(
-                                      margin: const EdgeInsets.fromLTRB(
-                                          0, 0, 0, 0),
-                                      child: SafeArea(
-                                        child: ListTile(
-                                          title: Text('Oops, network error',
-                                              style: TextStyle(fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white)
-                                          ),
-                                          subtitle: Text(
-                                            'Your order will be added when connection is back!.',
-                                            style: TextStyle(fontSize: 16,
-                                                color: Colors.white),
-                                          ),
-                                          trailing: IconButton(
-                                              icon: Icon(Icons.close,
-                                                color: Colors.white,),
-                                              onPressed: () {
-                                                OverlaySupportEntry.of(context)
-                                                    .dismiss();
-                                              }),
-                                        ),
-                                      ),
-                                      color: Colors.deepPurpleAccent,);
-                                  }, duration: Duration(milliseconds: 4000));
+                                  return connectionErrorToast();
                                 }
                                 else{
                                   Navigator.of(context)
@@ -320,42 +321,6 @@ class _OrderPageState extends State<OrderPage> {
                                   }, duration: Duration(milliseconds: 4000));
                                 }
                               },
-                              padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(10.0),
-                              ),
-                              color: const Color(0xFFAD4497),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceAround,
-                                children: <Widget>[
-                                  Text('Confirm order',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 120,
-                                    padding: EdgeInsets.fromLTRB(
-                                        20, 10, 20, 10),
-                                    margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15))
-                                    ),
-                                    child: Text(
-                                      formatCurrency.format(getTotal(snapshot)),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
                           )
                         ],
@@ -367,6 +332,89 @@ class _OrderPageState extends State<OrderPage> {
             }
           },
         )
+    );
+  }
+
+  connectionErrorToast(){
+    return showOverlayNotification((context) {
+      return Card(
+        margin: const EdgeInsets.fromLTRB(
+            0, 0, 0, 0),
+        child: SafeArea(
+          child: ListTile(
+            title: Text('Oops, network error',
+                style: TextStyle(fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            ),
+            subtitle: Text(
+              'Your order will be added when connection is back!.',
+              style: TextStyle(fontSize: 16,
+                  color: Colors.white),
+            ),
+            trailing: IconButton(
+                icon: Icon(Icons.close,
+                  color: Colors.white,),
+                onPressed: () {
+                  OverlaySupportEntry.of(context)
+                      .dismiss();
+                }),
+          ),
+        ),
+        color: Colors.deepPurpleAccent,);
+    }, duration: Duration(milliseconds: 4000));
+  }
+
+  Widget _buildAboutDialog(BuildContext context, bool isItem, String productId) {
+    return new AlertDialog(
+      title: const Text('Are you sure?'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildAboutText(isItem),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('CANCEL'),
+        ),
+        FlatButton(
+          onPressed: () async{
+            if(!isItem){
+              Navigator.of(context).pop();
+              databaseHelper.deleteDB();
+              deletedOrderToast();
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+            }
+            else{
+              Navigator.of(context).pop();
+              databaseHelper.deletePreOrder(productId);
+              setState(() {
+                auxReload = !auxReload;
+              });
+            }
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('DELETE'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAboutText(bool isItem) {
+    return new RichText(
+      text: new TextSpan(
+        text: isItem ? 'This item will be deleted from your cart' : 'You won\'t be able to get your products back!',
+        style: const TextStyle(color: Colors.black87),
+        children: <TextSpan>[
+        ],
+      ),
     );
   }
 

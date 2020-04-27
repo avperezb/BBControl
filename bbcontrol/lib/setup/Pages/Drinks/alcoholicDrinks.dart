@@ -12,9 +12,9 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AlcoholicDrinks extends StatelessWidget {
-  String userEmail;
-  AlcoholicDrinks(String userEmail){
-    this.userEmail = userEmail;
+  String userId;
+  AlcoholicDrinks(String userId){
+    this.userId = userId;
   }
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class AlcoholicDrinks extends StatelessWidget {
             margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: ListView(
               children: snapshot.data.documents.map<SingleBeer>((DocumentSnapshot beer ){
-                return SingleBeer(beer, userEmail);
+                return SingleBeer(beer, userId);
               }).toList(),
             ),
           );
@@ -54,15 +54,15 @@ class SingleBeer extends StatelessWidget {
   String description;
   String image;
   String drinkId;
-  String userEmail;
+  String userId;
 
-  SingleBeer(DocumentSnapshot beer, String userEmail){
+  SingleBeer(DocumentSnapshot beer, String userId){
     this.drinkName = beer['name'];
     this.volume = beer['volume'];
     this.description = beer['description'];
     this.image = beer['image'];
     this.drinkId = beer.documentID;
-    this.userEmail = userEmail;
+    this.userId = userId;
   }
 
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ class SingleBeer extends StatelessWidget {
       child: Container(
         child: ListTile(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userEmail)),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderBeer(drinkName, userId)),);
           },
           leading: CachedNetworkImage(
             imageUrl: image,
@@ -118,6 +118,7 @@ class OrderBeer extends StatefulWidget {
   int towerPrice = 60000;
   int pintPrice = 11000;
   int jarPrice = 34000;
+
   List<OrderItem> productsList;
   String userId;
 
@@ -140,7 +141,7 @@ class _OrderBeerState extends State<OrderBeer> {
   int jarTotal = 0;
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
-  String accumulateTotal = '\$0';
+  int accumulateTotal = 0;
   int getTotalOrder(){
     int total = glassTotal*widget.glassPrice + towerTotal*widget.towerPrice +
         pintTotal*widget.pintPrice + jarTotal*widget.jarPrice;
@@ -155,8 +156,7 @@ class _OrderBeerState extends State<OrderBeer> {
       else if(size == 'Pint') pintTotal = quantity;
       else if(size == 'Jar') jarTotal = quantity;
 
-      int total = getTotalOrder();
-      accumulateTotal = formatCurrency.format(total);
+      accumulateTotal = getTotalOrder();
     });
   }
   Widget build(BuildContext context) {
@@ -172,241 +172,259 @@ class _OrderBeerState extends State<OrderBeer> {
         appBar: AppBar(
           title: Text(widget.beer),
           centerTitle: true,
-          backgroundColor: const Color(0xFFAD4497),
+          backgroundColor: const Color(0xFFB75ba4),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  width: 150,
-                  height: 220,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                              'GLASS',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20
-                              )
-                          ),
-                          Text(
-                            '(330 ML)',
-                            style: TextStyle(
-                                fontSize: 12
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 100,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
-                        child: Image(
-                          image: AssetImage('assets/images/beerPresentations/beerGlass2.png'),
-                        ),
-                      ),
-                      Text(
-                        formatCurrency.format(widget.glassPrice),
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 20
-                        ),
-                      ),
-                      QuantityControl('Glass', callback),
-                    ],
-                  ),
+        bottomSheet: Card(
+          elevation: 6,
+          child: Container(
+            height: 60,
+            child: RaisedButton(
+                padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(10.0),
                 ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  width: 150,
-                  height: 220,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                              'TOWER',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20
-                              )
-                          ),
-                          Text(
-                            '(3 L)',
-                            style: TextStyle(
-                                fontSize: 12
-                            ),
-                          ),
-                        ],
+                color: const Color(0xFFB75BA4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceAround,
+                  children: <Widget>[
+                    Text('Add to order',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
                       ),
-                      Container(
-                        height: 100,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
-                        child: Image(
-                          image: AssetImage('assets/images/beerPresentations/beerTower2.png'),
-                        ),
-                      ),
-                      Text(
-                        formatCurrency.format(widget.towerPrice),
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 20
-                        ),
-                      ),
-                      QuantityControl('Tower', callback),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  width: 150,
-                  height: 220,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                              'JAR',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20
-                              )
-                          ),
-                          Text(
-                            '(1.5 L)',
-                            style: TextStyle(
-                                fontSize: 12
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 100,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
-                        child: Image(
-                          image: AssetImage('assets/images/beerPresentations/beerJar2.png'),
-                        ),
-                      ),
-                      Text(
-                        formatCurrency.format(widget.jarPrice),
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 20
-                        ),
-                      ),
-                      QuantityControl('Jar', callback),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  width: 150,
-                  height: 220,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                              'PINT',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20
-                              )
-                          ),
-                          Text(
-                            '(570 ML)',
-                            style: TextStyle(
-                                fontSize: 12
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 100,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
-                        child: Image(
-                          image: AssetImage('assets/images/beerPresentations/beerPint2.png'),
-                        ),
-                      ),
-                      Text(
-                        formatCurrency.format(widget.pintPrice),
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 20
-                        ),
-                      ),
-                      QuantityControl('Pint', callback),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width*0.35,
-                  child: Text(
-                    'Total: $accumulateTotal',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20
                     ),
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width*0.55,
-                  child: Builder(
-                    builder: (context) => RaisedButton(
-                      padding: EdgeInsets.fromLTRB(0.0, 13.0, 0.0, 13.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(10.0),
+                    Container(
+                      width: 120,
+                      padding: EdgeInsets.fromLTRB(
+                          20, 10, 20, 10),
+                      margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(15))
                       ),
-                      color: const Color(0xFFD7384A),
-                      onPressed:(){
-                        getConnState(context);
-                        if(!cStatus) {
-                          noConnectionToast();
-                        }
-                        if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
-                          print(jsonDecode(order));
-                          Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => PreOrderBeer(order, widget.userId)),
-                          );
-                        }
-                        else{
-                          noProductsToast();
-                        }
-                      },
-                      child: Text('Add to order',
+                      child: Text(formatCurrency.format(accumulateTotal),
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16
-                        ),),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15
+                        ),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  ],
+                ),
+                onPressed: () {
+                  getConnState(context);
+                  if(!cStatus) {
+                    return noConnectionToast();
+                  }
+                  if (jarTotal!=0 || glassTotal != 0 || towerTotal != 0 || pintTotal != 0){
+                    print(jsonDecode(order));
+                    Navigator.push(context, MaterialPageRoute(builder: (
+                        context) => PreOrderBeer(order, widget.userId)),
+                    );
+                  }
+                  else{
+                    noProductsToast();
+                  }
+                }
             ),
-          ],
+          ),
+        ),
+        body: SizedBox(
+          height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
+          child: ListView(
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        width: 150,
+                        height: 220,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                    'GLASS',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20
+                                    )
+                                ),
+                                Text(
+                                  '(330 ML)',
+                                  style: TextStyle(
+                                      fontSize: 12
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              height: 100,
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
+                              child: Image(
+                                image: AssetImage('assets/images/beerPresentations/beerGlass2.png'),
+                              ),
+                            ),
+                            Text(
+                              formatCurrency.format(widget.glassPrice),
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 20
+                              ),
+                            ),
+                            QuantityControl('Glass', callback),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        width: 150,
+                        height: 220,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                    'TOWER',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20
+                                    )
+                                ),
+                                Text(
+                                  '(3 L)',
+                                  style: TextStyle(
+                                      fontSize: 12
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              height: 100,
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
+                              child: Image(
+                                image: AssetImage('assets/images/beerPresentations/beerTower2.png'),
+                              ),
+                            ),
+                            Text(
+                              formatCurrency.format(widget.towerPrice),
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 20
+                              ),
+                            ),
+                            QuantityControl('Tower', callback),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        width: 150,
+                        height: 220,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                    'JAR',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20
+                                    )
+                                ),
+                                Text(
+                                  '(1.5 L)',
+                                  style: TextStyle(
+                                      fontSize: 12
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              height: 100,
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
+                              child: Image(
+                                image: AssetImage('assets/images/beerPresentations/beerJar2.png'),
+                              ),
+                            ),
+                            Text(
+                              formatCurrency.format(widget.jarPrice),
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 20
+                              ),
+                            ),
+                            QuantityControl('Jar', callback),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        width: 150,
+                        height: 220,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                    'PINT',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20
+                                    )
+                                ),
+                                Text(
+                                  '(570 ML)',
+                                  style: TextStyle(
+                                      fontSize: 12
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              height: 100,
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
+                              child: Image(
+                                image: AssetImage('assets/images/beerPresentations/beerPint2.png'),
+                              ),
+                            ),
+                            Text(
+                              formatCurrency.format(widget.pintPrice),
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 20
+                              ),
+                            ),
+                            QuantityControl('Pint', callback),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ],
+          ),
         )
 
     );
