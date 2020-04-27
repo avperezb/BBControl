@@ -1,6 +1,5 @@
 import 'package:bbcontrol/models/order.dart';
 import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
@@ -36,7 +35,7 @@ class _OrderPageState extends State<OrderPage> {
         appBar: AppBar(
           title: Text('My order'),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFAD4497),
         ),
         body: FutureBuilder(
           future: databaseHelper.getAllOrders(),
@@ -93,7 +92,7 @@ class _OrderPageState extends State<OrderPage> {
                               IconButton(
                                 icon: Icon(Icons.local_bar,
                                     size: 45),
-                                color: const Color(0xFFD7384A),
+                                color: const Color(0xFFAD4497),
                                 onPressed: () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/Drinks', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
@@ -101,7 +100,7 @@ class _OrderPageState extends State<OrderPage> {
                               IconButton(
                                 icon: Icon(Icons.room_service,
                                     size: 45),
-                                color: const Color(0xFFD7384A),
+                                color: const Color(0xFFAD4497),
                                 onPressed: () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/Food', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
@@ -115,6 +114,7 @@ class _OrderPageState extends State<OrderPage> {
               );
             }
             else {
+              total = getTotal(snapshot);
               return Column(
                 children: <Widget>[
                   Row(
@@ -250,10 +250,9 @@ class _OrderPageState extends State<OrderPage> {
                               onPressed: () async {
                                 var uuid = new Uuid();
                                 print(widget.userId);
-                                Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now());
+                                Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now(), '0', total, 0);
                                 await _ordersFirestoreClass.createOrder(newOrder);
                                 for(OrderItem item in snapshot.data){
-                                  print('ITEM:');print(item);
                                   await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
                                 }
                                 databaseHelper.deleteDB();
@@ -325,7 +324,7 @@ class _OrderPageState extends State<OrderPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(10.0),
                               ),
-                              color: const Color(0xFFD7384A),
+                              color: const Color(0xFFAD4497),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment
                                     .spaceAround,

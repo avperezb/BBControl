@@ -172,7 +172,7 @@ class _OrderBeerState extends State<OrderBeer> {
         appBar: AppBar(
           title: Text(widget.beer),
           centerTitle: true,
-          backgroundColor: const Color(0xFFD7384A),
+          backgroundColor: const Color(0xFFAD4497),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
