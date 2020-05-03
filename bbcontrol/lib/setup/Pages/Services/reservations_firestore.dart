@@ -14,7 +14,7 @@ class ReservationsFirestoreClass {
     String message = '';
     try {
       print(reservation.toJson());
-      await _reservationsCollectionReference.document().setData(
+      await _reservationsCollectionReference.document(reservation.id).setData(
           reservation.toJson());
     } catch (e) {
       message = e.message;
@@ -24,6 +24,22 @@ class ReservationsFirestoreClass {
     }
     else{
       done = false;
+    }
+  }
+
+  Future updateReservation(Reservation reservation) async{
+    try {
+      await _reservationsCollectionReference.document(reservation.id).setData({
+        'date' : reservation.date,
+        'start' : reservation.startTime,
+        'end' : reservation.endTime,
+        'num_people' : reservation.numPeople,
+        'preferences' : reservation.preferences,
+        'id' : reservation.id,
+        'user_Id' : reservation.userId
+      });
+    }catch(e){
+      return e.message;
     }
   }
 

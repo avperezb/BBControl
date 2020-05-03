@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bbcontrol/setup/Pages/Reservations/reservation.dart';
+import 'package:bbcontrol/models/reservation.dart' as res;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class ReservationsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: Firestore.instance.collection(
-          "/Reservations").where("user_Id", isEqualTo: userId).orderBy("date")
+          "/Reservations").where("user_Id", isEqualTo: userId).orderBy("date", descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
@@ -118,7 +119,19 @@ class ReservationsList extends StatelessWidget {
               child: ListView(
                 children:
                 snapshot.data.documents.map<ReservationTile>((DocumentSnapshot reservation){
-                  return new ReservationTile(reservation['date'], reservation['start'], reservation['end'], reservation['preferences'] ,reservation['num_people']);
+                  List<String> prefs = new List<String>();
+                  for(String str in reservation['preferences']){
+                    prefs.add(str.toString());
+                  }
+                  res.Reservation reserva = new res.Reservation(
+                      reservation['id'],
+                      DateTime.parse(reservation['date'].toDate().toString()),
+                      DateTime.parse(reservation['end'].toDate().toString()),
+                      DateTime.parse(reservation['start'].toDate().toString()),
+                      reservation['num_people'],
+                      prefs,
+                      reservation['user_Id']);
+                  return new ReservationTile(reserva);
                 }).toList(),
               ),
             ),
@@ -170,73 +183,188 @@ class ReservationsList extends StatelessWidget {
 }
 
 class ReservationTile extends StatelessWidget {
+  String _id;
   DateTime _date;
   DateTime _startTime;
   DateTime _endTime;
   int _numPeople;
   List _preferences;
+  String _userId;
+  res.Reservation _reservation;
   final formatDate = DateFormat("yMd");
   final formatHour = DateFormat("HH:mm a");
-  ReservationTile(Timestamp date, Timestamp start, Timestamp end, List preferences, int numPeople){
-    this._date = DateTime.parse(date.toDate().toString());
-    this._startTime = DateTime.parse(start.toDate().toString());
-    this._endTime = DateTime.parse(end.toDate().toString());
-    this._numPeople = numPeople;
-    this._preferences = preferences;
+
+  ReservationTile(res.Reservation reservation){
+    this._id = reservation.id;
+    this._date = reservation.date;
+    this._startTime = reservation.startTime;
+    this._endTime = reservation.endTime;
+    this._numPeople = reservation.numPeople;
+    this._preferences = reservation.preferences;
+    this._userId = reservation.userId;
+    this._reservation = reservation;
   }
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-      ),
-      child: Container(
-        child: ListTile(
-          title: Container(
-            margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                getReservationStatus(),
-                Container(
-                  width: 55,
-                  child: Row(
+    return Dismissible(
+      key: Key(_id),
+      // ignore: missing_return
+      confirmDismiss: (direction) {
+        if(direction == DismissDirection.endToStart){
+          showDialog(context: context,
+              builder: (BuildContext context){
+                return AlertDialog(
+                  title: const Text('Are you sure?'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                          margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                          child: Icon(Icons.people_outline)
-                      ),
-                      Text('$_numPeople')
+                      Text('You won\'t be able to get this reservation back!')
                     ],
                   ),
-                ),
-              ],
-            ),
+                  actions: <Widget>[
+                    FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text('CANCEL'),
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text('DELETE'),
+                      onPressed: () async{
+                        await Firestore.instance.collection("/Reservations").document(_id).delete();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+        }
+        else{
+          if(_date.isAfter(DateTime.now()))
+            Navigator.of(context).pushNamed('/EditReservation', arguments: _reservation);
+          else
+          showDialog(context: context,
+              builder: (BuildContext context){
+                return AlertDialog(
+                  title: const Text('Due reservation'),
+                  content: Text('This reservation is no longer available for changes.'),
+                  actions: <Widget>[
+                    FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text('DISMISS'),
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+        }
+      },
+      secondaryBackground: Container(
+          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          padding: EdgeInsets.only(right: 40),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            color: Colors.grey[500],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                offset: Offset(0.0, 1.0), //(x,y)
+                blurRadius: 6.0,
+              ),
+            ],
           ),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Icon(Icons.delete_outline,
+                color: Colors.white,
+                size: 30,
+              ),
+            ],
+          )
+      ),
+      background: Container(
+          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          padding: EdgeInsets.only(left: 40),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            color: Colors.blue,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                offset: Offset(0.0, 1.0), //(x,y)
+                blurRadius: 6.0,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(Icons.edit,
+                color: Colors.white,
+                size: 30,
+              ),
+            ],
+          )
+      ),
+      child: Container(
+        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              offset: Offset(0.0, 1.0), //(x,y)
+              blurRadius: 6.0,
+            ),
+          ],
+        ),
+        child: Container(
+          child: ListTile(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 7),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Date: ${formatDate.format(_date)}'),
-                  Text('Start time: ${formatHour.format(_startTime)}'),
-                  Text('End time: ${formatHour.format(_endTime)}'),
+                  getReservationStatus(),
+                  Container(
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                            margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            child: Icon(Icons.people_outline)
+                        ),
+                        Text('$_numPeople'),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              getPreferences(),
-            ],
+            ),
+            subtitle: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Date: ${formatDate.format(_date)}'),
+                    Text('Start time: ${formatHour.format(_startTime)}'),
+                    Text('End time: ${formatHour.format(_endTime)}'),
+                  ],
+                ),
+                getPreferences(),
+              ],
+            ),
           ),
         ),
       ),
@@ -285,6 +413,8 @@ class ReservationTile extends StatelessWidget {
         ),
       );
   }
+
+
 }
 
 

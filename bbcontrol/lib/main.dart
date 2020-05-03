@@ -4,6 +4,7 @@ import 'package:bbcontrol/setup/Pages/Food/food.dart';
 import 'package:bbcontrol/setup/Pages/Home/home.dart';
 import 'package:bbcontrol/setup/Pages/Offers/offers.dart';
 import 'package:bbcontrol/setup/Pages/Order/order.dart';
+import 'package:bbcontrol/setup/Pages/Reservations/EditReservation.dart';
 import 'package:bbcontrol/setup/Pages/Transport/transportation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -68,6 +69,12 @@ class RouteGenerator {
       case '/Offers' :
         return MaterialPageRoute(
             builder: (_) => Offers()
+        );
+      case '/EditReservation' :
+        return MaterialPageRoute(
+          builder: (_) => EditReservation(
+            reservation: args,
+          ),
         );
     }
   }

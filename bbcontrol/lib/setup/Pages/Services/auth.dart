@@ -47,8 +47,9 @@ class AuthService {
     try{
       FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _email, password: _password)).user;
       if(_email.contains('@bbc.com')){
-        print(_employeeFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
-        return await _firestoreEmployees.getEmployee(user.uid);
+        Employee employee = await _firestoreEmployees.getEmployee(user.uid);
+        print(employee.firstName);
+        return employee;
       }
       else{
         print(_userFromFirebaseUser(user).toString()+'imprimiendo usuario creado');
