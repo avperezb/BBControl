@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:passwordfield/passwordfield.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -253,9 +252,9 @@ class _SignUpState extends State<SignUpPage>{
                       _formKey.currentState.save();
                       dynamic result = await _auth.signUp(
                           _email, _password, _firstName, _lastName, _phoneNumber,
-                          _birthDate, 0);
-
+                          _birthDate, num.parse('0'));
                         print(_email + _password);
+                        loaderFunction();
                         Navigator.push(context, MaterialPageRoute(builder: (
                             context) => Home(customer: result)));
                     }
@@ -308,7 +307,7 @@ class _SignUpState extends State<SignUpPage>{
       dotThreeColor: Colors.green,
       dotType: DotType.circle,
       dotIcon: Icon(Icons.adjust),
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 4),
     );
   }
 }

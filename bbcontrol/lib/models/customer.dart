@@ -8,7 +8,7 @@ class Customer {
   final String email;
   final DateTime birthDate;
   final int phoneNumber;
-  final int limitAmount;
+  final num limitAmount;
 
   Customer({
     this.id,
