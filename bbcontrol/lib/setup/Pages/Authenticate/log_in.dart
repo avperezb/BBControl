@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:bbcontrol/models/customer.dart';
-import 'package:bbcontrol/models/employees.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/reset_Password.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';

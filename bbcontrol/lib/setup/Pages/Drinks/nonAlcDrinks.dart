@@ -245,6 +245,7 @@ class _NonAlcoholicDrinksState extends State<NonAlcoholicDrinks> {
       cStatus = checkConnection.getConnectionStatus(context);
     });
   }
+
 }
 
 class SingleDrink extends StatefulWidget {

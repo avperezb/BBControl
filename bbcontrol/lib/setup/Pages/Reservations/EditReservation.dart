@@ -12,16 +12,14 @@ import 'package:uuid/uuid.dart';
 
 import '../Services/connectivity.dart';
 
-class MakeReservation extends StatefulWidget {
-  String userEmail;
-  MakeReservation(String userEmail){
-    this.userEmail = userEmail;
-  }
+class EditReservation extends StatefulWidget {
+  Reservation reservation;
+  EditReservation({this.reservation});
   @override
-  _MakeReservationState createState() => _MakeReservationState();
+  _EditReservationState createState() => _EditReservationState();
 }
 
-class _MakeReservationState extends State<MakeReservation> {
+class _EditReservationState extends State<EditReservation> {
   DateTime _date;
   DateTime _startTime;
   TimeOfDay _startNoFormat;
@@ -30,6 +28,14 @@ class _MakeReservationState extends State<MakeReservation> {
   bool _neartv = false;
   bool _nearbar = false;
   bool _neararcade = false;
+
+  void initState(){
+    List<String> prefs = widget.reservation.preferences;
+    if(prefs.contains('near arcade')) _neararcade = true;
+    if(prefs.contains('near tv')) _neartv = true;
+    if(prefs.contains('near bar')) _nearbar = true;
+    super.initState();
+  }
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool cStatus = true;
   ReservationsFirestoreClass _reservationsFirestoreClass = ReservationsFirestoreClass();
@@ -42,7 +48,7 @@ class _MakeReservationState extends State<MakeReservation> {
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
-          title: Text('Make a reservation',),
+          title: Text('Edit reservation',),
           centerTitle: true,
           backgroundColor: const Color(0xFFB75ba4),
         ),
@@ -56,9 +62,9 @@ class _MakeReservationState extends State<MakeReservation> {
             ),
             color: const Color(0xFFB75ba4),
             onPressed: () async{
-              checkInternetConnection(context);
+              checkInternetConnection(context, widget.reservation);
             },
-            child: Text('Confirm reservation',
+            child: Text('Confirm changes',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16
@@ -102,11 +108,12 @@ class _MakeReservationState extends State<MakeReservation> {
                               ),
                               labelText: 'Reservation date'
                           ),
+                          initialValue: widget.reservation.date,
                           onShowPicker: (context, currentValue) {
                             return showDatePicker(
                                 context: context,
                                 firstDate: DateTime(2000),
-                                initialDate: currentValue ?? DateTime.now().add(Duration(days: 1)),
+                                initialDate: widget.reservation.date,
                                 lastDate: DateTime(2100));
                           },
                           onSaved: (input) => _date = input
@@ -131,10 +138,11 @@ class _MakeReservationState extends State<MakeReservation> {
                             ),
                             labelText: 'Starting time'
                         ),
+                        initialValue: widget.reservation.startTime,
                         onShowPicker: (context, currentValue) async {
                           final time = await showTimePicker(
                             context: context,
-                            initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime(2020, 4, 22, 15)),
+                            initialTime: TimeOfDay.fromDateTime(widget.reservation.startTime),
                           );
                           _startNoFormat = time;
                           return DateTimeField.convert(time);
@@ -163,10 +171,11 @@ class _MakeReservationState extends State<MakeReservation> {
                             ),
                             labelText: 'Ending time'
                         ),
+                        initialValue: widget.reservation.endTime,
                         onShowPicker: (context, currentValue) async {
                           final time = await showTimePicker(
                             context: context,
-                            initialTime: _startNoFormat,
+                            initialTime:TimeOfDay.fromDateTime( widget.reservation.endTime),
                           );
                           print(time.hour);
                           return DateTimeField.convert(time);
@@ -177,6 +186,7 @@ class _MakeReservationState extends State<MakeReservation> {
                     Container(
                       padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                       child: TextFormField(
+                        initialValue: widget.reservation.numPeople.toString(),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
                           LengthLimitingTextInputFormatter(2),
@@ -298,7 +308,7 @@ class _MakeReservationState extends State<MakeReservation> {
     );
   }
 
-  checkInternetConnection(context) async{
+  checkInternetConnection(context, Reservation reservation) async{
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -307,9 +317,9 @@ class _MakeReservationState extends State<MakeReservation> {
         if(_neararcade)  preferences.add('near arcade');
         if(_nearbar) preferences.add(('near bar'));
         if(_neartv) preferences.add('near tv');
-        Reservation reservation = new Reservation(
-            uuid.v1(), _date, _endTime, _startTime, _numPeople, preferences, widget.userEmail);
-        await _reservationsFirestoreClass.addReservation(reservation);
+        reservation = Reservation(
+            reservation.id, _date, _endTime, _startTime, _numPeople, preferences, reservation.userId);
+        await _reservationsFirestoreClass.updateReservation(reservation);
         Navigator.pop(context);
       }
     } on SocketException catch (_) {

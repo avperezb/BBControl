@@ -1,5 +1,6 @@
 class Reservation {
 
+  String _id;
   DateTime _date;
   DateTime _startTime;
   DateTime _endTime;
@@ -7,8 +8,9 @@ class Reservation {
   List<String> _preferences;
   String _userId;
 
-  Reservation(this._date, this._endTime, this._startTime, this._numPeople, this._preferences, this._userId);
+  Reservation(this._id, this._date, this._endTime, this._startTime, this._numPeople, this._preferences, this._userId);
 
+  String get id => _id;
   DateTime get date => _date;
   DateTime get startTime => _startTime;
   DateTime get endTime => _endTime;
@@ -16,6 +18,9 @@ class Reservation {
   List<String> get preferences => _preferences;
   String get userId => _userId;
 
+  setid(String id){
+    this._id = id;
+  }
   set userId(String userId){
     this._userId = userId;
   }
@@ -36,6 +41,7 @@ class Reservation {
   }
 
   Reservation.fromData(Map<String, dynamic> data):
+      _id = data['id'],
         _date = data['date'],
         _startTime = data['start'],
         _endTime = data['end'],
@@ -45,6 +51,7 @@ class Reservation {
 
   Map<String, dynamic> toJson(){
     return{
+      'id' : _id,
       'date' : _date,
       'start' : _startTime,
       'end' : _endTime,
