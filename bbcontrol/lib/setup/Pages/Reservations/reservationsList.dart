@@ -152,34 +152,33 @@ class ReservationsList extends StatelessWidget {
   }
 
   connectionErrorToast(){
-    return showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Connection error',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Check your connection and try again.',
-              style: TextStyle(
-                  fontSize: 16, color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(
-                  Icons.close, color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blueGrey,)
-      ;
-    }, duration: Duration(milliseconds: 4000));
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 18
+      ),),
+      subtitle: Text('Please check your connection and try again.',
+      style: TextStyle(
+      ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+            style: TextStyle(
+              color: Colors.grey[300],
+              fontSize: 16
+            ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
+
 }
 
 class ReservationTile extends StatelessWidget {
@@ -234,8 +233,8 @@ class ReservationTile extends StatelessWidget {
                       textColor: Theme.of(context).primaryColor,
                       child: Text('DELETE'),
                       onPressed: () async{
-                        await Firestore.instance.collection("/Reservations").document(_id).delete();
                         Navigator.of(context).pop();
+                        await Firestore.instance.collection("/Reservations").document(_id).delete();
                       },
                     ),
                   ],
@@ -246,22 +245,22 @@ class ReservationTile extends StatelessWidget {
           if(_date.isAfter(DateTime.now()))
             Navigator.of(context).pushNamed('/EditReservation', arguments: _reservation);
           else
-          showDialog(context: context,
-              builder: (BuildContext context){
-                return AlertDialog(
-                  title: const Text('Due reservation'),
-                  content: Text('This reservation is no longer available for changes.'),
-                  actions: <Widget>[
-                    FlatButton(
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text('DISMISS'),
-                      onPressed: (){
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              });
+            showDialog(context: context,
+                builder: (BuildContext context){
+                  return AlertDialog(
+                    title: const Text('Due reservation'),
+                    content: Text('This reservation is no longer available for changes.'),
+                    actions: <Widget>[
+                      FlatButton(
+                        textColor: Theme.of(context).primaryColor,
+                        child: Text('DISMISS'),
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                });
         }
       },
       secondaryBackground: Container(

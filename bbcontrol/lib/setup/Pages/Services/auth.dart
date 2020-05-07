@@ -90,7 +90,6 @@ class AuthService {
       //Display for the user that we sent an email.
     } catch (e) {
       print(e.message());
-      return null;
     }
   }
   //Sign out
@@ -106,6 +105,12 @@ class AuthService {
   }
 
   Future resetPassword(String email) async{
-    return _auth.sendPasswordResetEmail(email: email);
+    try {
+      return _auth.sendPasswordResetEmail(email: email);
+    }
+    catch(e){
+      print(e.message());
+      return null;
+    }
   }
 }
