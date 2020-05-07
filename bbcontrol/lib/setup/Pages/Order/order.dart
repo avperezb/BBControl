@@ -46,41 +46,36 @@ class _OrderPageState extends State<OrderPage> {
             if (!snapshot.hasData || snapshot.data.isEmpty) {
               return Center(
                 child: Container(
-                    width: 300,
-                    height: 300,
+                    width: 350,
+                    height: 350,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFffcc94),
+                      color: Colors.blue[200],
                       shape: BoxShape.circle,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-                          child: Text('Oops!',
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 200,
+                          width: 250,
                           child: Text(
-                            'It looks like you don\'t have any orders',
+                            'It looks like you don\'t have any orders!',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 35,
                               fontWeight: FontWeight.w900,
+                              fontFamily: 'Sacramento',
+                              color: Color(0xFF3066BE)
                             ),
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                          margin: EdgeInsets.only(top: 20),
                           child: Text('Start ordering',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
-                              fontSize: 20,
+                              fontSize: 35,
+                              fontFamily: 'Sacramento',
+                              color: Color(0xFF3066BE)
                             ),
                           ),
                         ),
@@ -93,7 +88,7 @@ class _OrderPageState extends State<OrderPage> {
                               IconButton(
                                 icon: Icon(Icons.local_bar,
                                     size: 45),
-                                color: const Color(0xFFB75ba4),
+                                color: Colors.grey[300],
                                 onPressed: () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/Drinks', ModalRoute.withName('/'),arguments: widget.userId);
                                 },
@@ -101,7 +96,7 @@ class _OrderPageState extends State<OrderPage> {
                               IconButton(
                                 icon: Icon(Icons.room_service,
                                     size: 45),
-                                color: const Color(0xFFB75ba4),
+                                color: Colors.grey[300],
                                 onPressed: () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/Food', ModalRoute.withName('/'),arguments: widget.userId);
                                 },

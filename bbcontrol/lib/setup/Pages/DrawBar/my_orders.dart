@@ -1,15 +1,13 @@
+import 'dart:io';
+
 import 'package:bbcontrol/models/orderAndItems.dart';
-import 'package:bbcontrol/models/orderItem.dart';
-import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
-import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
-import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:intl/intl.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class MyOrdersPage extends StatelessWidget {
 
@@ -27,14 +25,6 @@ class MyOrdersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var formatCurrency = NumberFormat.currency(
         symbol: '\$', decimalDigits: 0, locale: 'en_US');
-
-    CheckConnectivityState checkConnection = CheckConnectivityState();
-    List<OrderItem> orderList;
-    List<OrderItem> itemsPerOrder = new List<OrderItem>();
-    int count = 0;
-    bool cStatus = true;
-    int total;
-    bool auxReload = true;
 
 
     return StreamBuilder(
@@ -154,8 +144,7 @@ class MyOrdersPage extends StatelessWidget {
                         ),
                         child: FlatButton(
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (
-                                context) => OrderDetailPage(orderId: '${items[index]['id']}', total: items[index]['total'])));
+                            checkInternetConnection(context, snapshot, index);
                           },
                           child: ListTile(
                             title: Container(
@@ -171,22 +160,6 @@ class MyOrdersPage extends StatelessWidget {
                                       children: <Widget>[
                                         getOrderStatus(
                                             '${items[index]['state']}'),
-                                        Container(
-                                          width: 55,
-                                          child: Row(
-                                            children: <Widget>[
-                                              Container(
-                                                  margin: EdgeInsets.fromLTRB(
-                                                      5, 0, 5, 0),
-                                                  child: Icon(
-                                                      Icons.people_outline)
-                                              ),
-                                              Text(
-                                                '${items[index]['idWaiter']}',
-                                                style: TextStyle(fontSize: 17),)
-                                            ],
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -221,6 +194,48 @@ class MyOrdersPage extends StatelessWidget {
         }
     );
   }
+
+  checkInternetConnection(context, snapshot, index) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var items = snapshot.data.documents;
+        Navigator.push(context, MaterialPageRoute(builder: (
+            context) => OrderDetailPage(orderId: '${items[index]['id']}', total: items[index]['total'])));
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
+
+  connectionErrorToast(){
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Please check your connection and try again.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
+  }
+
   Widget loaderFunction(){
     return ColorLoader5(
       dotOneColor: Colors.redAccent,

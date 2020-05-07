@@ -25,7 +25,33 @@ Offers({this.userId});
                 centerTitle: true,
                 backgroundColor: const Color(0xFFB75ba4),
               ),
-              body: Text('There are not promotions, come check later'),
+              body: Center(
+                child: Container(
+                    width: 350,
+                    height: 350,
+                    decoration: BoxDecoration(
+                      color: Colors.blue[200],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: 250,
+                          child: Text(
+                            'There are no promotions, come check later!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 35,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Sacramento',
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+              ),
             );
           }
           else {

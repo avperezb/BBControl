@@ -81,12 +81,15 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       validator: (input) {
+                        String feedback;
                         if (input.isEmpty) {
-                          return 'Please type an email';
+                          feedback =  'Please type an email';
                         }
-                        if(input.isNotEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
-                          return 'Please type a valid email';
+                        else if(input.isNotEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(input)){
+                          feedback =  'Please type a valid email';
                         }
+                        else feedback = null;
+                        return feedback;
                       },
                       onChanged: (input) {
                         setState(() => _email = input);
@@ -109,19 +112,21 @@ class _LoginPageState extends State<LoginPage> {
                   padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                   child: TextFormField(
                     validator: (input) {
+                      String feedback;
                       if(input.isNotEmpty){
-                        String patttern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
-                        RegExp regExp = new RegExp(patttern);
+                        String pattern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
+                        RegExp regExp = new RegExp(pattern);
                         if (!regExp.hasMatch(input)) {
-                          return 'Non special characters, at least 1 letter and number 6+ chars.';
+                          feedback = 'No special characters, at least 1 letter and 1 number.';
                         }
                         if(input.length<6){
-                          return 'Your password needs to be atleast 6 characters';
+                          feedback = 'Your password needs to be at least 6 characters';
                         }
                       }
-                      else{
-                        return 'Please enter your password';
+                      else if(input.isEmpty){
+                        feedback = 'Please enter your password';
                       }
+                      return feedback;
                     },
                     onChanged: (input) {
                       setState(() => _password = input);
@@ -150,27 +155,6 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xFFAD4497),
                       onPressed: () async {
                         loaderFunction();
-                        checkConnectivity(context);
-                        if(!isConnected){
-                          return showOverlayNotification((context) {
-                            return connectionNotification(context);
-                          }, duration: Duration(milliseconds: 4000));
-                        }
-                        else {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-                            Customer result = await _auth.signIn(
-                                _email, _password);
-                            if (result == null) {
-                              return 'Could not sign you in. Check your data and try again.';
-                            }
-                            else {
-
-                              Navigator.push(context, MaterialPageRoute(builder: (
-                                  context) => Home(customer: result)));
-                            }
-                          }
-                        }
                         checkInternetConnection(context);
                       },
                       child: Text('Log in',
@@ -237,32 +221,31 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   connectionErrorToast(){
-    return showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Connection error',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Please try to log in again later.',
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Please check your connection and try again.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
               style: TextStyle(
-                  fontSize: 16, color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(
-                  Icons.close, color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blueGrey,);
-    }, duration: Duration(milliseconds: 4000));
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   void checkConnectivity(BuildContext context) async {

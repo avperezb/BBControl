@@ -382,7 +382,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                   leading: Icon(option5.icon),
                   title: Text(option5.title, style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w600)),
-                  onTap: action2,
+                  onTap: action4,
                 ),
               ),
               Card( //
@@ -509,33 +509,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
     print(widget.userIdFromHome);
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => MyOrdersPage(userId: widget.userIdFromHome)));
-    showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-            0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Hang on a minute!',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Your waiter is on the way to assist you.',
-              style: TextStyle(fontSize: 16,
-                  color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close,
-                  color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blue,);
-    }, duration: Duration(milliseconds: 4000));
   }
 
   void action3() {
@@ -544,8 +517,33 @@ class _MenuDrawerState extends State<MenuDrawer> {
         builder: (context) => ExpensesControlPage(userId: widget.userIdFromHome)));
   }
 
-  void action4() {
-
+   action4() {
+     Navigator.pop(context);
+    return showSimpleNotification(
+      Text("Hang on a minute",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Your waiter is on the way to assist you.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blue,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   void action5() {

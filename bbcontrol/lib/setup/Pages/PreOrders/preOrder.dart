@@ -50,7 +50,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
         stream: Firestore.instance.collection('/Customers').document(widget.userId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            expensesControl = snapshot.data['limitAmount'];
+            expensesControl = 1000000;
             return Scaffold(
                 appBar: AppBar(
                   title: Text('Order status'),
@@ -134,7 +134,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                 }, duration: Duration(milliseconds: 4000));
                               }
                               DatabaseItem databaseHelper = new DatabaseItem();
-                              if(expensesControl>0){
+                              if(expensesControl > 0){
                                 if(getTotal()<=expensesControl){
                                   jsonDecode(widget.order).forEach((name,
                                       content) async {
@@ -240,37 +240,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                 ),
                               ],
                             ),
-                            onPressed: () async {
-                              showToast(context);
-                              if (!cStatus) {
-                                showOverlayNotification((context) {
-                                  return Card(
-                                    margin: const EdgeInsets.fromLTRB(
-                                        0, 0, 0, 0),
-                                    child: SafeArea(
-                                      child: ListTile(
-                                        title: Text('Oops, network error',
-                                            style: TextStyle(fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white)
-                                        ),
-                                        subtitle: Text(
-                                          'Your order will be added when connection is back!.',
-                                          style: TextStyle(fontSize: 16,
-                                              color: Colors.white),
-                                        ),
-                                        trailing: IconButton(
-                                            icon: Icon(Icons.close,
-                                              color: Colors.white,),
-                                            onPressed: () {
-                                              OverlaySupportEntry.of(context)
-                                                  .dismiss();
-                                            }),
-                                      ),
-                                    ),
-                                    color: Colors.deepPurpleAccent,);
-                                }, duration: Duration(milliseconds: 4000));
-                              }
+                            onPressed: () async{
                               DatabaseItem databaseHelper = new DatabaseItem();
                               if (expensesControl > 0) {
                                 if (getTotal() <= expensesControl) {
@@ -283,6 +253,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                           content['price']);
                                       await databaseHelper.insertItem(op);
 
+                                      await checkInternetConnection(context);
                                       Navigator.of(context).pushNamedAndRemoveUntil(
                                           '/Order', ModalRoute.withName('/'),
                                           arguments: widget.userId);
@@ -306,7 +277,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                         "",
                                         content['price']);
                                     await databaseHelper.insertItem(op);
-
+                                    await checkInternetConnection(context);
                                     Navigator.of(context).pushNamedAndRemoveUntil(
                                         '/Order', ModalRoute.withName('/'),
                                         arguments: widget.userId);
@@ -338,6 +309,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
           }
         });
   }
+
   Widget loaderFunction() {
     return ColorLoader5(
       dotOneColor: Colors.redAccent,
@@ -405,99 +377,98 @@ class _PreOrderPageState extends State<PreOrderPage> {
   }
 
   connectionErrorToast(){
-    return showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Oops, network error',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Products will be added when connection is back!.',
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Products will still be added to your cart.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
               style: TextStyle(
-                  fontSize: 16, color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(
-                  Icons.close, color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.deepPurpleAccent,);
-    }, duration: Duration(milliseconds: 4000));
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
-getTotal(){
-  int total = 0;
-  jsonDecode(widget.order).forEach((name, content) {
-    if (content['quantity'] > 0) {
-      total += content['price']*content['quantity'];
-    }
-  });
-  return total;
-}
+  getTotal(){
+    int total = 0;
+    jsonDecode(widget.order).forEach((name, content) {
+      if (content['quantity'] > 0) {
+        total += content['price']*content['quantity'];
+      }
+    });
+    return total;
+  }
 
-getProductList() {
-  List<OrderItem> auxList = new List<OrderItem>();
-  jsonDecode(widget.order).forEach((name, content) {
-    if (content['quantity'] > 0) {
-      OrderItem op = new OrderItem.withId(
-          uuid.v1(),name, content['quantity'], "", content['price']);
-      auxList.add(op);
-    }
-  });
-  return auxList.map<Widget>((orderItem) {
-    return ListTile(
-      title: Container(
-        margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,),
-                    child: Center(
-                      child: Text(
-                        orderItem.quantity.toString(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500
-                        ),),
-                    )
-                ),
-                Container(
-                    margin: EdgeInsets.fromLTRB(
-                        0, 0, 15, 0),
-                    width: 120,
-                    child: Container(
-                        child: Text(orderItem.productName)
-                    )
-                ),
-              ],
-            ),
-            Container(
-                child: Text(formatCurrency.format(
-                    orderItem.price * orderItem.quantity))
-            ),
-          ],
+  getProductList() {
+    List<OrderItem> auxList = new List<OrderItem>();
+    jsonDecode(widget.order).forEach((name, content) {
+      if (content['quantity'] > 0) {
+        OrderItem op = new OrderItem.withId(
+            uuid.v1(),name, content['quantity'], "", content['price']);
+        auxList.add(op);
+      }
+    });
+    return auxList.map<Widget>((orderItem) {
+      return ListTile(
+        title: Container(
+          margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,),
+                      child: Center(
+                        child: Text(
+                          orderItem.quantity.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500
+                          ),),
+                      )
+                  ),
+                  Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0, 0, 15, 0),
+                      width: 120,
+                      child: Container(
+                          child: Text(orderItem.productName)
+                      )
+                  ),
+                ],
+              ),
+              Container(
+                  child: Text(formatCurrency.format(
+                      orderItem.price * orderItem.quantity))
+              ),
+            ],
 
+          ),
         ),
-      ),
-    );
-  }).toList();
-}
+      );
+    }).toList();
+  }
 }
