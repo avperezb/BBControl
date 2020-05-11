@@ -193,7 +193,7 @@ class _FoodListState extends State<FoodList> {
                 body: Column(
                   children: <Widget>[
                     Container(
-                      margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      margin: EdgeInsets.fromLTRB(15, 0, 10, 0),
                       child: SizedBox(
                         height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 90,
                         child: ListView(
@@ -318,7 +318,7 @@ class QuantityControl extends StatefulWidget  {
 class _QuantityControlState extends State<QuantityControl> {
 
   int quantity = 0;
-  int max = 4;
+  int max = 20;
   bool minDisabled = true;
   bool maxDisabled = false;
   var colorDecrease = Color(0xFF7F7F7F);

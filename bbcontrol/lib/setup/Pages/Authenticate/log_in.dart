@@ -143,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                       contentPadding: new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                     ),
                     obscureText: true,
+                    maxLength: 15,
                   ),
                 ),
                 Container(

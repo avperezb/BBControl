@@ -3,8 +3,12 @@ import 'dart:io';
 import 'package:bbcontrol/models/order.dart';
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
+import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
+import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
+import 'package:bbcontrol/setup/Pages/Services/employees_firestore.dart';
 import 'package:bbcontrol/setup/Pages/Services/orders_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +28,7 @@ class _OrderPageState extends State<OrderPage> {
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
   DatabaseItem databaseHelper = DatabaseItem();
   OrdersFirestoreClass _ordersFirestoreClass = OrdersFirestoreClass();
+  EmployeesFirestoreClass _employeesFirestoreClass = EmployeesFirestoreClass();
   CheckConnectivityState checkConnection = CheckConnectivityState();
   List<OrderItem> orderList;
   int count = 0;
@@ -32,262 +37,320 @@ class _OrderPageState extends State<OrderPage> {
   bool auxReload = true;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  DocumentSnapshot waiterAvailable;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('My order'),
-          centerTitle: true,
-          backgroundColor: const Color(0xFFB75BA4),
-        ),
-        body: FutureBuilder(
-          future: databaseHelper.getAllOrders(),
-          initialData: List<OrderItem>(),
-          builder: (BuildContext context, AsyncSnapshot<List<OrderItem>> snapshot) {
-            if (!snapshot.hasData || snapshot.data.isEmpty) {
-              return Center(
-                child: Container(
-                    width: 350,
-                    height: 350,
-                    decoration: BoxDecoration(
-                      color: Colors.blue[200],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          width: 250,
-                          child: Text(
-                            'It looks like you don\'t have any orders!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.w900,
-                              fontFamily: 'Sacramento',
-                              color: Color(0xFF3066BE)
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 20),
-                          child: Text('Start ordering',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 35,
-                              fontFamily: 'Sacramento',
-                              color: Color(0xFF3066BE)
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                          width: 150,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.local_bar,
-                                    size: 45),
-                                color: Colors.grey[300],
-                                onPressed: () {
-                                  Navigator.of(context).pushNamedAndRemoveUntil('/Drinks', ModalRoute.withName('/'),arguments: widget.userId);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.room_service,
-                                    size: 45),
-                                color: Colors.grey[300],
-                                onPressed: () {
-                                  Navigator.of(context).pushNamedAndRemoveUntil('/Food', ModalRoute.withName('/'),arguments: widget.userId);
-                                },
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    )
+    return StreamBuilder(
+        stream: Firestore.instance.collection('BBCEmployees').orderBy('ordersAmount', descending: false)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData){
+            return Container(
+                color: Colors.white,
+                child:  loaderFunction()
+            );
+          }else{
+            waiterAvailable = snapshot.data.documents[0];
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('My order'),
+                  centerTitle: true,
+                  backgroundColor: const Color(0xFFB75BA4),
                 ),
-              );
-            }
-            else {
-              total = getTotal(snapshot);
-              return Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 15, 20, 0),
-                        child: InkWell(
-                          child: Container(
-                              width: 160,
-                              margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  Icon(Icons.delete_outline,
-                                      color: Colors.red),
-                                  Text('EMPTY ORDER',
+                body: FutureBuilder(
+                  future: databaseHelper.getAllOrders(),
+                  initialData: List<OrderItem>(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<OrderItem>> snapshot) {
+                    if (!snapshot.hasData || snapshot.data.isEmpty) {
+                      return Center(
+                        child: Container(
+                            width: 350,
+                            height: 350,
+                            decoration: BoxDecoration(
+                              color: Colors.blue[200],
+                              shape: BoxShape.circle,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  width: 250,
+                                  child: Text(
+                                    'It looks like you don\'t have any orders!',
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w600,
+                                        fontSize: 35,
+                                        fontWeight: FontWeight.w900,
+                                        fontFamily: 'Sacramento',
+                                        color: Color(0xFF3066BE)
                                     ),
                                   ),
-                                ],
-                              )
-                          ),
-                          onTap: (){
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  _buildAboutDialog(context, false, ""),
-                            );
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 76*2,
-                    child: ListView(
-                      children: <Widget>[
-                        for(OrderItem orderProduct in snapshot.data)
-                          ListTile(
-                            title: Container(
-                              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween,
-                                children: <Widget>[
-                                  Row(
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  child: Text('Start ordering',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 35,
+                                        fontFamily: 'Sacramento',
+                                        color: Color(0xFF3066BE)
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                                  width: 150,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .spaceBetween,
                                     children: <Widget>[
-                                      Container(
-                                          margin: EdgeInsets.fromLTRB(
-                                              0, 0, 20, 0),
-                                          width: 20,
-                                          height: 20,
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue,
-                                            shape: BoxShape.circle,),
-                                          child: Text(
-                                            orderProduct.quantity.toString(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400
-                                            ),)
+                                      IconButton(
+                                        icon: Icon(Icons.local_bar,
+                                            size: 45),
+                                        color: Colors.grey[300],
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                              '/Drinks', ModalRoute.withName('/'),
+                                              arguments: widget.userId);
+                                        },
                                       ),
-                                      Container(
-                                          margin: EdgeInsets.fromLTRB(
-                                              0, 0, 15, 0),
-                                          width: 120,
-                                          child: Container(
-                                              child: Text(
-                                                  orderProduct.productName)
-                                          )
+                                      IconButton(
+                                        icon: Icon(Icons.room_service,
+                                            size: 45),
+                                        color: Colors.grey[300],
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                              '/Food', ModalRoute.withName('/'),
+                                              arguments: widget.userId);
+                                        },
                                       ),
                                     ],
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text(formatCurrency.format(
-                                            orderProduct.price *
-                                                orderProduct.quantity)),
-                                        IconButton(
-                                          icon: Icon( Icons.delete_outline,
-                                              color: Colors.red),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) =>
-                                                  _buildAboutDialog(context, true, orderProduct.id),
-                                            );
-                                          },
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-
-                              ),
-                            ),
-                            subtitle: Container(
-                                margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
-                                child: Text(orderProduct.beerSize,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
                                 )
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Card(
-                    elevation: 6.0,
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      height: 70,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                              ],
+                            )
+                        ),
+                      );
+                    }
+                    else {
+                      total = getTotal(snapshot);
+                      return Column(
                         children: <Widget>[
-                          Container(
-                            child: RaisedButton(
-                              padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(10.0),
-                              ),
-                              color: const Color(0xFFB75ba4),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceAround,
-                                children: <Widget>[
-                                  Text('Confirm order',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16
-                                    ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 15, 20, 0),
+                                child: InkWell(
+                                  child: Container(
+                                      width: 160,
+                                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceAround,
+                                        children: <Widget>[
+                                          Icon(Icons.delete_outline,
+                                              color: Colors.red),
+                                          Text('EMPTY ORDER',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      )
                                   ),
-                                  Container(
-                                    width: 120,
-                                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                    margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15))
-                                    ),
-                                    child: Text(
-                                      formatCurrency.format(getTotal(snapshot)),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _buildAboutDialog(context, false, ""),
+                                    );
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: MediaQuery
+                                .of(context)
+                                .size
+                                .height - AppBar().preferredSize.height - 76 * 2,
+                            child: ListView(
+                              children: <Widget>[
+                                for(OrderItem orderProduct in snapshot.data)
+                                  ListTile(
+                                    title: Container(
+                                      margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        children: <Widget>[
+                                          Row(
+                                            children: <Widget>[
+                                              Container(
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      0, 0, 20, 0),
+                                                  width: 20,
+                                                  height: 20,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    shape: BoxShape.circle,),
+                                                  child: Text(
+                                                    orderProduct.quantity
+                                                        .toString(),
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight
+                                                            .w400
+                                                    ),)
+                                              ),
+                                              Container(
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      0, 0, 15, 0),
+                                                  width: 120,
+                                                  child: Container(
+                                                      child: Text(
+                                                          orderProduct
+                                                              .productName)
+                                                  )
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                0, 0, 0, 0),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Text(formatCurrency.format(
+                                                    orderProduct.price *
+                                                        orderProduct.quantity)),
+                                                IconButton(
+                                                  icon: Icon(Icons.delete_outline,
+                                                      color: Colors.red),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (
+                                                          BuildContext context) =>
+                                                          _buildAboutDialog(
+                                                              context, true,
+                                                              orderProduct.id),
+                                                    );
+                                                  },
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+
                                       ),
                                     ),
+                                    subtitle: Container(
+                                        margin: EdgeInsets.fromLTRB(53, 0, 0, 0),
+                                        child: Text(orderProduct.beerSize,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        )
+                                    ),
                                   ),
+                              ],
+                            ),
+                          ),
+                          Card(
+                            elevation: 6.0,
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              height: 60,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    child: RaisedButton(
+                                      padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: new BorderRadius.circular(10.0),
+                                      ),
+                                      color: const Color(0xFFB75ba4),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceAround,
+                                        children: <Widget>[
+                                          Text('Confirm order',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 120,
+                                            padding: EdgeInsets.fromLTRB(
+                                                20, 10, 20, 10),
+                                            margin: EdgeInsets.fromLTRB(
+                                                20, 5, 0, 5),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15))
+                                            ),
+                                            child: Text(
+                                              formatCurrency.format(
+                                                  getTotal(snapshot)),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 15
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onPressed: () async {
+                                        print(widget.userId);
+                                        checkInternetConnection(
+                                            context, snapshot);
+                                      },
+                                    ),
+                                  )
                                 ],
                               ),
-                              onPressed: () async {
-                                print(widget.userId);
-                                checkInternetConnection(context, snapshot);
-                              },
                             ),
-                          )
+                          ),
                         ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
-        )
+                      );
+                    }
+                  },
+                )
+            );
+          }
+
+        }
     );
   }
+
+  Widget loaderFunction(){
+    return ColorLoader5(
+      dotOneColor: Colors.redAccent,
+      dotTwoColor: Colors.blueAccent,
+      dotThreeColor: Colors.green,
+      dotType: DotType.circle,
+      dotIcon: Icon(Icons.adjust),
+      duration: Duration(seconds: 2),
+    );
+  }
+
   successfulOrderToast(){
     showOverlayNotification((context) {
       return Card(
@@ -319,11 +382,13 @@ class _OrderPageState extends State<OrderPage> {
   }
   checkInternetConnection(context, snapshot) async{
     try {
+      print(widget.userId);
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var uuid = new Uuid();
         databaseHelper.deleteDB();
-        Order newOrder = new Order.withId(uuid.v1(), "", widget.userId, DateTime.now(), '0', total, 0);
+        Order newOrder = new Order.withId(uuid.v1(), waiterAvailable.data['id'], widget.userId, DateTime.now(), '0', total, 0);
+        _employeesFirestoreClass.updateEmployeeOrdersAmount(waiterAvailable.data['id'], 1);
         await _ordersFirestoreClass.createOrder(newOrder);
         for(OrderItem item in snapshot.data){
           await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);

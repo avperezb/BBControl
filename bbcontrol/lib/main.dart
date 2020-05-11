@@ -39,7 +39,7 @@ class RouteGenerator {
 
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => Home());
+        return MaterialPageRoute(builder: (_) => Home(customer: args));
       case '/Food':
         return MaterialPageRoute(
           builder: (_) => FoodList(

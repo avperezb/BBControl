@@ -9,6 +9,7 @@ class Employee{
   final String lastName;
   final String email;
   final num phoneNumber;
+  final num ordersAmount;
 
   Employee({
 
@@ -18,7 +19,8 @@ class Employee{
     this.firstName,
     this.lastName,
     this.email,
-    this.phoneNumber
+    this.phoneNumber,
+    this.ordersAmount
   });
 
   Employee.fromData(Map<String, dynamic> data):
@@ -28,7 +30,8 @@ class Employee{
         firstName = data['firstName'],
         lastName = data['lastName'],
         email = data['email'],
-        phoneNumber = data['phoneNumber'];
+        phoneNumber = data['phoneNumber'],
+  ordersAmount = data['ordersAmount'];
 
   Map<String, dynamic> toJson(){
     return{
@@ -38,7 +41,8 @@ class Employee{
       'firstName': firstName,
       'lastName': lastName,
       'email' : email,
-      'phoneNumber' : phoneNumber
+      'phoneNumber' : phoneNumber,
+      'ordersAmount' : ordersAmount
     };
   }
 }

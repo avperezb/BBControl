@@ -410,7 +410,7 @@ class OrderDetailPage extends StatelessWidget {
                                         )
                                     ),
                                     Container(
-                                        margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                        margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                                         width: 60,
                                         height: 40,
                                         decoration: BoxDecoration(
@@ -428,7 +428,7 @@ class OrderDetailPage extends StatelessWidget {
                                         )
                                     ),
                                     Container(
-                                        margin: EdgeInsets.fromLTRB(25, 0, 10, 0),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
                                         padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                                         width: 120,
                                         height: 50,

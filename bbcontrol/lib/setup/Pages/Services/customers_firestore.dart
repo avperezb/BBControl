@@ -36,7 +36,7 @@ class CustomersFirestoreClass {
 
   Future updateCustomerData(String id, String firstName, String lastName, String email, DateTime birthDate, num phoneNumber) async{
     try {
-      await _customersCollectionReference.document(id).setData({
+      await _customersCollectionReference.document(id).updateData({
         'id': id,
         'firstName': firstName,
         'lastName': lastName,
@@ -50,11 +50,9 @@ class CustomersFirestoreClass {
   }
 
   Future setLimitAmount(String idUser, num amount) async {
-    print('poniendo el límite');
     try {
-      await _customersCollectionReference.document(id).setData({
-        'id': id,
-        'limitAmount': limitAmount,
+      await _customersCollectionReference.document(idUser).updateData({
+        'limitAmount': amount,
       });
     }catch(e){
       return e.message;

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
@@ -50,7 +49,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
         stream: Firestore.instance.collection('/Customers').document(widget.userId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            expensesControl = 1000000;
+            expensesControl = snapshot.data['limitAmount'];
             return Scaffold(
                 appBar: AppBar(
                   title: Text('Order status'),
