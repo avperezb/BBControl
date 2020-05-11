@@ -38,7 +38,12 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
     return StreamBuilder(
         stream: Firestore.instance.collection('/Customers').document(widget.userId).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (!snapshot.hasData){
+            return Container(
+                color: Colors.white,
+                child:  loaderFunction()
+            );
+          } else {
             widget.currentAmount = snapshot.data['limitAmount'];
             return Scaffold(
               appBar: AppBar(
@@ -150,102 +155,6 @@ class _ExpensesControlPageState extends State<ExpensesControlPage> {
                                     _buildAboutDialog(context),
                               );
 
-                            }
-                          },
-                          child: Text('Set limit',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16
-                            ),),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text('Expenses control'),
-                centerTitle: true,
-                backgroundColor: const Color(0xFFAD4497),
-              ),
-              body: Container(
-                margin: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child:
-                ListView(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
-                          padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                          child: Text('Set limit to your next order: ',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w800
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
-                          padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                          child: Checkbox(
-                            value: nextOrder,
-                            onChanged: (bool value) {
-                              setState(() {
-                                nextOrder = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            child: MoneyTextFormField(
-                              settings: MoneyTextFormFieldSettings(
-                                  appearanceSettings: AppearanceSettings(
-                                      padding: EdgeInsets.all(15.0),
-                                      hintText: 'Enter value',
-                                      labelStyle: _ts,
-                                      inputStyle: _ts.copyWith(
-                                          color: Colors.orange),
-                                      formattedStyle:
-                                      _ts.copyWith(color: Colors.blue))),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        RaisedButton(
-                          padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(10.0),
-                          ),
-                          color: const Color(0xFFAD4497),
-                          onPressed: () async {
-                            print(formatterMoney.numberValue);
-                            if (formatterMoney.numberValue != '' ||
-                                formatterMoney.numberValue != null) {
-                              setLimit(widget.userId,
-                                  formatterMoney.numberValue);
-                            }
-                            else {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    _buildAboutDialog(context),
-                              );
                             }
                           },
                           child: Text('Set limit',
