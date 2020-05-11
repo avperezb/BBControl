@@ -35,6 +35,21 @@ class EmployeesFirestoreClass {
     }
   }
 
+  getOrderedWaiter(){
+    return Firestore.instance.collection('BBCEmployees').orderBy('ordersAmount', descending: false)
+    .getDocuments();
+  }
+
+  Future updateEmployeeOrdersAmount(String idEmployee, num amount) async {
+    try {
+      await _employeesCollectionReference.document(idEmployee).updateData({
+        'ordersAmount': FieldValue.increment(amount),
+      });
+    }catch(e){
+      return e.message;
+    }
+  }
+
   Future updateEmployeeData(String id, bool active, String firstName, String lastName, String email, num phoneNumber) async{
 
     try {
