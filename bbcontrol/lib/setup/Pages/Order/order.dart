@@ -352,34 +352,33 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   successfulOrderToast(){
-    showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-            0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Your order has been placed',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Sit back and relax while we fulfill your order.',
-              style: TextStyle(fontSize: 16,
-                  color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close,
-                  color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blue,);
-    }, duration: Duration(milliseconds: 4000));
+    return showSimpleNotification(
+      Text("Your order has been placed",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Sit back and relax while we fulfill your order.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blue,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
+
   checkInternetConnection(context, snapshot) async{
     try {
       print(widget.userId);
@@ -390,11 +389,12 @@ class _OrderPageState extends State<OrderPage> {
         Order newOrder = new Order.withId(uuid.v1(), waiterAvailable.data['id'], widget.userId, DateTime.now(), '0', total, 0);
         _employeesFirestoreClass.updateEmployeeOrdersAmount(waiterAvailable.data['id'], 1);
         await _ordersFirestoreClass.createOrder(newOrder);
+        successfulOrderToast();
         for(OrderItem item in snapshot.data){
           await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
         }
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-        return successfulOrderToast();
+
       }
     } on SocketException catch (_) {
       return connectionErrorToast();
@@ -402,33 +402,31 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   connectionErrorToast(){
-    return showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-            0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Oops, network error',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Check your connection and try again.',
-              style: TextStyle(fontSize: 16,
-                  color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close,
-                  color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.deepPurpleAccent,);
-    }, duration: Duration(milliseconds: 4000));
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Please check your connection and try again.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   Widget _buildAboutDialog(BuildContext context, bool isItem, String productId) {
@@ -485,33 +483,31 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   deletedOrderToast(){
-    return showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-            0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Order deleted',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Your cart is now empty.',
-              style: TextStyle(fontSize: 16,
-                  color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close,
-                  color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blue,);
-    }, duration: Duration(milliseconds: 4000));
+    return showSimpleNotification(
+      Text("Order deleted",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Your cart is now empty.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blue,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   int getTotal(snapshot) {

@@ -102,36 +102,6 @@ class _PreOrderPageState extends State<PreOrderPage> {
                               ],
                             ),
                             onPressed: () async {
-                              showToast(context);
-                              if (!cStatus) {
-                                showOverlayNotification((context) {
-                                  return Card(
-                                    margin: const EdgeInsets.fromLTRB(
-                                        0, 0, 0, 0),
-                                    child: SafeArea(
-                                      child: ListTile(
-                                        title: Text('Oops, network error',
-                                            style: TextStyle(fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white)
-                                        ),
-                                        subtitle: Text(
-                                          'Your order will be added when connection is back!.',
-                                          style: TextStyle(fontSize: 16,
-                                              color: Colors.white),
-                                        ),
-                                        trailing: IconButton(
-                                            icon: Icon(Icons.close,
-                                              color: Colors.white,),
-                                            onPressed: () {
-                                              OverlaySupportEntry.of(context)
-                                                  .dismiss();
-                                            }),
-                                      ),
-                                    ),
-                                    color: Colors.deepPurpleAccent,);
-                                }, duration: Duration(milliseconds: 4000));
-                              }
                               DatabaseItem databaseHelper = new DatabaseItem();
                               if(expensesControl > 0){
                                 if(getTotal()<=expensesControl){
@@ -142,7 +112,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                           uuid.v1(), name, content['quantity'], "",
                                           content['price']);
                                       await databaseHelper.insertItem(op);
-
+                                      checkInternetConnection(context);
                                       Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
                                     }
                                   });
@@ -163,7 +133,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                         uuid.v1(), name, content['quantity'], "",
                                         content['price']);
                                     await databaseHelper.insertItem(op);
-
+                                    checkInternetConnection(context);
                                     Navigator.of(context).pushNamedAndRemoveUntil('/Order', ModalRoute.withName('/'),arguments: widget.userId);
                                   }
                                 });
@@ -252,7 +222,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                           content['price']);
                                       await databaseHelper.insertItem(op);
 
-                                      await checkInternetConnection(context);
+                                      checkInternetConnection(context);
                                       Navigator.of(context).pushNamedAndRemoveUntil(
                                           '/Order', ModalRoute.withName('/'),
                                           arguments: widget.userId);
@@ -276,7 +246,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                                         "",
                                         content['price']);
                                     await databaseHelper.insertItem(op);
-                                    await checkInternetConnection(context);
+                                    checkInternetConnection(context);
                                     Navigator.of(context).pushNamedAndRemoveUntil(
                                         '/Order', ModalRoute.withName('/'),
                                         arguments: widget.userId);
@@ -364,7 +334,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
     });
   }
 
-  checkInternetConnection(context) async{
+  checkInternetConnection(context) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -377,12 +347,12 @@ class _PreOrderPageState extends State<PreOrderPage> {
 
   connectionErrorToast(){
     return showSimpleNotification(
-      Text("Oops! no internet connection",
+      Text("Connection error",
         style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18
         ),),
-      subtitle: Text('Products will still be added to your cart.',
+      subtitle: Text('Products will still be added to your cart, but won\'t be able to order.',
         style: TextStyle(
         ),),
       trailing: Builder(builder: (context) {
@@ -397,7 +367,7 @@ class _PreOrderPageState extends State<PreOrderPage> {
                   fontSize: 16
               ),));
       }),
-      background: Colors.blueGrey,
+      background: Colors.deepPurpleAccent,
       autoDismiss: false,
       slideDismiss: true,
     );

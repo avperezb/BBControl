@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:age/age.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
@@ -53,13 +55,6 @@ class _ProfilePageState extends State<ProfilePage>{
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    checkConnectivity(context);
-  }
-
-  @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
@@ -95,25 +90,7 @@ class _ProfilePageState extends State<ProfilePage>{
                       color: const Color(0xFFAD4497),
                       onPressed: () async {
                         loaderFunction();
-                        checkConnectivity(context);
-                        print('connection');
-                        print(isConnected);
-                        if (!isConnected) {
-                          showOverlayNotification((context) {
-                            return connectionNotification();
-                          },
-                              duration: Duration(milliseconds: 2000));
-                        }
-                        else {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-                            changeViewEditable();
-                            await customersDB.updateCustomerData(
-                                widget.userId, _firstName, _lastName,
-                                _email,
-                                _birthDate, _phoneNumber);
-                          }
-                        }
+                        checkInternetConnection(context);
                       },
                       child: Text('$buttonText',
                         style: TextStyle(
@@ -455,34 +432,51 @@ class _ProfilePageState extends State<ProfilePage>{
   }
 
 
-  @override
-  void checkConnectivity(BuildContext context) async {
-    await checkConnection.initConnectivity();
-    setState(() {
-      isConnected = checkConnection.getConnectionStatus(context);
-      print('check connectivity: '+ isConnected.toString());
-    });
+  checkInternetConnection(context) async{
+    try {
+      print(widget.userId);
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        if (_formKey.currentState.validate()) {
+          _formKey.currentState.save();
+          changeViewEditable();
+          await customersDB.updateCustomerData(
+              widget.userId, _firstName, _lastName,
+              _email,
+              _birthDate, _phoneNumber);
+        }
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
   }
 
-  Widget connectionNotification(){
-    return Card(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: SafeArea(
-        child: ListTile(
-          title: Text('Connection Error',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)
-          ),
-          subtitle: Text('Please try to edit this again later.',
-            style: TextStyle(fontSize: 16, color: Colors.white),
-          ),
-          trailing: IconButton(
-              icon: Icon(Icons.close, color: Colors.white,),
-              onPressed: () {
-                OverlaySupportEntry.of(context).dismiss();
-              }),
-        ),
-      ),
-      color: Colors.blueGrey,);
+  connectionErrorToast(){
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Please check your connection and try again.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   Widget loaderFunction(){

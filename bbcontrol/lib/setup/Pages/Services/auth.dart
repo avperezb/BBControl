@@ -61,8 +61,7 @@ class AuthService {
         return customer;
       }
     } catch (e) {
-      print(e.message);
-      return null;
+      return "error";
     }
   }
 

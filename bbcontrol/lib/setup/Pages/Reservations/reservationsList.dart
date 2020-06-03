@@ -242,8 +242,9 @@ class ReservationTile extends StatelessWidget {
               });
         }
         else{
-          if(_date.isAfter(DateTime.now()))
-            Navigator.of(context).pushNamed('/EditReservation', arguments: _reservation);
+          if(_date.isAfter(DateTime.now())) {
+            checkInternetConnection(context);
+          }
           else
             showDialog(context: context,
                 builder: (BuildContext context){
@@ -369,7 +370,45 @@ class ReservationTile extends StatelessWidget {
       ),
     );
   }
+  checkInternetConnection(context) async{
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        Navigator.of(context).pushNamed(
+            '/EditReservation', arguments: _reservation);
+      }
+    } on SocketException catch (_) {
+      return connectionErrorToast();
+    }
+  }
 
+  connectionErrorToast(){
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Please check your connection and try again.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
+  }
   getPreferences(){
     if(_preferences.isNotEmpty){
       List<IconData> icons = [];

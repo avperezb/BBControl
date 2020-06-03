@@ -96,36 +96,6 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                 ],
                               ),
                               onPressed: () async {
-                                showToast(context);
-                                if (!cStatus) {
-                                  showOverlayNotification((context) {
-                                    return Card(
-                                      margin: const EdgeInsets.fromLTRB(
-                                          0, 0, 0, 0),
-                                      child: SafeArea(
-                                        child: ListTile(
-                                          title: Text('Oops, network error',
-                                              style: TextStyle(fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white)
-                                          ),
-                                          subtitle: Text(
-                                            'Your order will be added when connection is back!.',
-                                            style: TextStyle(fontSize: 16,
-                                                color: Colors.white),
-                                          ),
-                                          trailing: IconButton(
-                                              icon: Icon(Icons.close,
-                                                color: Colors.white,),
-                                              onPressed: () {
-                                                OverlaySupportEntry.of(context)
-                                                    .dismiss();
-                                              }),
-                                        ),
-                                      ),
-                                      color: Colors.deepPurpleAccent,);
-                                  }, duration: Duration(milliseconds: 4000));
-                                }
                                 DatabaseItem databaseHelper = new DatabaseItem();
                                 if (expensesControl > 0) {
                                   if (getTotal() <= expensesControl) {
@@ -139,6 +109,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                                 specs['price']);
                                             await databaseHelper.insertItem(
                                                 oItem);
+                                            checkInternetConnection(context);
                                             Navigator.of(context)
                                                 .pushNamedAndRemoveUntil(
                                                 '/Order',
@@ -156,19 +127,21 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                 }
                                 else {
                                   jsonDecode(widget.order).forEach((name,
-                                      content) async {
-                                    if (content['quantity'] > 0) {
-                                      OrderItem op = OrderItem.withId(
-                                          uuid.v1(), name, content['quantity'],
-                                          "",
-                                          content['price']);
-                                      await databaseHelper.insertItem(op);
-
-                                      Navigator.of(context)
-                                          .pushNamedAndRemoveUntil(
-                                          '/Order', ModalRoute.withName('/'),
-                                          arguments: widget.userId);
-                                    }
+                                      content){
+                                    content.forEach((size, detail) async{
+                                      if (detail['quantity'] > 0) {
+                                        OrderItem op = OrderItem.withId(
+                                            uuid.v1(), name, detail['quantity'],
+                                            size,
+                                            detail['price']);
+                                        await databaseHelper.insertItem(op);
+                                        checkInternetConnection(context);
+                                        Navigator.of(context)
+                                            .pushNamedAndRemoveUntil(
+                                            '/Order', ModalRoute.withName('/'),
+                                            arguments: widget.userId);
+                                      }
+                                    });
                                   });
                                 }
                               }
@@ -195,7 +168,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
             );
           }
           else {
-            Scaffold(
+            return Scaffold(
                 appBar: AppBar(
                   title: Text('Order status'),
                   centerTitle: true,
@@ -247,36 +220,6 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                 ],
                               ),
                               onPressed: () async {
-                                showToast(context);
-                                if (!cStatus) {
-                                  showOverlayNotification((context) {
-                                    return Card(
-                                      margin: const EdgeInsets.fromLTRB(
-                                          0, 0, 0, 0),
-                                      child: SafeArea(
-                                        child: ListTile(
-                                          title: Text('Oops, network error',
-                                              style: TextStyle(fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white)
-                                          ),
-                                          subtitle: Text(
-                                            'Your order will be added when connection is back!.',
-                                            style: TextStyle(fontSize: 16,
-                                                color: Colors.white),
-                                          ),
-                                          trailing: IconButton(
-                                              icon: Icon(Icons.close,
-                                                color: Colors.white,),
-                                              onPressed: () {
-                                                OverlaySupportEntry.of(context)
-                                                    .dismiss();
-                                              }),
-                                        ),
-                                      ),
-                                      color: Colors.deepPurpleAccent,);
-                                  }, duration: Duration(milliseconds: 4000));
-                                }
                                 DatabaseItem databaseHelper = new DatabaseItem();
                                 if (expensesControl > 0) {
                                   if (getTotal() <= expensesControl) {
@@ -288,8 +231,8 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                                 .withId(uuid.v1(), name,
                                                 specs['quantity'], size,
                                                 specs['price']);
-                                            await databaseHelper.insertItem(
-                                                oItem);
+                                            await databaseHelper.insertItem(oItem);
+                                            checkInternetConnection(context);
                                             Navigator.of(context)
                                                 .pushNamedAndRemoveUntil(
                                                 '/Order',
@@ -314,7 +257,7 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
                                           "",
                                           content['price']);
                                       await databaseHelper.insertItem(op);
-
+                                      checkInternetConnection(context);
                                       Navigator.of(context)
                                           .pushNamedAndRemoveUntil(
                                           '/Order', ModalRoute.withName('/'),
@@ -395,33 +338,32 @@ class _PreOrderBeerState extends State<PreOrderBeer> {
     }
   }
 
-  connectionErrorToast() {
-    showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Connection Error',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Check your connection and try again.',
+  connectionErrorToast(){
+    return showSimpleNotification(
+      Text("Connection error",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Products will still be added to your cart, but won\'t be able to order.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
               style: TextStyle(
-                  fontSize: 16, color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(
-                  Icons.close, color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.deepPurpleAccent,);
-    }, duration: Duration(milliseconds: 4000));
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.deepPurpleAccent,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   void showToast(BuildContext context) async {

@@ -288,6 +288,7 @@ class _SignUpState extends State<SignUpPage>{
         }
       }
     } on SocketException catch (_) {
+      _formKey.currentState.validate();
       return connectionErrorToast();
     }
   }

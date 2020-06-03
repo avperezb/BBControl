@@ -10,8 +10,8 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:uuid/uuid.dart';
 
 class Offers extends StatelessWidget {
-String userId;
-Offers({this.userId});
+  String userId;
+  Offers({this.userId});
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -114,8 +114,8 @@ class SingleOffer extends StatelessWidget {
             child: Text(snapshot['description'],
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 17
+                  color: Colors.black,
+                  fontSize: 17
               ),
             ),
           ),
@@ -162,62 +162,59 @@ class SingleOffer extends StatelessWidget {
   }
 
   connectionErrorToast(){
-    showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Connection Error',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Products will be added when connection is back.',
+    return showSimpleNotification(
+      Text("Connection error",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('The offer will still be added to your cart, but won\'t be able to order.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
               style: TextStyle(
-                  fontSize: 16, color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(
-                  Icons.close, color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.deepPurpleAccent,);
-    }, duration: Duration(milliseconds: 4000));
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.deepPurpleAccent,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   addedProductToast(){
-    return showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-            0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Offer added',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'This offer is now in your cart.',
-              style: TextStyle(fontSize: 16,
-                  color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close,
-                  color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blue,);
-    }, duration: Duration(milliseconds: 4000));
+    return showSimpleNotification(
+      Text("Offer added",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('This offer is now in your cart.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blue,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 }
 

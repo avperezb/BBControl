@@ -194,17 +194,17 @@ class _LoginPageState extends State<LoginPage> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         if (_formKey.currentState.validate()) {
           _formKey.currentState.save();
-          var result = await _auth.signIn(
+          var response = await _auth.signIn(
               _email, _password);
           print(_email);
-          if (result == null) {
-            return 'Could not sign you in. Check your data and try again.';
+          if (response == "error") {
+            //loginErrorToast();
           }
           else {
             if(_email.contains('@bbc.com')){
               print('acaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
               Navigator.push(context, MaterialPageRoute(builder: (
-                  context) => OrdersListWaiter(employee: result)));
+                  context) => OrdersListWaiter(employee: response)));
             }
             else if(_email.contains('@adminbbc.com')){
 
@@ -212,13 +212,41 @@ class _LoginPageState extends State<LoginPage> {
             else{
               print('llllllllllllllllllllllllllllllllllllllllllllllllll');
               Navigator.push(context, MaterialPageRoute(builder: (
-                  context) => Home(customer: result)));}
+                  context) => Home(customer: response)));}
           }
         }
       }
     } on SocketException catch (_) {
       return connectionErrorToast();
     }
+  }
+
+  loginErrorToast(){
+    return showSimpleNotification(
+      Text("Could not log you in",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Incorrect email or password.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.cyan,
+      autoDismiss: false,
+      slideDismiss: true,
+    );
   }
 
   connectionErrorToast(){
