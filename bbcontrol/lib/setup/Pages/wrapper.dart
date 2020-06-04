@@ -35,6 +35,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   void initState() {
     getEmailFromSP();
+    isNearBBC();
     super.initState();
   }
 

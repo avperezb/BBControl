@@ -32,7 +32,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed

@@ -79,13 +79,13 @@ class HomeState extends State<Home> {
                               drinksButton(userId, widget.inBBC),
                               Column(
                                 children: <Widget>[
-                                  specialOffersButton(userId),
-                                  foodButton(userId),
+                                  specialOffersButton(userId, widget.inBBC),
+                                  foodButton(userId, widget.inBBC),
                                 ],
                               ),
                             ],
                           ),
-                          currentOrdersButton(),
+                          currentOrdersButton(widget.inBBC),
                         ],
                       ),
                       ],
@@ -98,14 +98,16 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget specialOffersButton(userId){
+  Widget specialOffersButton(String userId, bool inBBC){
     return Container(
       width: MediaQuery.of(context).size.width / 2,
       height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
       child: FlatButton(
         color: const Color(0xFFFF6B00),
         onPressed: () {
-          Navigator.of(context).pushNamed('/Offers', arguments: userId);
+          if(inBBC) {
+            Navigator.of(context).pushNamed('/Offers', arguments: userId);
+          }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +126,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget drinksButton(userId, inBBC){
+  Widget drinksButton(String userId, bool inBBC){
     return Column(
       children: <Widget>[
         Container(
@@ -133,7 +135,9 @@ class HomeState extends State<Home> {
           child: FlatButton(
             color: const Color(0xFFD7384A),
             onPressed: () {
-              Navigator.of(context).pushNamed('/Drinks', arguments: userId);
+              if(inBBC) {
+                Navigator.of(context).pushNamed('/Drinks', arguments: userId);
+              }
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -179,12 +183,8 @@ class HomeState extends State<Home> {
               ],
             ),
             onPressed: () {
-              print('BUENAS EN EL PRESSED');
-              print(widget.inBBC);
               if(inBBC) {
                 Navigator.of(context).pushNamed('/Cab');
-              }
-              else{
               }
             },
           ),
@@ -193,7 +193,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget foodButton(userId){
+  Widget foodButton(String userId, bool inBBC){
     return Container(
       width: MediaQuery.of(context).size.width / 2,
       height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height -24.0) * 4 / 9,
@@ -202,7 +202,9 @@ class HomeState extends State<Home> {
             FlatButton(
               color: const Color(0xFFD8AE2D),
               onPressed: () {
-                Navigator.of(context).pushNamed('/Food', arguments: userId);
+                if(inBBC) {
+                  Navigator.of(context).pushNamed('/Food', arguments: userId);
+                }
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -252,7 +254,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget currentOrdersButton(){
+  Widget currentOrdersButton(bool inBBC){
     return Container(
       height: (MediaQuery
           .of(context)
@@ -262,8 +264,11 @@ class HomeState extends State<Home> {
       child: FlatButton(
         color: const Color(0xFF6DAC3B),
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-          loaderFunction();
+          if(inBBC) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => OrderPage()));
+            loaderFunction();
+          }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

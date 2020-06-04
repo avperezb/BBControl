@@ -12,25 +12,26 @@ class LocationClass {
 
     Firestore firestore = Firestore.instance;
     GeoFirestore geoFirestore = GeoFirestore(firestore.collection('Locations'));
+    //Ubicación del usuario
     var pos = await location.getLocation();
-    //await geoFirestore.setLocation('casaValeria', GeoPoint(7.901978, -72.469323));
-    final locationDB = await geoFirestore.getLocation('tl0Lw0NUddQx5a8kXymO');
+    print('ubicación usuario:');
+    print(pos);
+
+    //Add BBC point to database
+    await geoFirestore.setLocation('BBCValeria', GeoPoint(7.901923, -72.46932));
 
     final queryLocation = GeoPoint(pos.latitude, pos.longitude);
-    print(queryLocation);
 
     // creates a new query around [currentLocation] with a radius of 6 mts
     final List<DocumentSnapshot> documents = await geoFirestore.getAtLocation(queryLocation, 6);
     documents.forEach((document) {
-      print('en for each');
       print(document.data);
     });
+    print(documents.length);
     if(documents.length!=0){
       nearBBC = true;
     }
-    print(nearBBC);
     return nearBBC;
   }
-
 
 }
