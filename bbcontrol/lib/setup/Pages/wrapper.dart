@@ -8,6 +8,8 @@ import 'Authenticate/authenticate.dart';
 import 'Extra/ColorLoader.dart';
 import 'Extra/DotType.dart';
 import 'Home/home.dart';
+import 'DrawBar/drunk_Mode.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Wrapper extends StatefulWidget {
@@ -16,6 +18,9 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
+
+  LocationClass lc = LocationClass();
+  bool inBBC;
   String _email;
   String _id;
   String _firstName;
@@ -30,14 +35,17 @@ class _WrapperState extends State<Wrapper> {
   @override
   void initState() {
     getEmailFromSP();
+    isNearBBC();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     //return either Home or Authenticate widget
     if(_email == null){
       return Authenticate();
-    } else if(_email.contains('@bbc.com')){
+    }
+    else if(_email.contains('@bbc.com')){
       loaderFunction();
       getEmployeeDataFromSP();
       Employee employee = new Employee(
@@ -65,8 +73,15 @@ class _WrapperState extends State<Wrapper> {
           firstName: _firstName,
           email: _email,
           birthDate: _birthDate);
-      return Home(customer: customer);
+      return Home(customer: customer, inBBC: inBBC);
     }
+  }
+
+  isNearBBC() async{
+    bool rta = await lc.isNearBBC();
+    setState(() {
+      inBBC = rta;
+    });
   }
 
   getEmailFromSP() async{
