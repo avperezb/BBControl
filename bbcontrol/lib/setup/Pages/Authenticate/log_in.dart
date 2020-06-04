@@ -14,6 +14,8 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../DrawBar/drunk_Mode.dart';
+
 class LoginPage extends StatefulWidget {
 
   _LoginPageState createState() => new _LoginPageState();
@@ -21,6 +23,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  LocationClass lc = LocationClass();
+  bool inBBC;
   final AuthService _auth = AuthService();
 
   String _email, _password;
@@ -28,6 +32,13 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   CheckConnectivityState checkConnection = CheckConnectivityState();
   bool isConnected = true;
+
+  @override
+  void initState() {
+    isNearBBC();
+    super.initState();
+  }
+
 
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -156,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xFFAD4497),
                       onPressed: () async {
                         loaderFunction();
-                        checkInternetConnection(context);
+                        checkInternetConnection(context, inBBC);
                       },
                       child: Text('Log in',
                         style: TextStyle(
@@ -188,7 +199,8 @@ class _LoginPageState extends State<LoginPage> {
         )
     );
   }
-  checkInternetConnection(context) async{
+
+  checkInternetConnection(context, bool inBBC) async{
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -216,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
               else {
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => Home(customer: response)));
+                    builder: (context) => Home(customer: response, inBBC: inBBC)));
               }
             }
           }
@@ -228,6 +240,13 @@ class _LoginPageState extends State<LoginPage> {
     } on SocketException catch (_) {
       return connectionErrorToast();
     }
+  }
+
+  isNearBBC() async{
+    bool rta = await lc.isNearBBC();
+    setState(() {
+      inBBC = rta;
+    });
   }
 
   loginErrorToast(){
