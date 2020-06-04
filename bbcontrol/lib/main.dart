@@ -1,3 +1,4 @@
+import 'package:bbcontrol/setup/Pages/Authenticate/authenticate.dart';
 import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
 import 'package:bbcontrol/setup/Pages/Drinks/drinks.dart';
 import 'package:bbcontrol/setup/Pages/Food/food.dart';
@@ -40,6 +41,8 @@ class RouteGenerator {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => Home(customer: args));
+      case '/Login':
+        return MaterialPageRoute(builder: (_) => Authenticate());
       case '/Food':
         return MaterialPageRoute(
           builder: (_) => FoodList(

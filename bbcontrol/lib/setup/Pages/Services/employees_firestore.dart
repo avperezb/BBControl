@@ -27,11 +27,12 @@ class EmployeesFirestoreClass {
   }
 
   Future getEmployee(String id) async{
-    try{
-      var employeeInfo = await _employeesCollectionReference.document('0fCB43hKS0MvOEOnL2ZfiSVQKny2').get();
+    try {
+      var employeeInfo = await _employeesCollectionReference.document(id).get();
       return Employee.fromData(employeeInfo.data);
-    }catch(e){
-      return e.message;
+    }
+    catch(e){
+      print("error");
     }
   }
 
