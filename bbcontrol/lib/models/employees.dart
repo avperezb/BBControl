@@ -26,12 +26,12 @@ class Employee{
   Employee.fromData(Map<String, dynamic> data):
         id = data['id'],
         active = data['active'],
-        identification = data['id'],
+        identification = data['identification'],
         firstName = data['firstName'],
         lastName = data['lastName'],
         email = data['email'],
         phoneNumber = data['phoneNumber'],
-  ordersAmount = data['ordersAmount'];
+        ordersAmount = data['ordersAmount'];
 
   Map<String, dynamic> toJson(){
     return{

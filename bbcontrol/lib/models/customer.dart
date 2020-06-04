@@ -25,7 +25,7 @@ class Customer {
         firstName = data['firstName'],
         lastName = data['lastName'],
         email = data['email'],
-        birthDate = data['birthDate'],
+        birthDate = DateTime.parse(data['birthDate'].toDate().toString()),
         phoneNumber = data['phoneNumber'],
         limitAmount = data['limitAmount'];
 

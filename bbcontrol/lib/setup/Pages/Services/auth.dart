@@ -3,6 +3,7 @@ import 'package:bbcontrol/models/employees.dart';
 import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:bbcontrol/setup/Pages/Services/employees_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
 
@@ -49,19 +50,39 @@ class AuthService {
       FirebaseUser user = (await _auth.signInWithEmailAndPassword(
           email: _email, password: _password)).user;
       if (_email.contains('@bbc.com')) {
-        print(_employeeFromFirebaseUser(user).toString() +
-            'imprimiendo usuario creado');
-        return await _firestoreEmployees.getEmployee(user.uid);
+        Employee employee = await _firestoreEmployees.getEmployee(user.uid);
+        print('se trajo el empleado');
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setString('email', _email);
+          prefs.setString('id', employee.id);
+          prefs.setString('first_name', employee.firstName);
+          prefs.setString('last_name', employee.lastName);
+          prefs.setInt('identification', employee.identification);
+          prefs.setInt('phone_number', employee.phoneNumber);
+          prefs.setBool('active', employee.active);
+          prefs.setInt('orders_amount', employee.ordersAmount);
+        });
+        return employee;
       }
       else {
-        print(_userFromFirebaseUser(user).toString() +
-            'imprimiendo usuario creado');
         Customer customer = await _firestoreService.getCustomer(user.uid);
+        print("se trajo el usuario");
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setString('email', _email);
+          prefs.setString('id', customer.id);
+          prefs.setString('first_name', customer.firstName);
+          prefs.setString('last_name', customer.lastName);
+          prefs.setString('birth_date', customer.birthDate.toString());
+          prefs.setInt('phone_number', customer.phoneNumber);
+          prefs.setInt('limit_amount', customer.limitAmount);
+        });
+
         print(customer);
         return customer;
       }
-    } catch (e) {
-      return "error";
+    }
+    catch(e){
+
     }
   }
 
@@ -95,6 +116,10 @@ class AuthService {
   Future signOut() async {
     if (user != null) {
       try {
+        SharedPreferences.getInstance().then((prefs){
+          prefs.setString('email', null);
+        });
+
         return await _auth.signOut();
       } catch (e) {
         print(e.toString());

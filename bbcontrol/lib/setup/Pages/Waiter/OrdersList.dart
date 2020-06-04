@@ -119,22 +119,6 @@ class OrdersListWaiter extends StatelessWidget {
                                       children: <Widget>[
                                         getOrderStatus(
                                             '${items[index]['state']}'),
-                                        Container(
-                                          width: 55,
-                                          child: Row(
-                                            children: <Widget>[
-                                              Container(
-                                                  margin: EdgeInsets.fromLTRB(
-                                                      5, 0, 5, 0),
-                                                  child: Icon(
-                                                      Icons.people_outline)
-                                              ),
-                                              Text(
-                                                '${items[index]['idWaiter']}',
-                                                style: TextStyle(fontSize: 17),)
-                                            ],
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -164,6 +148,7 @@ class OrdersListWaiter extends StatelessWidget {
                     }
                 ),
               ),
+              endDrawer: MenuDrawer(employee.firstName, employee.lastName, employee.email),
             );
           }
         }
@@ -436,23 +421,17 @@ class OrderDetailWaiter extends StatelessWidget {
 
 class MenuDrawer extends StatefulWidget {
 
-  String userIdFromHome;
   String userFirstName;
   String userLastName;
   String userEmail;
-  DateTime userDateBirth;
-  num userPhoneNumber;
 
   Function (String, String, String) callback;
 
-  MenuDrawer(String userId, DateTime bd, String userFName, String userLName, String email, num phone){
+  MenuDrawer(String userFName, String userLName, String email){
 
-    this.userIdFromHome = userId;
     this.userFirstName = userFName;
     this.userLastName = userLName;
     this.userEmail = email;
-    this.userDateBirth = bd;
-    this.userPhoneNumber = phone;
   }
 
   @override
@@ -512,15 +491,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
                   ),
                 ),
               ),
-              Card(////                         <-- Card widget
-                color: Color(0xFFF5E8F2),
-                child: ListTile(
-                  leading: Icon(option1.icon),
-                  title: Text(option1.title, style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600)),
-                  onTap: action1,
-                ),
-              ),
               Card( ////             <-- Card widget
                 color: Color(0xFFF5E8F2),
                 child: ListTile(
@@ -544,11 +514,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
         ),
       ),
     );
-  }
-
-  void action1() {
-    Navigator.push(context, MaterialPageRoute(
-        builder: (context) => ProfilePage(userId: widget.userIdFromHome)));
   }
 
   void action2() {
@@ -588,6 +553,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
   void action4() {
     Navigator.pop(context);
     _auth.signOut();
+    Navigator.of(context).pushReplacementNamed('/Login');
   }
 
   Widget _buildAboutDialog(BuildContext context) {

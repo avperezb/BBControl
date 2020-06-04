@@ -310,6 +310,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
   void actionLogOut() {
     Navigator.pop(context);
     _auth.signOut();
+    Navigator.of(context).pushReplacementNamed('/Login');
   }
 
   Widget _buildAboutDialog(BuildContext context) {

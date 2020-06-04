@@ -39,6 +39,7 @@ dependencies:
   flutter_appavailability: ^0.0.21
   store_redirect: ^1.0.2
   flutter_masked_text: ^0.8.0
+  shared_preferences: ^0.5.7+3
 
 
   # The following adds the Cupertino Icons font to your application.
