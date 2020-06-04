@@ -39,6 +39,10 @@ dependencies:
   flutter_appavailability: ^0.0.21
   store_redirect: ^1.0.2
   flutter_masked_text: ^0.8.0
+  geoflutterfire: ^2.1.0
+  location: ^3.0.2
+  rxdart: ^0.23.1
+  google_maps_flutter: ^0.5.28+1
 
 
   # The following adds the Cupertino Icons font to your application.

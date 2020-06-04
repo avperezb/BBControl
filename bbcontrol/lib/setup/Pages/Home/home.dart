@@ -224,33 +224,7 @@ class HomeState extends State<Home> {
                               ),
                             ],
                           ),
-                          Container(
-                            height: (MediaQuery
-                                .of(context)
-                                .size
-                                .height - AppBar().preferredSize.height -
-                                24.0) / 6,
-                            child: FlatButton(
-                              color: const Color(0xFF6DAC3B),
-                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                                loaderFunction();
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.shopping_cart,
-                                      size: iconSize,
-                                      color: Colors.white) : Container(),
-                                  Text('My order',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),)
-                                ],
-                              ),
-                            ),
-                          ),
+                          currentOrders(),
                         ],
                       ),
                       ],
@@ -271,6 +245,36 @@ class HomeState extends State<Home> {
       dotType: DotType.circle,
       dotIcon: Icon(Icons.adjust),
       duration: Duration(seconds: 2),
+    );
+  }
+
+  Widget currentOrders(){
+    return Container(
+      height: (MediaQuery
+          .of(context)
+          .size
+          .height - AppBar().preferredSize.height -
+          24.0) / 6,
+      child: FlatButton(
+        color: const Color(0xFF6DAC3B),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+          loaderFunction();
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.shopping_cart,
+                size: iconSize,
+                color: Colors.white) : Container(),
+            Text('Current orders',
+              style: TextStyle(
+                color: Colors.white,
+              ),)
+          ],
+        ),
+      ),
     );
   }
 
