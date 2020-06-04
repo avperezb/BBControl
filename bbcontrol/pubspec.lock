@@ -63,21 +63,7 @@ packages:
       name: cloud_firestore
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4+2"
-  cloud_firestore_platform_interface:
-    dependency: transitive
-    description:
-      name: cloud_firestore_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
-  cloud_firestore_web:
-    dependency: transitive
-    description:
-      name: cloud_firestore_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1+2"
+    version: "0.12.11"
   collection:
     dependency: transitive
     description:
@@ -240,13 +226,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  geoflutterfire:
+  geo_firestore:
     dependency: "direct main"
     description:
-      name: geoflutterfire
+      name: geo_firestore
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "0.0.1"
   google_fonts:
     dependency: "direct main"
     description:

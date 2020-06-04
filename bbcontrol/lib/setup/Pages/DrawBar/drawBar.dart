@@ -215,7 +215,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             ),
                             color: Colors.transparent,
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FireMap()));
+                              print('no hago nada');
                             },
                           ),
                           Container(),

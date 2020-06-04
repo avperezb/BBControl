@@ -1,70 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geo_firestore/geo_firestore.dart';
 import 'package:location/location.dart';
-import 'dart:math';
 
-class FireMap extends StatefulWidget{
-  State createState()=>FireMapState();
-}
-class FireMapState extends State<FireMap>{
-  GoogleMapController mapController;
+class LocationClass {
+
+  bool nearBBC = false;
+
   Location location = new Location();
-  Geoflutterfire geo = Geoflutterfire();
 
-  @override
-  Widget build(BuildContext context) {
-    //BehaviorSubject<double> radius = BehaviorSubject();
-    getCurrentLocation();
-    // TODO: implement build
-    return  Stack(
-      children: <Widget>[
-        GoogleMap(initialCameraPosition: CameraPosition(
-          target: LatLng(24.142, -110.321),
-          zoom: 15
-        ),
-          onMapCreated: _onMapCreated,
-          myLocationEnabled: true,
-        )
-      ],
-    );
-  }
+  Future<bool> isNearBBC() async{
 
-  Widget randomOperation(){
-    int max = 5;
-    int min = 3;
-    Random rnd = new Random();
-    int r = min + rnd.nextInt(max - min+1);
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Card(
-            child: ButtonBar(
-              alignment: MainAxisAlignment.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  _onMapCreated(GoogleMapController controller){
-    setState(() {
-      mapController = controller;
-    });
-  }
-
-
-
-  Future<DocumentReference> getCurrentLocation() async{
-
+    Firestore firestore = Firestore.instance;
+    GeoFirestore geoFirestore = GeoFirestore(firestore.collection('Locations'));
     var pos = await location.getLocation();
-    print(pos);
-    GeoFirePoint point = geo.point(latitude: pos.latitude, longitude: pos.longitude);
-    print('aaaaaaaaaaaaaaaaaaaaaaaa');
-    print(point);
+    //await geoFirestore.setLocation('casaValeria', GeoPoint(7.901978, -72.469323));
+    final locationDB = await geoFirestore.getLocation('tl0Lw0NUddQx5a8kXymO');
+
+    final queryLocation = GeoPoint(pos.latitude, pos.longitude);
+    print(queryLocation);
+
+    // creates a new query around [currentLocation] with a radius of 6 mts
+    final List<DocumentSnapshot> documents = await geoFirestore.getAtLocation(queryLocation, 6);
+    documents.forEach((document) {
+      print('en for each');
+      print(document.data);
+    });
+    if(documents.length!=0){
+      nearBBC = true;
+    }
+    print(nearBBC);
+    return nearBBC;
   }
 
 
