@@ -7,7 +7,9 @@ import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'drunk_Mode.dart';
+import 'location.dart';
 import 'expenses_Control.dart';
 
 class MenuDrawer extends StatefulWidget {
@@ -36,6 +38,13 @@ class MenuDrawer extends StatefulWidget {
 
 class _MenuDrawerState extends State<MenuDrawer> {
 
+  initState() {
+    // TODO: implement initState
+    obtenerEstadoExpControl();
+    super.initState();
+  }
+
+  bool isSwitched = false;
   CustomersFirestoreClass _customersFirestoreClass = CustomersFirestoreClass();
   double maxWidth = 200;
   NavigationModel editProfile = new NavigationModel(
@@ -45,8 +54,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
   NavigationModel  settings = new NavigationModel("Settings", Icons.settings);
   NavigationModel  logOut = new NavigationModel("Log out", Icons.exit_to_app);
   final AuthService _auth = AuthService();
-  bool isSwitched = false;
-  bool isButtonExpensesDisabled = true;
+
   @override
   Widget build(BuildContext context) {
 
@@ -144,9 +152,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
                           ),
                           Switch(
                             value: isSwitched,
-                            onChanged: (value) {
+                            onChanged: (value) async{
+                              await guardarEstadoExpControl(value);
                               if (!isSwitched) {
-                                print(widget.userLimitAmount);
                                 if (widget.userLimitAmount > 0){
                                   setState(() {
                                     isSwitched = value;
@@ -178,7 +186,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                                                   Navigator.push(context, MaterialPageRoute(builder: (context) => ExpensesControlPage(userId: widget.userIdFromHome)));
                                                 },
                                                 textColor: Theme.of(context).primaryColor,
-                                                child: const Text('Go now'),
+                                                child: const Text('Acept'),
                                               ),
                                             ],
                                           )
@@ -191,8 +199,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
                                   builder: (BuildContext context) =>
                                       _buildAboutDialog(context),
                                 );
-                                // Perform some action
-
                               }
                             },
                             activeTrackColor: Color(0xFFC591BA),
@@ -215,7 +221,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             ),
                             color: Colors.transparent,
                             onPressed: () {
-                              print('no hago nada');
+                              actionDrunkMode();
                             },
                           ),
                           Container(),
@@ -241,13 +247,24 @@ class _MenuDrawerState extends State<MenuDrawer> {
     );
   }
 
-  void actionEditProfile() {
+  void obtenerEstadoExpControl() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isSwitched = prefs.getBool("estadoExpControl");
+    });
+  }
+
+  guardarEstadoExpControl(bool estadoActual)async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("estadoExpControl", estadoActual);
+  }
+
+  actionEditProfile() {
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => ProfilePage(userId: widget.userIdFromHome)));
   }
 
-  void actionMyOrders() {
-    print(widget.userIdFromHome);
+  actionMyOrders() {
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => MyOrdersPage(userId: widget.userIdFromHome)));
   }
@@ -279,6 +296,11 @@ class _MenuDrawerState extends State<MenuDrawer> {
       autoDismiss: false,
       slideDismiss: true,
     );
+  }
+
+  actionDrunkMode(){
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => DrunkModePage()));
   }
 
   void actionLogOut() {
@@ -324,7 +346,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
     return new RichText(
       text: new TextSpan(
         text: 'You\'re about to set the limit of your spent back to none. Think about it!',
-        style: const TextStyle(color: Colors.black87),
+        style: const TextStyle(color: Colors.black87, fontSize: 16),
         children: <TextSpan>[
         ],
       ),
@@ -335,7 +357,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
     return new RichText(
       text: new TextSpan(
         text: 'Your limit amount must be specified before turning on this mode.',
-        style: const TextStyle(color: Colors.black87),
+        style: const TextStyle(color: Colors.black87, fontSize: 16),
         children: <TextSpan>[
         ],
       ),

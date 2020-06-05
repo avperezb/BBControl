@@ -8,7 +8,7 @@ import 'Authenticate/authenticate.dart';
 import 'Extra/ColorLoader.dart';
 import 'Extra/DotType.dart';
 import 'Home/home.dart';
-import 'DrawBar/drunk_Mode.dart';
+import 'DrawBar/location.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 

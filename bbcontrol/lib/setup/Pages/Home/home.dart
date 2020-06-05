@@ -1,6 +1,7 @@
 import 'package:bbcontrol/models/customer.dart';
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
+import 'package:bbcontrol/setup/Pages/DrawBar/location.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Reservations/reservationsList.dart';
@@ -9,6 +10,7 @@ import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import '../DrawBar/drawBar.dart';
 
@@ -30,17 +32,41 @@ class HomeState extends State<Home> {
 
   void initState() {
     // TODO: implement initState
+    obtenerEstadoDrunkMode();
+    if (widget.inBBC == null) {
+      print('estaba null el valor de inBBC');
+      nearBBC();
+    }
+    else{
+      print('acáaa jijiji');
+      inBBC2 = widget.inBBC;
+    }
     super.initState();
   }
 
+  bool inBBC2;
   CheckConnectivityState checkConnection = CheckConnectivityState();
+  LocationClass lc = LocationClass();
   DatabaseItem databaseHelper = DatabaseItem();
   bool cStatus = true;
   List<OrderItem> orderList;
   int count = 0;
   final iconSize = 60.0;
   bool isConnected = true;
+  bool drunkModeState;
 
+  void nearBBC() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      inBBC2 = prefs.getBool("estaEnBBCSP");
+    });
+  }
+  void obtenerEstadoDrunkMode()async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      drunkModeState = prefs.getBool("estadoDrunkMode");
+    });
+  }
 
   Widget build(BuildContext context) {
     return new StreamBuilder(
@@ -48,8 +74,8 @@ class HomeState extends State<Home> {
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.hasError) {
             return Container(
-              color: Colors.white,
-              child:  loaderFunction()
+                color: Colors.white,
+                child:  loaderFunction()
             );
           }
           else {
@@ -60,7 +86,6 @@ class HomeState extends State<Home> {
             String userEmail = snapshot.data['email'];
             num phoneNumber = snapshot.data['phoneNumber'];
             num limitAmount = snapshot.data['limitAmount'];
-
             return Scaffold(
               appBar: AppBar(
                 title: Text('Menu'),
@@ -76,16 +101,16 @@ class HomeState extends State<Home> {
                           reservationsButton(userId),
                           Row(
                             children: <Widget>[
-                              drinksButton(userId, widget.inBBC),
+                              drinksButton(userId),
                               Column(
                                 children: <Widget>[
-                                  specialOffersButton(userId, widget.inBBC),
-                                  foodButton(userId, widget.inBBC),
+                                  specialOffersButton(userId, inBBC2),
+                                  foodButton(userId, inBBC2),
                                 ],
                               ),
                             ],
                           ),
-                          currentOrdersButton(widget.inBBC),
+                          currentOrdersButton(inBBC2),
                         ],
                       ),
                       ],
@@ -98,13 +123,49 @@ class HomeState extends State<Home> {
     );
   }
 
+  Widget reservationsButton(userId){
+    return Container(
+      height: (MediaQuery
+          .of(context)
+          .size
+          .height - AppBar().preferredSize.height -
+          24.0) / 6,
+      child: FlatButton(
+        color: const Color(0xFF69B3E7),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(
+              builder: (context) => ReservationsList(userId)),);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.group,
+                size: iconSize,
+                color: Colors.white) : Container(),
+            Text('Reservations',
+              style: TextStyle(
+                color: Colors.white,
+              ),)
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget specialOffersButton(String userId, bool inBBC){
     return Container(
       width: MediaQuery.of(context).size.width / 2,
       height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
       child: FlatButton(
         color: const Color(0xFFFF6B00),
-        onPressed: () {
+        onPressed: () async{
+          print('vvv');
+          print(drunkModeState);
+          print(inBBC);
+          if (inBBC == null) {
+            inBBC = await lc.isNearBBC();
+          }
           if(inBBC) {
             Navigator.of(context).pushNamed('/Offers', arguments: userId);
           }
@@ -126,7 +187,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget drinksButton(String userId, bool inBBC){
+  Widget drinksButton(String userId){
     return Column(
       children: <Widget>[
         Container(
@@ -134,8 +195,13 @@ class HomeState extends State<Home> {
           height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 4 / 9,
           child: FlatButton(
             color: const Color(0xFFD7384A),
-            onPressed: () {
-              if(inBBC) {
+            onPressed: () async{
+              obtenerEstadoDrunkMode();
+              if (widget.inBBC == null || inBBC2 == null) {
+                print('estaba null el valor de inBBC');
+                nearBBC();
+              }
+              if (!drunkModeState && inBBC2) {
                 Navigator.of(context).pushNamed('/Drinks', arguments: userId);
               }
             },
@@ -182,8 +248,13 @@ class HomeState extends State<Home> {
                   ),)
               ],
             ),
-            onPressed: () {
-              if(inBBC) {
+            onPressed: () async {
+              print('vvv');
+              obtenerEstadoDrunkMode();
+              if (inBBC2 == null) {
+                inBBC2 = await lc.isNearBBC();
+              }
+              if (inBBC2 && !drunkModeState) {
                 Navigator.of(context).pushNamed('/Cab');
               }
             },
@@ -201,8 +272,13 @@ class HomeState extends State<Home> {
         builder: (context) =>
             FlatButton(
               color: const Color(0xFFD8AE2D),
-              onPressed: () {
-                if(inBBC) {
+              onPressed: () async {
+                print('vvv');
+                print(drunkModeState);
+                if(inBBC==null) {
+                  inBBC = await lc.isNearBBC();
+                }
+                if (inBBC || !drunkModeState) {
                   Navigator.of(context).pushNamed('/Food', arguments: userId);
                 }
               },
@@ -224,35 +300,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget reservationsButton(userId){
-    return Container(
-      height: (MediaQuery
-          .of(context)
-          .size
-          .height - AppBar().preferredSize.height -
-          24.0) / 6,
-      child: FlatButton(
-        color: const Color(0xFF69B3E7),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => ReservationsList(userId)),);
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            (MediaQuery.of(context).orientation == Orientation.portrait) ? Icon(Icons.group,
-                size: iconSize,
-                color: Colors.white) : Container(),
-            Text('Reservations',
-              style: TextStyle(
-                color: Colors.white,
-              ),)
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget currentOrdersButton(bool inBBC){
     return Container(
@@ -263,8 +311,11 @@ class HomeState extends State<Home> {
           24.0) / 6,
       child: FlatButton(
         color: const Color(0xFF6DAC3B),
-        onPressed: () {
-          if(inBBC) {
+        onPressed: () async{
+          if(inBBC==null){
+            inBBC = await lc.isNearBBC();
+          }
+          if(inBBC || drunkModeState) {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => OrderPage()));
             loaderFunction();

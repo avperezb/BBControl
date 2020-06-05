@@ -316,13 +316,9 @@ class _PreOrderPageState extends State<PreOrderPage> {
 
 
   Widget _buildAboutText() {
-    return new RichText(
-      text: new TextSpan(
-        text: 'You set a limit for the expenses control. If you have changed your mind go to settings and change it!',
-        style: const TextStyle(color: Colors.black87),
-        children: <TextSpan>[
-        ],
-      ),
+    return new Text('Yoou set a limit for the expenses control. If you have changed your mind go to settings and change it!',
+        style: const TextStyle(color: Colors.black87, fontSize: 15.9),
+        textAlign: TextAlign.justify,
     );
   }
 

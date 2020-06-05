@@ -4,6 +4,7 @@ import 'package:bbcontrol/setup/Pages/Services/customers_firestore.dart';
 import 'package:bbcontrol/setup/Pages/Services/employees_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_validator/string_validator.dart';
 
 class AuthService {
 
@@ -74,10 +75,8 @@ class AuthService {
           prefs.setString('last_name', customer.lastName);
           prefs.setString('birth_date', customer.birthDate.toString());
           prefs.setInt('phone_number', customer.phoneNumber);
-          prefs.setInt('limit_amount', customer.limitAmount);
+          prefs.setInt('limit_amount', toInt((customer.limitAmount).toString()));
         });
-
-        print(customer);
         return customer;
       }
     }
@@ -90,9 +89,7 @@ class AuthService {
   Future signUp(String _email, String _password, String _firstName,
       String _lastName, num _phoneNumber, DateTime _birthDate,
       num _limitAmount) async {
-    print('intento crear');
     try {
-      print('holaaa');
       FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
           email: _email, password: _password)).user;
       user.sendEmailVerification();
