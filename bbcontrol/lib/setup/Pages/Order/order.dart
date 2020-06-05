@@ -337,12 +337,18 @@ class _OrderPageState extends State<OrderPage> {
                                         ],
                                       ),
                                       onPressed: () async {
-                                        bool estadoDM = await obtenerEstadoDrunkMode();
-                                        SharedPreferences prefs = await SharedPreferences.getInstance();
-                                        if(estadoDM){
-                                          showMathOperation(context, snapshot);
-                                        }else{
-                                          checkInternetConnection(context,snapshot);
+                                        try {
+                                          final result = await InternetAddress.lookup('google.com');
+                                          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                            bool estadoDM = await obtenerEstadoDrunkMode();
+                                            if(estadoDM){
+                                              showMathOperation(context, snapshot);
+                                            }else{
+                                              sendOrder(context,snapshot);
+                                            }
+                                          }
+                                        } on SocketException catch (_) {
+                                          return connectionErrorToast();
                                         }
                                       },
                                     ),
@@ -416,47 +422,39 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  checkInternetConnection(context, snapshot) async{
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var uuid = new Uuid();
-        databaseHelper.deleteDB();
-        Order newOrder = new Order.withId(
-            uuid.v1(),
-            waiterAvailable.data['id'],
-            widget.userId,
-            DateTime.now(),
-            '0',
-            total,
-            0);
-        _employeesFirestoreClass.updateEmployeeOrdersAmount(
-            waiterAvailable.data['id'], 1);
-        await _ordersFirestoreClass.createOrder(newOrder);
-        //Guardar hora de la última orden
-        int timestamp = DateTime
-            .now()
-            .millisecondsSinceEpoch;
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setInt('lastOrderDate', timestamp);
-        if (cantOrdenes < 3) {
-          setState(() {
-            cantOrdenes += 1;
-          });
-          print(cantOrdenes);
-          successfulOrderToast();
-          for (OrderItem item in snapshot.data) {
-            await _ordersFirestoreClass.addItemToOrder(item, newOrder.id);
-          }
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/', (Route<dynamic> route) => false);
-        }
-        showMathOperation(context, snapshot);
+  sendOrder(context, snapshot) async{
+    var uuid = new Uuid();
+    databaseHelper.deleteDB();
+    Order newOrder = new Order.withId(
+        uuid.v1(),
+        waiterAvailable.data['id'],
+        widget.userId,
+        DateTime.now(),
+        '0',
+        total,
+        0);
+    _employeesFirestoreClass.updateEmployeeOrdersAmount(
+        waiterAvailable.data['id'], 1);
+    await _ordersFirestoreClass.createOrder(newOrder);
+    //Guardar hora de la última orden
+    int timestamp = DateTime
+        .now()
+        .millisecondsSinceEpoch;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('lastOrderDate', timestamp);
+    if (cantOrdenes < 3) {
+      setState(() {
+        cantOrdenes += 1;
+      });
+      print(cantOrdenes);
+      successfulOrderToast();
+      for (OrderItem item in snapshot.data) {
+        await _ordersFirestoreClass.addItemToOrder(item, newOrder.id);
       }
-    } on SocketException catch (_) {
-      return connectionErrorToast();
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          '/', (Route<dynamic> route) => false);
     }
-
+    showMathOperation(context, snapshot);
   }
 
   connectionErrorToast(){
@@ -520,7 +518,7 @@ class _OrderPageState extends State<OrderPage> {
                         isSwitched = !isSwitched;
                       });
                       Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                      checkInternetConnection(context,snapshot);
+                      sendOrder(context,snapshot);
                     }
                     else {
                       Navigator.of(context).pop();
@@ -539,7 +537,7 @@ class _OrderPageState extends State<OrderPage> {
                         isSwitched = !isSwitched;
                       });
                       Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                      checkInternetConnection(context,snapshot);
+                      sendOrder(context,snapshot);
                     }
                     else {
                       Navigator.of(context).pop();
@@ -558,7 +556,7 @@ class _OrderPageState extends State<OrderPage> {
                         isSwitched = !isSwitched;
                       });
                       Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                      checkInternetConnection(context,snapshot);
+                      sendOrder(context,snapshot);
                     }
                     else {
                       Navigator.of(context).pop();
