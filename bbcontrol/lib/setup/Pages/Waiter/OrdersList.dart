@@ -1,6 +1,4 @@
 import 'package:bbcontrol/models/employees.dart';
-import 'package:bbcontrol/models/navigation_model.dart';
-import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/auth.dart';
@@ -13,6 +11,7 @@ import 'package:overlay_support/overlay_support.dart';
 class OrdersListWaiter extends StatelessWidget {
   final CollectionReference _ordersCollectionReference = Firestore.instance.collection('Orders');
   var formatCurrency = NumberFormat.currency(symbol: '\$', decimalDigits: 0, locale: 'en_US');
+  final AuthService _auth = AuthService();
   Employee employee;
   OrdersListWaiter({this.employee});
 
@@ -30,9 +29,20 @@ class OrdersListWaiter extends StatelessWidget {
                 title: Text('My Orders'),
                 centerTitle: true,
                 backgroundColor: const Color(0xFFAD4497),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                        Icons.exit_to_app,
+                        color: Colors.white
+                    ),
+                    onPressed: (){
+                      _auth.signOut();
+                      Navigator.of(context).pushReplacementNamed('/Login');
+                    },
+                  )
+                ],
               ),
               body: Center(
-
                 child: Container(
                     width: 300,
                     height: 300,
@@ -76,11 +86,21 @@ class OrdersListWaiter extends StatelessWidget {
                 title: Text('My Orders'),
                 centerTitle: true,
                 backgroundColor: const Color(0xFFAD4497),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                        Icons.exit_to_app,
+                        color: Colors.white
+                    ),
+                    onPressed: (){
+                      _auth.signOut();
+                      Navigator.of(context).pushReplacementNamed('/Login');
+                    },
+                  )
+                ],
               ),
               body:
               Container(
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                 child: ListView.builder(
                     itemCount: snapshot.data.documents.length,
                     itemBuilder: (context, int index) {
@@ -148,7 +168,6 @@ class OrdersListWaiter extends StatelessWidget {
                     }
                 ),
               ),
-              endDrawer: MenuDrawer(employee.firstName, employee.lastName, employee.email),
             );
           }
         }
@@ -418,181 +437,3 @@ class OrderDetailWaiter extends StatelessWidget {
   }
 }
 
-
-class MenuDrawer extends StatefulWidget {
-
-  String userFirstName;
-  String userLastName;
-  String userEmail;
-
-  Function (String, String, String) callback;
-
-  MenuDrawer(String userFName, String userLName, String email){
-
-    this.userFirstName = userFName;
-    this.userLastName = userLName;
-    this.userEmail = email;
-  }
-
-  @override
-  _MenuDrawerState createState() => _MenuDrawerState();
-}
-
-
-class _MenuDrawerState extends State<MenuDrawer> {
-  double maxWidth = 200;
-  NavigationModel option1 = new NavigationModel(
-      'My profile', Icons.account_circle);
-  NavigationModel option2 = new NavigationModel("My orders", Icons.view_list);
-  NavigationModel option4 = new NavigationModel("Log out", Icons.exit_to_app);
-  final AuthService _auth = AuthService();
-  bool isSwitched = false;
-  bool isButtonExpensesDisabled = true;
-  @override
-  Widget build(BuildContext context) {
-
-    return Container(
-      child: new Drawer(
-        child: Container(
-          color: Color(0xFFEAD0E5),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              SizedBox(
-                height: 150.0,
-                child: DrawerHeader(
-                  decoration: new BoxDecoration(
-                      color: Color(0xFFB75BA4)),
-                  padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
-                  child: Column(
-                    children:<Widget>[
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
-                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
-                        child: Text('${widget.userFirstName}',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border(bottom: BorderSide(color: Colors.black87, width: 1.0)),
-                            color: Colors.transparent
-                        ),
-                        alignment: Alignment.centerLeft,
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
-                        child: Text('${widget.userEmail}',
-                          style: TextStyle(fontSize: 17),
-                        ),
-                        alignment: Alignment.centerLeft,
-                      ),
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  ),
-                ),
-              ),
-              Card( ////             <-- Card widget
-                color: Color(0xFFF5E8F2),
-                child: ListTile(
-                  leading: Icon(option2.icon),
-                  title: Text(option2.title, style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600)),
-                  onTap: action2,
-                ),
-              ),
-              Card(
-                color: Color(0xFFF5E8F2),
-                child: ListTile(
-                  leading: Icon(option4.icon),
-                  title: Text(option4.title, style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600)),
-                  onTap: action4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void action2() {
-    showOverlayNotification((context) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-            0, 0, 0, 0),
-        child: SafeArea(
-          child: ListTile(
-            title: Text('Hang on a minute!',
-                style: TextStyle(fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            ),
-            subtitle: Text(
-              'Your waiter is on the way to assist you.',
-              style: TextStyle(fontSize: 16,
-                  color: Colors.white),
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close,
-                  color: Colors.white,),
-                onPressed: () {
-                  OverlaySupportEntry.of(context)
-                      .dismiss();
-                }),
-          ),
-        ),
-        color: Colors.blue,);
-    }, duration: Duration(milliseconds: 4000));
-  }
-
-  void action3() {
-
-  }
-
-  void action4() {
-    Navigator.pop(context);
-    _auth.signOut();
-    Navigator.of(context).pushReplacementNamed('/Login');
-  }
-
-  Widget _buildAboutDialog(BuildContext context) {
-    return new AlertDialog(
-      title: const Text('Are you sure?'),
-      content: new Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _buildAboutText(),
-        ],
-      ),
-      actions: <Widget>[
-        FlatButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          textColor: Theme.of(context).primaryColor,
-          child: const Text('Okay, got it!'),
-        ),
-        FlatButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          textColor: Theme.of(context).primaryColor,
-          child: const Text('Okay, got it!'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAboutText() {
-    return new RichText(
-      text: new TextSpan(
-        text: 'You\'re about to set the limit of your spent back to none. Think about it!',
-        style: const TextStyle(color: Colors.black87),
-        children: <TextSpan>[
-        ],
-      ),
-    );
-  }
-}
