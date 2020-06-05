@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bbcontrol/setup/Pages/Admin/adminTabs.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/reset_Password.dart';
 import 'package:bbcontrol/setup/Pages/Authenticate/sign_up.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
@@ -197,7 +198,6 @@ class _LoginPageState extends State<LoginPage> {
             _formKey.currentState.save();
             var response = await _auth.signIn(
                 _email, _password);
-            print(_email);
             SharedPreferences prefs = await SharedPreferences.getInstance();
             print(prefs.getString('email'));
             if(prefs.getString('email') == null){
@@ -211,7 +211,10 @@ class _LoginPageState extends State<LoginPage> {
                         OrdersListWaiter(employee: response)));
               }
               else if (_email.contains('@adminbbc.com')) {
-
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (context) =>
+                        AdminTabs(email: _email,)));
               }
               else {
                 Navigator.of(context).popUntil((route) => route.isFirst);

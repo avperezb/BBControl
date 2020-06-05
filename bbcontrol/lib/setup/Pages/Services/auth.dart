@@ -63,6 +63,12 @@ class AuthService {
           prefs.setInt('orders_amount', employee.ordersAmount);
         });
         return employee;
+      }else if(_email.contains('@adminbbc.com')){
+        print('este es admin');
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setString('email', _email);
+        });
+        return true;
       }
       else {
         Customer customer = await _firestoreService.getCustomer(user.uid);
