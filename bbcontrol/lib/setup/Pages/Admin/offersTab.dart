@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bbcontrol/models/offer.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
+import 'package:bbcontrol/setup/Pages/Offers/createOffer.dart';
 import 'package:bbcontrol/setup/Pages/Services/offers_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class OffersTab extends StatefulWidget {
-  List<Offer> offers = new List<Offer>();
   @override
   _OffersTabState createState() => _OffersTabState();
 }
@@ -57,7 +57,7 @@ class _OffersTabState extends State<OffersTab> {
                           try {
                             final result = await InternetAddress.lookup('google.com');
                             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-                              updateSuccesfulToast();
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => CreateOffer()));
                             }
                           } on SocketException catch (_) {
                             return connectionErrorToast();
@@ -85,7 +85,6 @@ class _OffersTabState extends State<OffersTab> {
                     Offer newOffer = new Offer(
                         offer.documentID, offer['active'], offer['description'], offer['name'], offer['price']
                     );
-                    widget.offers.add(newOffer);
                     return SingleOffer(offer: newOffer, active: newOffer.active,);
                   }).toList(),
                 ),

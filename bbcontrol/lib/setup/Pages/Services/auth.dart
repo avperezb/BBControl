@@ -118,6 +118,32 @@ class AuthService {
       print(e.message());
     }
   }
+
+  Future registerWaiter(bool _active, String _email, String _firstName, num _identification,
+      String _lastName, num _ordersAmount, num _phoneNumber) async{
+    try{
+      List<String> arr = _firstName.split(' ');
+      String password = '123' + arr[0].toLowerCase();
+      print(password);
+      FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
+          email: _email, password: password)).user;
+      user.sendEmailVerification();
+
+      return await _firestoreEmployees.createEmployee(Employee(
+          id: user.uid,
+          phoneNumber: _phoneNumber,
+          active: _active,
+          identification: _identification,
+          ordersAmount: _ordersAmount,
+          email: _email,
+          lastName: _lastName,
+          firstName: _firstName
+      ));
+    }
+    catch(e){
+      print('error creando mesero');
+    }
+  }
   //Sign out
   Future signOut() async {
     if (user != null) {
