@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bbcontrol/models/order.dart';
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
+import 'package:bbcontrol/setup/Pages/DrawBar/math_Operation.dart';
 import 'package:bbcontrol/setup/Pages/Extra/ColorLoader.dart';
 import 'package:bbcontrol/setup/Pages/Extra/DotType.dart';
 import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
@@ -13,7 +14,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+
+import '../DrawBar/drunk_Mode.dart';
 
 class OrderPage extends StatefulWidget {
   String userId;
@@ -24,17 +28,30 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
 
+  final GlobalKey<ScaffoldState> _scaffoldkey = new GlobalKey<ScaffoldState>();
+  MathOperation mathOperation = MathOperation();
+  bool isSwitched = false;
+  int correctAnswer;
+  int userAnswer;
+  bool isAnswerOkay;
+  List<String> operationText;
+  List<int> posiblesOpciones;
+  int op1;
+  int op2;
+  int op3;
   var formatCurrency = NumberFormat.currency(
       symbol: '\$', decimalDigits: 0, locale: 'en_US');
   DatabaseItem databaseHelper = DatabaseItem();
   OrdersFirestoreClass _ordersFirestoreClass = OrdersFirestoreClass();
   EmployeesFirestoreClass _employeesFirestoreClass = EmployeesFirestoreClass();
   CheckConnectivityState checkConnection = CheckConnectivityState();
+  DrunkModePage drunkModePage = DrunkModePage();
   List<OrderItem> orderList;
   int count = 0;
   bool cStatus = true;
   int total;
   bool auxReload = true;
+  int cantOrdenes = 0;
 
   @override
   void initState() {
@@ -46,6 +63,7 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return StreamBuilder(
         stream: Firestore.instance.collection('BBCEmployees').orderBy('ordersAmount', descending: false)
             .snapshots(),
@@ -58,6 +76,7 @@ class _OrderPageState extends State<OrderPage> {
           }else{
             waiterAvailable = snapshot.data.documents[0];
             return Scaffold(
+                key: _scaffoldkey,
                 appBar: AppBar(
                   title: Text('My order'),
                   centerTitle: true,
@@ -318,9 +337,13 @@ class _OrderPageState extends State<OrderPage> {
                                         ],
                                       ),
                                       onPressed: () async {
-                                        print(widget.userId);
-                                        checkInternetConnection(
-                                            context, snapshot);
+                                        bool estadoDM = await obtenerEstadoDrunkMode();
+                                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                                        if(estadoDM){
+                                          showMathOperation(context, snapshot);
+                                        }else{
+                                          checkInternetConnection(context,snapshot);
+                                        }
                                       },
                                     ),
                                   )
@@ -335,9 +358,23 @@ class _OrderPageState extends State<OrderPage> {
                 )
             );
           }
-
         }
     );
+  }
+
+  Future<bool> obtenerEstadoDrunkMode()async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("estadoDrunkMode");
+  }
+
+  guardarEstadoDrunkMode(bool estadoActual)async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("estadoDrunkMode", estadoActual);
+  }
+
+  actualizarCantOrdenes(int cant)async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt("cantidadOrdenes", cant);
   }
 
   Widget loaderFunction(){
@@ -381,24 +418,45 @@ class _OrderPageState extends State<OrderPage> {
 
   checkInternetConnection(context, snapshot) async{
     try {
-      print(widget.userId);
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var uuid = new Uuid();
         databaseHelper.deleteDB();
-        Order newOrder = new Order.withId(uuid.v1(), waiterAvailable.data['id'], widget.userId, DateTime.now(), '0', total, 0);
-        _employeesFirestoreClass.updateEmployeeOrdersAmount(waiterAvailable.data['id'], 1);
+        Order newOrder = new Order.withId(
+            uuid.v1(),
+            waiterAvailable.data['id'],
+            widget.userId,
+            DateTime.now(),
+            '0',
+            total,
+            0);
+        _employeesFirestoreClass.updateEmployeeOrdersAmount(
+            waiterAvailable.data['id'], 1);
         await _ordersFirestoreClass.createOrder(newOrder);
-        successfulOrderToast();
-        for(OrderItem item in snapshot.data){
-          await _ordersFirestoreClass.addItemToOrder(item,newOrder.id);
+        //Guardar hora de la última orden
+        int timestamp = DateTime
+            .now()
+            .millisecondsSinceEpoch;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setInt('lastOrderDate', timestamp);
+        if (cantOrdenes < 3) {
+          setState(() {
+            cantOrdenes += 1;
+          });
+          print(cantOrdenes);
+          successfulOrderToast();
+          for (OrderItem item in snapshot.data) {
+            await _ordersFirestoreClass.addItemToOrder(item, newOrder.id);
+          }
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/', (Route<dynamic> route) => false);
         }
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-
+        showMathOperation(context, snapshot);
       }
     } on SocketException catch (_) {
       return connectionErrorToast();
     }
+
   }
 
   connectionErrorToast(){
@@ -428,6 +486,106 @@ class _OrderPageState extends State<OrderPage> {
       slideDismiss: true,
     );
   }
+
+  void showMathOperation(context, snapshot){
+
+    operationText = mathOperation.operation();
+    posiblesOpciones = mathOperation.calculateResult(operationText);
+    correctAnswer = posiblesOpciones[2];
+    op1 = posiblesOpciones[mathOperation.randomNumber(0, 2)];
+    posiblesOpciones.remove(op1);
+    op2 = posiblesOpciones[mathOperation.randomNumber(0, 1)];
+    posiblesOpciones.remove(op2);
+    op3 = posiblesOpciones[0];
+    posiblesOpciones.remove(op3);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            AlertDialog(
+              title: const Text(
+                  'Select the correct answer'),
+              content: new Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment
+                    .start,
+                children: <Widget>[
+                  textOfDialog(operationText),
+                ],
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    if (correctAnswer == op1) {
+                      setState(() {
+                        isSwitched = !isSwitched;
+                      });
+                      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                      checkInternetConnection(context,snapshot);
+                    }
+                    else {
+                      Navigator.of(context).pop();
+                      showSnackBar();
+                    }
+                  },
+                  textColor: Theme
+                      .of(context)
+                      .primaryColor,
+                  child: Text(op1.toString()),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    if (correctAnswer == op2) {
+                      setState(() {
+                        isSwitched = !isSwitched;
+                      });
+                      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                      checkInternetConnection(context,snapshot);
+                    }
+                    else {
+                      Navigator.of(context).pop();
+                      showSnackBar();
+                    }
+                  },
+                  textColor: Theme
+                      .of(context)
+                      .primaryColor,
+                  child: Text(op2.toString()),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    if (correctAnswer == op3) {
+                      setState(() {
+                        isSwitched = !isSwitched;
+                      });
+                      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                      checkInternetConnection(context,snapshot);
+                    }
+                    else {
+                      Navigator.of(context).pop();
+                      showSnackBar();
+                    }
+                  },
+                  textColor: Theme
+                      .of(context)
+                      .primaryColor,
+                  child: Text(op3.toString()),
+                ),
+              ],
+            )
+    );
+  }
+
+  void showSnackBar() {
+    final snackBarContent = SnackBar(
+      content: Text("You cannot order if your answer is wrong! Try again.", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 15)),
+      duration: Duration(days: 1),
+      backgroundColor: Color(0xFFDE5F54),
+      action: SnackBarAction(
+          label: 'Dismiss',onPressed: _scaffoldkey.currentState.hideCurrentSnackBar,textColor: Color(0xFFF7F9F7)),
+    );
+    _scaffoldkey.currentState.showSnackBar(snackBarContent);
+  }
+
 
   Widget _buildAboutDialog(BuildContext context, bool isItem, String productId) {
     return new AlertDialog(

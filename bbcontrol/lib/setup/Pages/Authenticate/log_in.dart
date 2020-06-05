@@ -15,7 +15,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../DrawBar/drunk_Mode.dart';
+import '../DrawBar/location.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -36,7 +36,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    isNearBBC();
     super.initState();
   }
 
@@ -168,6 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xFFAD4497),
                       onPressed: () async {
                         loaderFunction();
+                        inBBC = await isNearBBC();
                         checkInternetConnection(context, inBBC);
                       },
                       child: Text('Log in',
@@ -248,8 +248,10 @@ class _LoginPageState extends State<LoginPage> {
   isNearBBC() async{
     bool rta = await lc.isNearBBC();
     setState(() {
-      inBBC = rta;
-    });
+        inBBC = rta;
+      });
+    print('cuando hice log in quedó: ');
+    print(inBBC);
   }
 
   loginErrorToast(){
