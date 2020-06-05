@@ -1,6 +1,7 @@
 
 import 'package:bbcontrol/models/customer.dart';
 import 'package:bbcontrol/models/employees.dart';
+import 'package:bbcontrol/setup/Pages/Admin/adminTabs.dart';
 import 'package:bbcontrol/setup/Pages/Waiter/OrdersList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class _WrapperState extends State<Wrapper> {
       return OrdersListWaiter(employee: employee);
     }
     else if(_email.contains('@adminbbc.com')){
-
+      return AdminTabs(email: _email,);
     }
     else{
       loaderFunction();
