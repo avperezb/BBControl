@@ -59,7 +59,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    print(isSwitched);
     return Container(
       child: new Drawer(
         child: Container(
