@@ -150,9 +150,16 @@ class _MakeReservationState extends State<MakeReservation> {
                             return 'Please select a time';
                           }
                           else if(input.difference((DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute)))
-                              > Duration(hours: 3) || (DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute))
-                              .difference(input) > Duration(hours:  3)){
+                              > Duration(hours: 3)){
                             return 'A reservation can\'t last more than 3 hours';
+                          }
+                          else if(input.difference((DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute)))
+                              < Duration(hours: 0)){
+                            return 'Ending time must be after starting time';
+                          }
+                          else if(input.difference((DateTime(input.year, input.month, input.day, _startNoFormat.hour, _startNoFormat.minute)))
+                              < Duration(hours: 1)){
+                            return 'A reservation can\'t last less than 1 hour';
                           }
                           else return null;
                         },
@@ -302,15 +309,23 @@ class _MakeReservationState extends State<MakeReservation> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        _formKey.currentState.save();
-        List<String> preferences = new List<String>();
-        if(_neararcade)  preferences.add('near arcade');
-        if(_nearbar) preferences.add(('near bar'));
-        if(_neartv) preferences.add('near tv');
-        Reservation reservation = new Reservation(
-            uuid.v1(), _date, _endTime, _startTime, _numPeople, preferences, widget.userEmail);
-        await _reservationsFirestoreClass.addReservation(reservation);
-        Navigator.pop(context);
+        if (_formKey.currentState.validate()) {
+          _formKey.currentState.save();
+          List<String> preferences = new List<String>();
+          if (_neararcade) preferences.add('near arcade');
+          if (_nearbar) preferences.add(('near bar'));
+          if (_neartv) preferences.add('near tv');
+          Reservation reservation = new Reservation(
+              uuid.v1(),
+              _date,
+              _endTime,
+              _startTime,
+              _numPeople,
+              preferences,
+              widget.userEmail);
+          await _reservationsFirestoreClass.addReservation(reservation);
+          Navigator.pop(context);
+        }
       }
     } on SocketException catch (_) {
       return connectionErrorToast();

@@ -337,49 +337,55 @@ class _OrderPageState extends State<OrderPage> {
                                         ],
                                       ),
                                       onPressed: () async {
-
-                                        SharedPreferences prefs = await SharedPreferences.getInstance();
-                                        bool estadoDM = await obtenerEstadoDrunkMode();
-                                        print('cantidad de órdenes del SP');
-                                        cantOrdenes = prefs.getInt('cantOrdenes');
-                                        if(cantOrdenes==null) {
-                                          print('ddddddddddddddd');
-                                          cantOrdenes = 0;
-                                        }
-                                        print(cantOrdenes);
-                                        print('hoooooooola');
-                                        print(estadoDM);
-                                        if(estadoDM){
-                                          showMathOperation(context, snapshot);
-                                        }else{
-                                          if (cantOrdenes >= 3) {
-                                            prefs.setBool("estadoDrunkMode", true);
-                                            var res = showMathOperation(
-                                                context, snapshot);
-                                            if (res) {
-                                              print('HAHDBFKENVKJNDV');
-                                              //Guardar hora de la última orden
-                                              int timestamp = DateTime.now().millisecondsSinceEpoch;
-                                              prefs.setInt('lastOrderDate', timestamp);
-                                              prefs.setInt('cantOrdenes', cantOrdenes+1);
+                                        try {
+                                          final result = await InternetAddress.lookup('google.com');
+                                          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                                            bool estadoDM = await obtenerEstadoDrunkMode();
+                                            print('cantidad de órdenes del SP');
+                                            cantOrdenes = prefs.getInt('cantOrdenes');
+                                            if(cantOrdenes==null) {
+                                              print('ddddddddddddddd');
+                                              cantOrdenes = 0;
+                                            }
+                                            print(cantOrdenes);
+                                            print('hoooooooola');
+                                            print(estadoDM);
+                                            if(estadoDM){
+                                              showMathOperation(context, snapshot);
+                                            }else{
+                                              if (cantOrdenes >= 3) {
+                                                prefs.setBool("estadoDrunkMode", true);
+                                                var res = showMathOperation(
+                                                    context, snapshot);
+                                                if (res) {
+                                                  print('HAHDBFKENVKJNDV');
+                                                  //Guardar hora de la última orden
+                                                  int timestamp = DateTime.now().millisecondsSinceEpoch;
+                                                  prefs.setInt('lastOrderDate', timestamp);
+                                                  prefs.setInt('cantOrdenes', cantOrdenes+1);
+                                                }
+                                              }
+                                              else{
+                                                print('CANTIDAD ÓRDENES:');
+                                                print(cantOrdenes);
+                                                var res = await saveOrder(context, snapshot);
+                                                if (res) {
+                                                  print('eeeeeeeeeee');;
+                                                  //Guardar hora de la última orden
+                                                  int timestamp = DateTime.now().millisecondsSinceEpoch;
+                                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                                  prefs.setInt('lastOrderDate', timestamp);
+                                                  prefs.setInt('cantOrdenes', cantOrdenes+1);
+                                                  cantOrdenes = prefs.getInt('cantOrdenes');
+                                                }
+                                                print('EHFBERHJV');
+                                                print(cantOrdenes);
+                                              }
                                             }
                                           }
-                                          else{
-                                            print('CANTIDAD ÓRDENES:');
-                                            print(cantOrdenes);
-                                            var res = await checkInternetConnection(context, snapshot);
-                                            if (res) {
-                                              print('eeeeeeeeeee');;
-                                              //Guardar hora de la última orden
-                                              int timestamp = DateTime.now().millisecondsSinceEpoch;
-                                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                                              prefs.setInt('lastOrderDate', timestamp);
-                                              prefs.setInt('cantOrdenes', cantOrdenes+1);
-                                              cantOrdenes = prefs.getInt('cantOrdenes');
-                                            }
-                                            print('EHFBERHJV');
-                                            print(cantOrdenes);
-                                          }
+                                        } on SocketException catch (_) {
+                                          return connectionErrorToast();
                                         }
                                       },
                                     ),
@@ -453,10 +459,9 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Future<bool> checkInternetConnection(context, snapshot) async{
-
+  Future<bool> saveOrder(context, snapshot) async{
     bool rta = false;
-    try {
+    try{
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var uuid = new Uuid();
@@ -546,7 +551,7 @@ class _OrderPageState extends State<OrderPage> {
                       setState(() {
                         isSwitched = !isSwitched;
                       });
-                      checkInternetConnection(context,snapshot);
+                      saveOrder(context,snapshot);
                       rta = true;
                     }
                     else {
@@ -565,7 +570,7 @@ class _OrderPageState extends State<OrderPage> {
                       setState(() {
                         isSwitched = !isSwitched;
                       });
-                      checkInternetConnection(context,snapshot);
+                      saveOrder(context,snapshot);
                       rta = true;
                     }
                     else {
@@ -584,7 +589,7 @@ class _OrderPageState extends State<OrderPage> {
                       setState(() {
                         isSwitched = !isSwitched;
                       });
-                      checkInternetConnection(context,snapshot);
+                      saveOrder(context,snapshot);
                       rta = true;
                     }
                     else {
