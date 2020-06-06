@@ -1,4 +1,3 @@
-
 import 'package:bbcontrol/models/navigation_model.dart';
 import 'package:bbcontrol/setup/Pages/DrawBar/edit_Profile.dart';
 import 'package:bbcontrol/setup/Pages/DrawBar/my_orders.dart';
@@ -38,19 +37,12 @@ class MenuDrawer extends StatefulWidget {
 
 class _MenuDrawerState extends State<MenuDrawer> {
 
-  SharedPreferences prefs;
-
-  @override
-  void initState() {
-
-    loadSharedPreferencesAndSwitchState();
+  initState() {
+    // TODO: implement initState
+    if(isSwitched == null) {
+      obtenerEstadoExpControl();
+    }
     super.initState();
-  }
-
-  Future loadSharedPreferencesAndSwitchState() async {
-    prefs = await SharedPreferences.getInstance();
-    isSwitched = prefs.getBool('estadoExpControl') == null ? false : (prefs.getBool('estadoExpControl'));
-    return isSwitched;
   }
 
   bool isSwitched = false;
@@ -162,9 +154,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             value: isSwitched,
                             onChanged: (value) async{
                               print(isSwitched);
+                              await guardarEstadoExpControl(value);
                               if (!isSwitched) {
                                 if (widget.userLimitAmount > 0){
-                                  await guardarEstadoExpControl(value);
                                   setState(() {
                                     isSwitched = value;
                                   });
