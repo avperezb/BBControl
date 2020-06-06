@@ -46,7 +46,6 @@ class AuthService {
   //Sign in email-password
 
   Future signIn(String _email, String _password) async {
-    print('log in');
     try {
       FirebaseUser user = (await _auth.signInWithEmailAndPassword(
           email: _email, password: _password)).user;
@@ -65,7 +64,6 @@ class AuthService {
         });
         return employee;
       }else if(_email.contains('@adminbbc.com')){
-        print('este es admin');
         SharedPreferences.getInstance().then((prefs) {
           prefs.setString('email', _email);
         });
@@ -73,7 +71,7 @@ class AuthService {
       }
       else {
         Customer customer = await _firestoreService.getCustomer(user.uid);
-        print("se trajo el usuario");
+
         SharedPreferences.getInstance().then((prefs) {
           prefs.setString('email', _email);
           prefs.setString('id', customer.id);

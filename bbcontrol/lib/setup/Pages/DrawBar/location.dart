@@ -9,7 +9,6 @@ class LocationClass {
 
   Future<bool> isNearBBC() async{
     bool nearBBC = false;
-    print('actualizaré de una la ubicación, perras');
     Firestore firestore = Firestore.instance;
     GeoFirestore geoFirestore = GeoFirestore(firestore.collection('Locations'));
     //Ubicación del usuario

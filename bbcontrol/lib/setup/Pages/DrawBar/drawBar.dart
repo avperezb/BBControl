@@ -40,7 +40,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
   initState() {
     // TODO: implement initState
-    obtenerEstadoExpControl();
+    if(isSwitched == null) {
+      obtenerEstadoExpControl();
+    }
     super.initState();
   }
 
@@ -57,7 +59,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
   @override
   Widget build(BuildContext context) {
-
+    print(isSwitched);
     return Container(
       child: new Drawer(
         child: Container(
@@ -153,6 +155,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                           Switch(
                             value: isSwitched,
                             onChanged: (value) async{
+                              print(isSwitched);
                               await guardarEstadoExpControl(value);
                               if (!isSwitched) {
                                 if (widget.userLimitAmount > 0){
