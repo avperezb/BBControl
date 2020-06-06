@@ -2,7 +2,7 @@
 
 In order to run this project you will need to have Cabify app and the PlayStore app for the Cab request functionality.
 
-As for the users, there thre types: administrator, waiter and customer; which users are as follows
+As for the users, there are three types: administrator, waiter and customer; which users are as follows
 
 + Customer: 
 user: vale_9817@hotmail.com
