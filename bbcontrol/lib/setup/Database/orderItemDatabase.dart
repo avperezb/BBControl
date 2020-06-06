@@ -122,4 +122,16 @@ class DatabaseItem{
     return pList;
   }
 
+  Future<List<String>> getAll() async{
+    var productsList = await getPreOrdersMapList();
+    int count = productsList.length;
+
+    List<String> pList = List<String>();
+
+    for(int i =0; i< count; i++){
+      pList.add(OrderItem.fromMapObject(productsList[i]).productName+"|"+OrderItem.fromMapObject(productsList[i]).price.toString()+"|"+OrderItem.fromMapObject(productsList[i]).quantity.toString());
+    }
+    return pList;
+  }
+
 }

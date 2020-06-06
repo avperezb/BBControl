@@ -21,7 +21,7 @@ class LocationClass {
     final queryLocation = GeoPoint(pos.latitude, pos.longitude);
 
     // creates a new query around [currentLocation] with a radius of 6 mts
-    final List<DocumentSnapshot> documents = await geoFirestore.getAtLocation(queryLocation, 900);
+    final List<DocumentSnapshot> documents = await geoFirestore.getAtLocation(queryLocation, 100);
     documents.forEach((document) {
       print(document.data);
     });
