@@ -29,10 +29,9 @@ class LocationClass {
     if(documents.length>0){
       nearBBC = true;
     }
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("estaEnBBCSP", nearBBC);
-
+    prefs.setBool("estaEnBBCSP", nearBBC);
     return nearBBC;
   }
 

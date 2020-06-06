@@ -38,12 +38,19 @@ class MenuDrawer extends StatefulWidget {
 
 class _MenuDrawerState extends State<MenuDrawer> {
 
-  initState() {
-    // TODO: implement initState
-    if(isSwitched == null) {
-      obtenerEstadoExpControl();
-    }
+  SharedPreferences prefs;
+
+  @override
+  void initState() {
+
+    loadSharedPreferencesAndSwitchState();
     super.initState();
+  }
+
+  Future loadSharedPreferencesAndSwitchState() async {
+    prefs = await SharedPreferences.getInstance();
+    isSwitched = prefs.getBool('estadoExpControl') == null ? false : (prefs.getBool('estadoExpControl'));
+    return isSwitched;
   }
 
   bool isSwitched = false;
@@ -155,9 +162,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             value: isSwitched,
                             onChanged: (value) async{
                               print(isSwitched);
-                              await guardarEstadoExpControl(value);
                               if (!isSwitched) {
                                 if (widget.userLimitAmount > 0){
+                                  await guardarEstadoExpControl(value);
                                   setState(() {
                                     isSwitched = value;
                                   });

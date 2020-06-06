@@ -32,16 +32,30 @@ class HomeState extends State<Home> {
 
   void initState() {
     // TODO: implement initState
-    obtenerEstadoDrunkMode();
-    if (widget.inBBC == null) {
-      print('estaba null el valor de inBBC');
-      nearBBC();
-    }
-    else{
-      print('acáaa jijiji');
-      inBBC2 = widget.inBBC;
-    }
+    putDrunkModeInSP();
+    putExpControlInSP();
+    isNearBBCC();
     super.initState();
+  }
+
+  void isNearBBCC() async{
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+    setState(() {
+      inBBC2 = prefs.getBool('estaEnBBCSP');
+    });
+
+  }
+
+  void putDrunkModeInSP() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('estadoDrunkMode', false);
+  }
+
+  putExpControlInSP() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('estadoExpControl', false);
   }
 
   bool inBBC2;
@@ -59,12 +73,6 @@ class HomeState extends State<Home> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       inBBC2 = prefs.getBool("estaEnBBCSP");
-    });
-  }
-  void obtenerEstadoDrunkMode()async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      drunkModeState = prefs.getBool("estadoDrunkMode");
     });
   }
 
@@ -160,13 +168,10 @@ class HomeState extends State<Home> {
       child: FlatButton(
         color: const Color(0xFFFF6B00),
         onPressed: () async{
-          print('vvv');
-          print(drunkModeState);
-          print(inBBC);
-          if (inBBC == null) {
-            inBBC = await lc.isNearBBC();
-          }
-          if(inBBC) {
+          nearBBC();
+          print('está en bbc?');
+          print(inBBC2);
+          if (inBBC2) {
             Navigator.of(context).pushNamed('/Offers', arguments: userId);
           }
         },
@@ -196,14 +201,12 @@ class HomeState extends State<Home> {
           child: FlatButton(
             color: const Color(0xFFD7384A),
             onPressed: () async{
-              obtenerEstadoDrunkMode();
-              if (widget.inBBC == null || inBBC2 == null) {
-                print('estaba null el valor de inBBC');
-                nearBBC();
-              }
-              if (!drunkModeState && inBBC2) {
-                Navigator.of(context).pushNamed('/Drinks', arguments: userId);
-              }
+            nearBBC();
+            print('está en bbc?');
+            print(inBBC2);
+            if (inBBC2) {
+              Navigator.of(context).pushNamed('/Drinks', arguments: userId);
+            }
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -249,12 +252,10 @@ class HomeState extends State<Home> {
               ],
             ),
             onPressed: () async {
-              print('vvv');
-              obtenerEstadoDrunkMode();
-              if (inBBC2 == null) {
-                inBBC2 = await lc.isNearBBC();
-              }
-              if (inBBC2 && !drunkModeState) {
+              nearBBC();
+              print('está en bbc?');
+              print(inBBC2);
+              if (inBBC2) {
                 Navigator.of(context).pushNamed('/Cab');
               }
             },
@@ -273,12 +274,10 @@ class HomeState extends State<Home> {
             FlatButton(
               color: const Color(0xFFD8AE2D),
               onPressed: () async {
-                print('vvv');
-                print(drunkModeState);
-                if(inBBC==null) {
-                  inBBC = await lc.isNearBBC();
-                }
-                if (inBBC || !drunkModeState) {
+                nearBBC();
+                print('está en bbc?');
+                print(inBBC2);
+                if (inBBC2) {
                   Navigator.of(context).pushNamed('/Food', arguments: userId);
                 }
               },
@@ -300,8 +299,6 @@ class HomeState extends State<Home> {
     );
   }
 
-
-
   Widget currentOrdersButton(bool inBBC){
     return Container(
       height: (MediaQuery
@@ -312,10 +309,10 @@ class HomeState extends State<Home> {
       child: FlatButton(
         color: const Color(0xFF6DAC3B),
         onPressed: () async{
-          if(inBBC==null){
-            inBBC = await lc.isNearBBC();
-          }
-          if(inBBC || drunkModeState) {
+          nearBBC();
+          print('está en bbc?');
+          print(inBBC2);
+          if (inBBC2) {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => OrderPage()));
             loaderFunction();

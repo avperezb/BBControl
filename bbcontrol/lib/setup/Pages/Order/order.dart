@@ -351,7 +351,7 @@ class _OrderPageState extends State<OrderPage> {
                                             print(cantOrdenes);
                                             print('hoooooooola');
                                             print(estadoDM);
-                                            if(estadoDM){
+                                            if(cantOrdenes==100){
                                               showMathOperation(context, snapshot);
                                             }else{
                                               if (cantOrdenes >= 3) {
@@ -465,6 +465,7 @@ class _OrderPageState extends State<OrderPage> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var uuid = new Uuid();
+        List<String> list = await databaseHelper.getAll();
         databaseHelper.deleteDB();
         Order newOrder = new Order.withId(
             uuid.v1(),
@@ -473,9 +474,11 @@ class _OrderPageState extends State<OrderPage> {
             DateTime.now(),
             '0',
             total,
-            0);
+            0,
+            list);
         _employeesFirestoreClass.updateEmployeeOrdersAmount(
             waiterAvailable.data['id'], 1);
+        print(uuid);
         await _ordersFirestoreClass.createOrder(newOrder);
         rta = true;
         successfulOrderToast();
