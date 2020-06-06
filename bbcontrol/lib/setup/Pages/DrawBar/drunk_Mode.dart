@@ -18,7 +18,9 @@ class _DrunkModePageState extends State<DrunkModePage> {
 
   initState() {
     // TODO: implement initState
-    obtenerEstadoDrunkMode();
+    if (isSwitched == null) {
+      obtenerEstadoDrunkMode();
+    }
     super.initState();
   }
 
