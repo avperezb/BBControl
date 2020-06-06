@@ -18,4 +18,4 @@ password: adminwaiter1
 
 For creating waiters, the password is set as "123 + first name" automatically. For instance, if the first name entered corresponds to Maria Camila, then the password will be 123maria, and it will work when trying to log in.
 
-When the app is started, a prompt asking for gps use will appear, it is necessary to select the always option for the app to work properly.
+When the app is started, a prompt asking for gps use will appear, it is necessary to select the always option for the app to work properly. This is necessary since the app is set up to disable the menu buttons (except for the reservations button) if the device's location is not within a radius of 900 mts (we forgot to change the number after testing it), which would be the configuration for letting the user interact with the app only while being near to one of the BBCs registered on the database.
