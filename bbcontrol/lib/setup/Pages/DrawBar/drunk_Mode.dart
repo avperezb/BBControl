@@ -140,6 +140,7 @@ class _DrunkModePageState extends State<DrunkModePage> {
   }
 
   void showMathOperation(){
+
     operationText = mathOperation.operation();
     posiblesOpciones = mathOperation.calculateResult(operationText);
     correctAnswer = posiblesOpciones[2];
@@ -170,6 +171,7 @@ class _DrunkModePageState extends State<DrunkModePage> {
                       setState(() {
                         isSwitched = !isSwitched;
                         guardarEstadoDrunkMode(isSwitched);
+                        cambiarCantOrdenes(0);
                       });
                       Navigator.of(context).pop();
                       showSnackBarRight();
@@ -189,6 +191,8 @@ class _DrunkModePageState extends State<DrunkModePage> {
                     if (correctAnswer == op2) {
                       setState(() {
                         isSwitched = !isSwitched;
+                        guardarEstadoDrunkMode(isSwitched);
+                        cambiarCantOrdenes(0);
                       });
                       Navigator.of(context).pop();
                       showSnackBarRight();
@@ -208,6 +212,8 @@ class _DrunkModePageState extends State<DrunkModePage> {
                     if (correctAnswer == op3) {
                       setState(() {
                         isSwitched = !isSwitched;
+                        guardarEstadoDrunkMode(isSwitched);
+                        cambiarCantOrdenes(0);
                       });
                       Navigator.of(context).pop();
                       showSnackBarRight();
@@ -237,6 +243,11 @@ class _DrunkModePageState extends State<DrunkModePage> {
   guardarEstadoDrunkMode(bool estadoActual)async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("estadoDrunkMode", estadoActual);
+  }
+
+  cambiarCantOrdenes(int cantOrdenes)async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt("cantOrdenes", cantOrdenes);
   }
 
   void showSnackBarRight() {
