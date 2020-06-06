@@ -17,3 +17,5 @@ user: fduran@adminbbc.com
 password: adminwaiter1
 
 For creating waiters, the password is set as "123 + first name" automatically. For instance, if the first name entered corresponds to Maria Camila, then the password will be 123maria, and it will work when trying to log in.
+
+When the app is started, a prompt asking for gps use will appear, it is necessary to select the always option for the app to work properly.
