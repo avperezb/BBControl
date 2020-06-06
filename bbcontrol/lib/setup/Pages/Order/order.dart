@@ -337,12 +337,49 @@ class _OrderPageState extends State<OrderPage> {
                                         ],
                                       ),
                                       onPressed: () async {
-                                        bool estadoDM = await obtenerEstadoDrunkMode();
+
                                         SharedPreferences prefs = await SharedPreferences.getInstance();
+                                        bool estadoDM = await obtenerEstadoDrunkMode();
+                                        print('cantidad de órdenes del SP');
+                                        cantOrdenes = prefs.getInt('cantOrdenes');
+                                        if(cantOrdenes==null) {
+                                          print('ddddddddddddddd');
+                                          cantOrdenes = 0;
+                                        }
+                                        print(cantOrdenes);
+                                        print('hoooooooola');
+                                        print(estadoDM);
                                         if(estadoDM){
                                           showMathOperation(context, snapshot);
                                         }else{
-                                          checkInternetConnection(context,snapshot);
+                                          if (cantOrdenes >= 3) {
+                                            prefs.setBool("estadoDrunkMode", true);
+                                            var res = showMathOperation(
+                                                context, snapshot);
+                                            if (res) {
+                                              print('HAHDBFKENVKJNDV');
+                                              //Guardar hora de la última orden
+                                              int timestamp = DateTime.now().millisecondsSinceEpoch;
+                                              prefs.setInt('lastOrderDate', timestamp);
+                                              prefs.setInt('cantOrdenes', cantOrdenes+1);
+                                            }
+                                          }
+                                          else{
+                                            print('CANTIDAD ÓRDENES:');
+                                            print(cantOrdenes);
+                                            var res = await checkInternetConnection(context, snapshot);
+                                            if (res) {
+                                              print('eeeeeeeeeee');;
+                                              //Guardar hora de la última orden
+                                              int timestamp = DateTime.now().millisecondsSinceEpoch;
+                                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                                              prefs.setInt('lastOrderDate', timestamp);
+                                              prefs.setInt('cantOrdenes', cantOrdenes+1);
+                                              cantOrdenes = prefs.getInt('cantOrdenes');
+                                            }
+                                            print('EHFBERHJV');
+                                            print(cantOrdenes);
+                                          }
                                         }
                                       },
                                     ),
@@ -416,7 +453,9 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  checkInternetConnection(context, snapshot) async{
+  Future<bool> checkInternetConnection(context, snapshot) async{
+
+    bool rta = false;
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -433,30 +472,18 @@ class _OrderPageState extends State<OrderPage> {
         _employeesFirestoreClass.updateEmployeeOrdersAmount(
             waiterAvailable.data['id'], 1);
         await _ordersFirestoreClass.createOrder(newOrder);
-        //Guardar hora de la última orden
-        int timestamp = DateTime
-            .now()
-            .millisecondsSinceEpoch;
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setInt('lastOrderDate', timestamp);
-        if (cantOrdenes < 3) {
-          setState(() {
-            cantOrdenes += 1;
-          });
-          print(cantOrdenes);
-          successfulOrderToast();
-          for (OrderItem item in snapshot.data) {
-            await _ordersFirestoreClass.addItemToOrder(item, newOrder.id);
-          }
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/', (Route<dynamic> route) => false);
+        rta = true;
+        successfulOrderToast();
+        for (OrderItem item in snapshot.data) {
+          await _ordersFirestoreClass.addItemToOrder(item, newOrder.id);
         }
-        showMathOperation(context, snapshot);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/', (Route<dynamic> route) => false);
       }
     } on SocketException catch (_) {
       return connectionErrorToast();
     }
-
+    return rta;
   }
 
   connectionErrorToast(){
@@ -487,8 +514,8 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  void showMathOperation(context, snapshot){
-
+  bool showMathOperation(context, snapshot){
+    bool rta = false;
     operationText = mathOperation.operation();
     posiblesOpciones = mathOperation.calculateResult(operationText);
     correctAnswer = posiblesOpciones[2];
@@ -519,8 +546,8 @@ class _OrderPageState extends State<OrderPage> {
                       setState(() {
                         isSwitched = !isSwitched;
                       });
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
                       checkInternetConnection(context,snapshot);
+                      rta = true;
                     }
                     else {
                       Navigator.of(context).pop();
@@ -538,8 +565,8 @@ class _OrderPageState extends State<OrderPage> {
                       setState(() {
                         isSwitched = !isSwitched;
                       });
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
                       checkInternetConnection(context,snapshot);
+                      rta = true;
                     }
                     else {
                       Navigator.of(context).pop();
@@ -557,8 +584,8 @@ class _OrderPageState extends State<OrderPage> {
                       setState(() {
                         isSwitched = !isSwitched;
                       });
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
                       checkInternetConnection(context,snapshot);
+                      rta = true;
                     }
                     else {
                       Navigator.of(context).pop();
@@ -573,6 +600,7 @@ class _OrderPageState extends State<OrderPage> {
               ],
             )
     );
+    return rta;
   }
 
   void showSnackBar() {
@@ -581,7 +609,7 @@ class _OrderPageState extends State<OrderPage> {
       duration: Duration(days: 1),
       backgroundColor: Color(0xFFDE5F54),
       action: SnackBarAction(
-          label: 'Dismiss',onPressed: _scaffoldkey.currentState.hideCurrentSnackBar,textColor: Color(0xFFF7F9F7)),
+          label: 'Dismiss', onPressed: _scaffoldkey.currentState.hideCurrentSnackBar,textColor: Color(0xFFF7F9F7)),
     );
     _scaffoldkey.currentState.showSnackBar(snackBarContent);
   }
