@@ -21,7 +21,7 @@ class LocationClass {
     final queryLocation = GeoPoint(pos.latitude, pos.longitude);
 
     // creates a new query around [currentLocation] with a radius of 6 mts
-    final List<DocumentSnapshot> documents = await geoFirestore.getAtLocation(queryLocation, 100);
+    final List<DocumentSnapshot> documents = await geoFirestore.getAtLocation(queryLocation, 900);
     documents.forEach((document) {
       print(document.data);
     });
@@ -29,10 +29,9 @@ class LocationClass {
     if(documents.length>0){
       nearBBC = true;
     }
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("estaEnBBCSP", nearBBC);
-
+    prefs.setBool("estaEnBBCSP", nearBBC);
     return nearBBC;
   }
 

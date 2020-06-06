@@ -33,25 +33,29 @@ class HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     putDrunkModeInSP();
-    putisNearBBCInSP();
-    if (widget.inBBC == null) {
-      print('estaba null el valor de inBBC');
-    }
+    putExpControlInSP();
+    isNearBBCC();
     super.initState();
   }
 
-  void putisNearBBCInSP() async{
+  void isNearBBCC() async{
 
-    bool rta = await lc.isNearBBC();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('estaEnBBCSP', rta);
     print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-    print(prefs.getBool('estaEnBBCSP'));
+    setState(() {
+      inBBC2 = prefs.getBool('estaEnBBCSP');
+    });
+
   }
 
   void putDrunkModeInSP() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('estadoDrunkMode', false);
+  }
+
+  putExpControlInSP() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('estadoExpControl', false);
   }
 
   bool inBBC2;
@@ -69,12 +73,6 @@ class HomeState extends State<Home> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       inBBC2 = prefs.getBool("estaEnBBCSP");
-    });
-  }
-  void obtenerEstadoDrunkMode()async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      drunkModeState = prefs.getBool("estadoDrunkMode");
     });
   }
 
@@ -169,15 +167,13 @@ class HomeState extends State<Home> {
       height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
       child: FlatButton(
         color: const Color(0xFFFF6B00),
-        onPressed: () async{obtenerEstadoDrunkMode();
-        nearBBC();
-        print('el drunk mode está:');
-        print(drunkModeState);
-        print('está en bbc?');
-        print(inBBC2);
-        if (!drunkModeState && inBBC2) {
+        onPressed: () async{
+          nearBBC();
+          print('está en bbc?');
+          print(inBBC2);
+          if (inBBC2) {
             Navigator.of(context).pushNamed('/Offers', arguments: userId);
-         }
+          }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -205,15 +201,12 @@ class HomeState extends State<Home> {
           child: FlatButton(
             color: const Color(0xFFD7384A),
             onPressed: () async{
-              obtenerEstadoDrunkMode();
-              nearBBC();
-              print('el drunk mode está:');
-              print(drunkModeState);
-              print('está en bbc?');
-              print(inBBC2);
-              if (!drunkModeState && inBBC2) {
-                Navigator.of(context).pushNamed('/Drinks', arguments: userId);
-              }
+            nearBBC();
+            print('está en bbc?');
+            print(inBBC2);
+            if (inBBC2) {
+              Navigator.of(context).pushNamed('/Drinks', arguments: userId);
+            }
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -259,12 +252,10 @@ class HomeState extends State<Home> {
               ],
             ),
             onPressed: () async {
-              print('vvv');
-              obtenerEstadoDrunkMode();
-              if (inBBC2 == null) {
-                inBBC2 = await lc.isNearBBC();
-              }
-              if (inBBC2 && !drunkModeState) {
+              nearBBC();
+              print('está en bbc?');
+              print(inBBC2);
+              if (inBBC2) {
                 Navigator.of(context).pushNamed('/Cab');
               }
             },
@@ -283,13 +274,10 @@ class HomeState extends State<Home> {
             FlatButton(
               color: const Color(0xFFD8AE2D),
               onPressed: () async {
-                obtenerEstadoDrunkMode();
                 nearBBC();
-                print('el drunk mode está:');
-                print(drunkModeState);
                 print('está en bbc?');
                 print(inBBC2);
-                if (!drunkModeState && inBBC2) {
+                if (inBBC2) {
                   Navigator.of(context).pushNamed('/Food', arguments: userId);
                 }
               },
@@ -320,13 +308,11 @@ class HomeState extends State<Home> {
           24.0) / 6,
       child: FlatButton(
         color: const Color(0xFF6DAC3B),
-        onPressed: () async{obtenerEstadoDrunkMode();
-        nearBBC();
-        print('el drunk mode está:');
-        print(drunkModeState);
-        print('está en bbc?');
-        print(inBBC2);
-        if (!drunkModeState && inBBC2) {
+        onPressed: () async{
+          nearBBC();
+          print('está en bbc?');
+          print(inBBC2);
+          if (inBBC2) {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => OrderPage()));
             loaderFunction();

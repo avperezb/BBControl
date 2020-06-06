@@ -517,7 +517,7 @@ class _QuantityControlState extends State<QuantityControl> {
   final disabledColor = Color(0xFF7F7F7F);
 
   int getMaxOrder(String size){
-    var jsonData = '{ "Glass" : "10", "Pint" : "10", "Tower" : "2", "Jar" : "3"  }';
+    var jsonData = '{ "Glass" : "25", "Pint" : "25", "Tower" : "25", "Jar" : "25"  }';
     var parsedJson = json.decode(jsonData);
     return num.parse(parsedJson[size]);
   }

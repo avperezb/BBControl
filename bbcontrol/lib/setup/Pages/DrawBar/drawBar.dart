@@ -164,9 +164,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
                               print(isSwitched);
                               if (!isSwitched) {
                                 if (widget.userLimitAmount > 0){
-                                  setState(() async{
+                                  await guardarEstadoExpControl(value);
+                                  setState(() {
                                     isSwitched = value;
-                                    await guardarEstadoExpControl(value);
                                   });
                                 } else {
                                   showDialog(
