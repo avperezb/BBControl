@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bbcontrol/models/customer.dart';
 import 'package:bbcontrol/models/orderItem.dart';
 import 'package:bbcontrol/setup/Database/orderItemDatabase.dart';
@@ -10,6 +12,7 @@ import 'package:bbcontrol/setup/Pages/Services/connectivity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import '../DrawBar/drawBar.dart';
@@ -35,13 +38,12 @@ class HomeState extends State<Home> {
     putDrunkModeInSP();
     putExpControlInSP();
     isNearBBCC();
+    checkConnection.initConnectivity();
     super.initState();
   }
 
   void isNearBBCC() async{
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
     setState(() {
       inBBC2 = prefs.getBool('estaEnBBCSP');
     });
@@ -68,6 +70,9 @@ class HomeState extends State<Home> {
   final iconSize = 60.0;
   bool isConnected = true;
   bool drunkModeState;
+  bool foodCargada = false;
+  bool drinksCargada = false;
+  bool offersCargada = false;
 
   void nearBBC() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -167,14 +172,29 @@ class HomeState extends State<Home> {
       height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 2 / 9,
       child: FlatButton(
         color: const Color(0xFFFF6B00),
-        onPressed: () async{
-          nearBBC();
-          print('está en bbc?');
-          print(inBBC2);
-          if (inBBC2) {
-            Navigator.of(context).pushNamed('/Offers', arguments: userId);
+        onPressed: () async {
+          if(!offersCargada){
+          try {
+            final result = await InternetAddress.lookup('google.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              nearBBC();
+              if (inBBC2) {
+                Navigator.of(context).pushNamed('/Offers', arguments: userId);
+              }
+              setState(() {
+                offersCargada = true;
+              });
+            }
+          } on SocketException catch (_) {
+            return connectionErrorToast();
           }
-        },
+        }else{
+            nearBBC();
+            if (inBBC2) {
+              Navigator.of(context).pushNamed('/Offers', arguments: userId);
+            }
+          }
+          },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -200,13 +220,33 @@ class HomeState extends State<Home> {
           height: (MediaQuery.of(context).size.height - AppBar().preferredSize.height - 24.0) * 4 / 9,
           child: FlatButton(
             color: const Color(0xFFD7384A),
-            onPressed: () async{
-            nearBBC();
-            print('está en bbc?');
-            print(inBBC2);
-            if (inBBC2) {
-              Navigator.of(context).pushNamed('/Drinks', arguments: userId);
-            }
+            onPressed: () async {
+              if (!drinksCargada) {
+                try {
+                  final result = await InternetAddress.lookup('google.com');
+                  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                    nearBBC();
+                    print('está en bbc?');
+                    print(inBBC2);
+                    setState(() {
+                      drinksCargada = true;
+                    });
+                    if (inBBC2) {
+                      Navigator.of(context).pushNamed(
+                          '/Drinks', arguments: userId);
+                    }
+                  }
+                } on SocketException catch (_) {
+                  return connectionErrorToast();
+                }
+              } else {
+                nearBBC();
+                print(inBBC2);
+                if (inBBC2) {
+                  Navigator.of(context).pushNamed(
+                      '/Drinks', arguments: userId);
+                }
+              }
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -253,8 +293,6 @@ class HomeState extends State<Home> {
             ),
             onPressed: () async {
               nearBBC();
-              print('está en bbc?');
-              print(inBBC2);
               if (inBBC2) {
                 Navigator.of(context).pushNamed('/Cab');
               }
@@ -274,11 +312,28 @@ class HomeState extends State<Home> {
             FlatButton(
               color: const Color(0xFFD8AE2D),
               onPressed: () async {
-                nearBBC();
-                print('está en bbc?');
-                print(inBBC2);
-                if (inBBC2) {
-                  Navigator.of(context).pushNamed('/Food', arguments: userId);
+                if (!foodCargada) {
+                  try {
+                    final result = await InternetAddress.lookup('google.com');
+                    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                      nearBBC();
+                      print('está en bbc?');
+                      print(inBBC2);
+                      if (inBBC2) {
+                        Navigator.of(context).pushNamed('/Food', arguments: userId);
+                      }
+                      setState(() {
+                        foodCargada = true;
+                      });
+                    }
+                  } on SocketException catch (_) {
+                    return connectionErrorToast();
+                  }
+                } else {
+                  nearBBC();
+                  if (inBBC2) {
+                    Navigator.of(context).pushNamed('/Food', arguments: userId);
+                  }
                 }
               },
               child: Column(
@@ -309,14 +364,19 @@ class HomeState extends State<Home> {
       child: FlatButton(
         color: const Color(0xFF6DAC3B),
         onPressed: () async{
-          nearBBC();
-          print('está en bbc?');
-          print(inBBC2);
-          if (inBBC2) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => OrderPage()));
-            loaderFunction();
-          }
+            try {
+              final result = await InternetAddress.lookup('google.com');
+              if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                nearBBC();
+                if (inBBC2) {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => OrderPage()));
+                  loaderFunction();
+                }
+              }
+            } on SocketException catch (_) {
+              return connectionErrorToast();
+            }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -332,6 +392,34 @@ class HomeState extends State<Home> {
           ],
         ),
       ),
+    );
+  }
+
+  connectionErrorToast(){
+    return showSimpleNotification(
+      Text("Oops! no internet connection",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+        ),),
+      subtitle: Text('Please check your connection and try again.',
+        style: TextStyle(
+        ),),
+      trailing: Builder(builder: (context) {
+        return FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss',
+              style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16
+              ),));
+      }),
+      background: Colors.blueGrey,
+      autoDismiss: false,
+      slideDismiss: true,
     );
   }
 

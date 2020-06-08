@@ -68,7 +68,7 @@ class _OrderPageState extends State<OrderPage> {
         stream: Firestore.instance.collection('BBCEmployees').orderBy('ordersAmount', descending: false)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData){
+          if (!snapshot.hasData || snapshot.data.documents.length == 0){
             return Container(
                 color: Colors.white,
                 child:  loaderFunction()
